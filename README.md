@@ -13,7 +13,7 @@
 
 ## Usage
 
-1. Open `[bruceJSdesigner](https://tebin623.github.io/Bruce-JS-Designer/)` in a web browser.
+1. Open [bruceJSdesigner](https://tebin623.github.io/Bruce-JS-Designer/) in a web browser.
 2. Use the buttons to add shapes to the canvas.
 3. Adjust properties using sliders, color picker, and input fields.
 4. Copy the generated code from the bottom panel for use with your JS project.

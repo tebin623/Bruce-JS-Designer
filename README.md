@@ -7,7 +7,6 @@
 - Add and edit shapes: rectangles, lines, pixels, circles, text
 - Set device display (e.g., M5StickC, LilyGO T-Embed)
 - Live preview of your design on a canvas
-- Editable code generation using the **display API**
 - Responsive UI for both PC and mobile
 - Color picker, sliders, and interactive controls
 - Credits link to GitHub profile

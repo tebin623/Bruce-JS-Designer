@@ -3,175 +3,256 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bruce JS designer</title>
+<title>Bruce JS Designer</title>
 <style>
-body { margin:0; padding:16px; background:#1a0033; color:#fff; font-family:'Segoe UI',sans-serif; }
+body {
+  margin:0; padding:16px;
+  background:#1a0033; color:#fff;
+  font-family:'Segoe UI',sans-serif;
+}
 .container { max-width:960px; margin:auto; }
-h1 { text-align:center; font-size:2rem; margin-bottom:16px; }
-canvas { display:block; margin:0 auto; border-radius:4px; background:#000; image-rendering:pixelated; max-width:100%; }
-.panel { background:#2b0055; padding:16px; border-radius:12px; display:flex; flex-direction:column; align-items:center; }
-.sliders { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; width:100%; margin-bottom:16px; }
-.sliders label { flex:1 1 120px; }
-.control-btns { display:flex; gap:4px; margin-top:4px; justify-content:center; }
-.shape-buttons { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px; }
-.shape-btn, .danger-btn { flex:1 1 120px; padding:12px 0; border-radius:10px; border:none; font-weight:bold; font-size:1rem; text-align:center; cursor:pointer; transition:0.2s; }
-.shape-btn { background:#4b2e83; color:#fff; }
-.shape-btn:hover { background:#6c43b2; }
-.danger-btn { background:#ff4d6d; color:#fff; }
-.danger-btn:hover { background:#ff1a3c; }
-input[type=color], input[type=text], input[type=number], input[type=range], select { display:block; margin-top:4px; padding:6px; border-radius:8px; border:none; background:#4b2e83; color:#fff; width:100%; }
-code { display:block; background:#2b0055; padding:16px; border-radius:8px; border:1px solid #4b2e83; white-space:pre-wrap; overflow-x:auto; max-height:300px; margin-top:12px; }
-.credits { position:fixed; bottom:8px; right:16px; font-size:0.85rem; color:#aaa; }
-@media(max-width:600px){ .shape-btn, .danger-btn { flex:1 1 48%; } .sliders label { flex:1 1 48%; } }
+h1 { text-align:center; margin-bottom:12px; }
+canvas { display:block; margin:0 auto 12px; background:#000; border-radius:6px; image-rendering:pixelated; }
+.panel { background:#2b0055; padding:16px; border-radius:12px; }
+.sliders { display:flex; flex-wrap:wrap; gap:12px; }
+.sliders label { flex:1 1 45%; display:flex; flex-direction:column; }
+.slider-control { display:flex; align-items:center; gap:4px; margin-top:4px; }
+input, select { width:100%; padding:6px; border-radius:8px; border:none; background:#4b2e83; color:#fff; }
+.buttons { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+button { flex:1 1 140px; padding:10px; border:none; border-radius:10px; background:#6c43b2; color:#fff; font-weight:bold; cursor:pointer; }
+button:hover { background:#8457d6; }
+.danger { background:#ff4d6d; } .danger:hover { background:#ff1a3c; }
+.export { background:#4dff88; color:#000; } .export:hover { background:#2cff70; }
+.value-box { width:40px; text-align:center; background:#000; border:1px solid #4b2e83; border-radius:6px; padding:2px; }
+code { display:block; background:#2b0055; border:1px solid #4b2e83; padding:12px; border-radius:8px; white-space:pre-wrap; margin-top:12px; max-height:300px; overflow:auto; }
+.credits { position:fixed; bottom:8px; right:16px; font-size:0.8rem; }
+@media(max-width:600px){ .sliders label { flex:1 1 100%; } button { flex:1 1 48%; } }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>Bruce firmware JSDesigner</h1>
+<h1>Bruce JS Designer</h1>
 
-  <canvas id="screen" width="320" height="170"></canvas>
+<canvas id="screen" width="320" height="170"></canvas>
 
-  <div class="panel">
-    <div class="sliders">
-      <label>X: <input type="range" id="x" min="0" max="320"><div class="control-btns"><button id="xMinus">-</button><button id="xPlus">+</button></div></label>
-      <label>Y: <input type="range" id="y" min="0" max="170"><div class="control-btns"><button id="yMinus">-</button><button id="yPlus">+</button></div></label>
-      <label>Width: <input type="range" id="w" min="1" max="320"><div class="control-btns"><button id="wMinus">-</button><button id="wPlus">+</button></div></label>
-      <label>Height: <input type="range" id="h" min="1" max="170"><div class="control-btns"><button id="hMinus">-</button><button id="hPlus">+</button></div></label>
-      <label>Text: <input type="text" id="text" placeholder="Enter text"></label>
-      <label>Text Size: <input type="number" id="textSize" min="1" max="48" value="16"></label>
-      <label>Color: <input type="color" id="color" value="#ffffff"></label>
-      <label>Device: <select id="device"><option value="240x135">M5StickC / Cardputer</option><option value="320x170">LilyGO T-Embed</option></select></label>
-      <label>Shape: <select id="shapeSelect"></select></label>
-    </div>
+<label>Device:
+  <select id="device">
+    <option value="240x135">M5StickC / Cardputer</option>
+    <option value="320x170" selected>LilyGO T-Embed</option>
+  </select>
+</label>
 
-    <div class="shape-buttons">
-      <button class="shape-btn" id="addFillRect">+ Fill Rect</button>
-      <button class="shape-btn" id="addRect">+ Rect</button>
-      <button class="shape-btn" id="addLine">+ Line</button>
-      <button class="shape-btn" id="addPixel">+ Pixel</button>
-      <button class="shape-btn" id="addCircle">+ Circle</button>
-      <button class="shape-btn" id="addFillCircle">+ Fill Circle</button>
-      <button class="shape-btn" id="addText">+ Text</button>
-      <button id="deleteShape" class="danger-btn">Delete Selected</button>
-    </div>
-
+<div class="panel">
+  <div class="sliders">
+    <label>X
+      <div class="slider-control">
+        <input type="range" id="x" min="0" max="320">
+        <button id="xMinus">-</button>
+        <button id="xPlus">+</button>
+        <span class="value-box" id="xVal">0</span>
+      </div>
+    </label>
+    <label>Y
+      <div class="slider-control">
+        <input type="range" id="y" min="0" max="170">
+        <button id="yMinus">-</button>
+        <button id="yPlus">+</button>
+        <span class="value-box" id="yVal">0</span>
+      </div>
+    </label>
+    <label>Width
+      <div class="slider-control">
+        <input type="range" id="w" min="1" max="320">
+        <button id="wMinus">-</button>
+        <button id="wPlus">+</button>
+        <span class="value-box" id="wVal">0</span>
+      </div>
+    </label>
+    <label>Height
+      <div class="slider-control">
+        <input type="range" id="h" min="1" max="170">
+        <button id="hMinus">-</button>
+        <button id="hPlus">+</button>
+        <span class="value-box" id="hVal">0</span>
+      </div>
+    </label>
+    <label>Text
+      <input type="text" id="text">
+    </label>
+    <label>Text Size
+      <div class="slider-control">
+        <input type="range" id="textSize" min="1" max="6">
+        <button id="textMinus">-</button>
+        <button id="textPlus">+</button>
+        <span class="value-box" id="textVal">1</span>
+      </div>
+    </label>
+    <label>Color
+      <input type="color" id="color">
+    </label>
+    <label>Shape
+      <select id="shapeSelect"></select>
+    </label>
+    <label>File name
+      <input type="text" id="fileName" value="app">
+    </label>
   </div>
 
-  <code id="code"></code>
+  <div class="buttons">
+    <button onclick="addItem('fillRect')">FillRect</button>
+    <button onclick="addItem('rect')">Rect</button>
+    <button onclick="addItem('line')">Line</button>
+    <button onclick="addItem('circle')">Circle</button>
+    <button onclick="addItem('fillCircle')">FillCircle</button>
+    <button onclick="addItem('text')">Text</button>
+    <button class="danger" onclick="deleteItem()">Delete</button>
+    <button class="export" onclick="exportJS()">Export JS</button>
+  </div>
+</div>
+
+<code id="code"></code>
 
 <div class="credits">
-  <a href="https://github.com/sloth" target="_blank" style="color:#aaa; text-decoration:none;">Made by SLOTH</a>
+  <a href="https://github.com/sloth" target="_blank" style="color:#aaa;text-decoration:none">
+    Made by SLOTH
+  </a>
 </div>
 </div>
 
 <script>
-const canvas = document.getElementById('screen');
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("screen");
+const ctx = canvas.getContext("2d");
+
+const deviceSelect = document.getElementById("device");
 
 let items = [];
-let selectedItem = null;
+let selected = null;
 
-const shapeSelect = document.getElementById('shapeSelect');
-
-function updateShapeSelect(){
-  shapeSelect.innerHTML='';
-  items.forEach((item,i)=>{
-    const opt=document.createElement('option');
-    opt.value=i; opt.text=`${item.type} #${i+1}`;
-    if(selectedItem===item) opt.selected=true;
-    shapeSelect.appendChild(opt);
-  });
+function setDeviceSize(){
+  const val = deviceSelect.value.split("x");
+  canvas.width = +val[0]; canvas.height = +val[1];
 }
-shapeSelect.onchange = ()=>{ selectedItem = items[+shapeSelect.value]; updateControls(); render(); };
+deviceSelect.addEventListener("change", ()=>{
+  setDeviceSize(); render();
+});
+setDeviceSize();
+
+function addItem(type){
+  let obj = {type, x:40, y:40, w:40, h:40, size:2, color:"#ffffff", text:"Hello"};
+  if(type.includes("circle")) obj.w=20;
+  items.push(obj); selected=obj; render();
+}
+
+function deleteItem(){ if(!selected) return; items = items.filter(i=>i!==selected); selected=null; render(); }
 
 function render(){
   ctx.fillStyle="#000"; ctx.fillRect(0,0,canvas.width,canvas.height);
-  items.forEach(item=>{
-    ctx.strokeStyle=item.color; ctx.fillStyle=item.color; ctx.lineWidth=2;
-    if(item.type==='fillRect') ctx.fillRect(item.x,item.y,item.w,item.h);
-    if(item.type==='rect') ctx.strokeRect(item.x,item.y,item.w,item.h);
-    if(item.type==='line'){ ctx.beginPath(); ctx.moveTo(item.x,item.y); ctx.lineTo(item.x+item.w,item.y+item.h); ctx.stroke(); }
-    if(item.type==='pixel'){ ctx.fillRect(item.x,item.y,1,1); }
-    if(item.type==='circle'){ ctx.beginPath(); ctx.arc(item.x,item.y,item.w,0,Math.PI*2); ctx.stroke(); }
-    if(item.type==='fillCircle'){ ctx.beginPath(); ctx.arc(item.x,item.y,item.w,0,Math.PI*2); ctx.fill(); }
-    if(item.type==='text'){ ctx.font=`${item.size}px Arial`; ctx.fillText(item.text,item.x,item.y); }
-  });
-  updateCode(); updateShapeSelect();
-}
-
-function hexToRgb(hex){ hex=hex.replace('#',''); return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)]; }
-
-function updateCode(){
-  const codeEl = document.getElementById('code');
-  let codeStr = `// Device: ${document.getElementById('device').selectedOptions[0].text}\nconst display = require("display");\n\n`;
   items.forEach(i=>{
-    codeStr += `// ${i.type}\n`;
-    if(i.type==='fillRect') codeStr+=`display.drawFillRect(${i.x},${i.y},${i.w},${i.h},display.color(${hexToRgb(i.color).join(',')}));\n`;
-    if(i.type==='rect') codeStr+=`display.drawRect(${i.x},${i.y},${i.w},${i.h},display.color(${hexToRgb(i.color).join(',')}));\n`;
-    if(i.type==='line') codeStr+=`display.drawLine(${i.x},${i.y},${i.x+i.w},${i.y+i.h},display.color(${hexToRgb(i.color).join(',')}));\n`;
-    if(i.type==='pixel') codeStr+=`display.drawPixel(${i.x},${i.y},display.color(${hexToRgb(i.color).join(',')}));\n`;
-    if(i.type==='circle') codeStr+=`display.drawCircle(${i.x},${i.y},${i.w},display.color(${hexToRgb(i.color).join(',')}));\n`;
-    if(i.type==='fillCircle') codeStr+=`display.drawFillCircle(${i.x},${i.y},${i.w},display.color(${hexToRgb(i.color).join(',')}));\n`;
-    if(i.type==='text') codeStr+=`display.setTextSize(${i.size}); display.setTextColor(display.color(${hexToRgb(i.color).join(',')})); display.drawText("${i.text}",${i.x},${i.y});\n`;
+    ctx.strokeStyle=ctx.fillStyle=i.color; ctx.lineWidth=2;
+    if(i.type==="fillRect") ctx.fillRect(i.x,i.y,i.w,i.h);
+    if(i.type==="rect") ctx.strokeRect(i.x,i.y,i.w,i.h);
+    if(i.type==="line"){ ctx.beginPath(); ctx.moveTo(i.x,i.y); ctx.lineTo(i.x+i.w,i.y+i.h); ctx.stroke(); }
+    if(i.type==="circle"){ ctx.beginPath(); ctx.arc(i.x,i.y,i.w,0,Math.PI*2); ctx.stroke(); }
+    if(i.type==="fillCircle"){ ctx.beginPath(); ctx.arc(i.x,i.y,i.w,0,Math.PI*2); ctx.fill(); }
+    if(i.type==="text"){ ctx.font=`${i.size*8}px Arial`; ctx.fillText(i.text,i.x,i.y); }
   });
-  codeEl.textContent = codeStr;
+  syncUI(); generateCode();
 }
 
-function addItem(type){
-  let newItem = {type,x:50,y:50,w:50,h:50,color:'#ffffff',size:16,text:'Text'};
-  if(type==='text') newItem.text='Hello'; 
-  if(type==='circle'||type==='fillCircle') newItem.w=25;
-  items.push(newItem); selectedItem=newItem; render(); updateControls();
+function syncUI(){
+  if(!selected) return;
+  document.getElementById("x").value = selected.x;
+  document.getElementById("y").value = selected.y;
+  document.getElementById("w").value = selected.w;
+  document.getElementById("h").value = selected.h;
+  document.getElementById("text").value = selected.text||"";
+  document.getElementById("textSize").value = selected.size;
+  document.getElementById("color").value = selected.color;
+
+  document.getElementById("xVal").textContent=selected.x;
+  document.getElementById("yVal").textContent=selected.y;
+  document.getElementById("wVal").textContent=selected.w;
+  document.getElementById("hVal").textContent=selected.h;
+  document.getElementById("textVal").textContent=selected.size;
+
+  const sel = shapeSelect; sel.innerHTML="";
+  items.forEach((i,idx)=>{
+    const o=document.createElement("option");
+    o.value=idx; o.text=`${i.type} ${idx+1}`;
+    if(i===selected) o.selected=true;
+    sel.appendChild(o);
+  });
 }
 
-function updateControls(){
-  if(!selectedItem) return;
-  document.getElementById('x').value = selectedItem.x;
-  document.getElementById('y').value = selectedItem.y;
-  document.getElementById('w').value = selectedItem.w;
-  document.getElementById('h').value = selectedItem.h;
-  document.getElementById('color').value = selectedItem.color;
-  document.getElementById('text').value = selectedItem.text||'';
-  document.getElementById('textSize').value = selectedItem.size||16;
-}
-
-['x','y','w','h','color','text','textSize'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',()=>{
-    if(!selectedItem) return;
-    selectedItem[id] = id==='textSize'? +document.getElementById(id).value : (id==='x'||id==='y'||id==='w'||id==='h'? +document.getElementById(id).value : document.getElementById(id).value);
+["x","y","w","h","text","textSize","color"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",()=>{
+    if(!selected) return;
+    if(id==="textSize") selected.size=+textSize.value;
+    else if(id==="text") selected.text=text.value;
+    else if(id==="color") selected.color=color.value;
+    else selected[id]=+document.getElementById(id).value;
     render();
   });
 });
 
-const btnMap = {x:['xMinus','xPlus'],y:['yMinus','yPlus'],w:['wMinus','wPlus'],h:['hMinus','hPlus']};
-for(const prop in btnMap){
-  document.getElementById(btnMap[prop][0]).onclick = ()=>{ if(selectedItem){ selectedItem[prop]-=1; updateControls(); render(); }};
-  document.getElementById(btnMap[prop][1]).onclick = ()=>{ if(selectedItem){ selectedItem[prop]+=1; updateControls(); render(); }};
-}
-
-document.getElementById('addFillRect').onclick=()=>addItem('fillRect');
-document.getElementById('addRect').onclick=()=>addItem('rect');
-document.getElementById('addLine').onclick=()=>addItem('line');
-document.getElementById('addPixel').onclick=()=>addItem('pixel');
-document.getElementById('addCircle').onclick=()=>addItem('circle');
-document.getElementById('addFillCircle').onclick=()=>addItem('fillCircle');
-document.getElementById('addText').onclick=()=>addItem('text');
-
-document.getElementById('deleteShape').onclick=()=>{ if(selectedItem){ items=items.filter(i=>i!==selectedItem); selectedItem=null; render(); } };
-
-canvas.addEventListener('pointerdown', e=>{
-  const rect = canvas.getBoundingClientRect();
-  const x = (e.clientX-rect.left)*(canvas.width/rect.width);
-  const y = (e.clientY-rect.top)*(canvas.height/rect.height);
-  selectedItem = items.slice().reverse().find(item=>{
-    if(item.type==='fillRect'||item.type==='rect'||item.type==='line') return x>=item.x&&x<=item.x+item.w&&y>=item.y&&y<=item.y+item.h;
-    if(item.type==='circle'||item.type==='fillCircle') return Math.hypot(x-item.x,y-item.y)<=item.w;
-    if(item.type==='text') return x>=item.x&&x<=item.x+50&&y>=item.y-20&&y<=item.y;
-    if(item.type==='pixel') return x===item.x&&y===item.y;
-  })||null;
-  updateControls();
+// +/- buttons
+const btns = [["x","xMinus","xPlus"],["y","yMinus","yPlus"],["w","wMinus","wPlus"],["h","hMinus","hPlus"],["textSize","textMinus","textPlus"]];
+btns.forEach(([prop,minus,plus])=>{
+  document.getElementById(minus).onclick=()=>{ if(selected){ selected[prop]-=1; render(); } };
+  document.getElementById(plus).onclick=()=>{ if(selected){ selected[prop]+=1; render(); } };
 });
 
+// RGB converter
+function rgb(hex){ hex=hex.replace("#",""); return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)]; }
+
+// Generate JS code with loop & keyboard
+function generateCode(){
+  let out =
+`var keyboard = require("keyboard");
+var display = require("display");
+
+var sprite = display.createSprite();
+
+while (true) {
+
+    if (keyboard.getEscPress(true)) break;
+
+    sprite.fill(0);
+`;
+
+  items.forEach(i=>{
+    const c = rgb(i.color).join(",");
+    if(i.type==="fillRect") out+=`    sprite.drawFillRect(${i.x},${i.y},${i.w},${i.h},display.color(${c}));\n`;
+    if(i.type==="rect") out+=`    sprite.drawRect(${i.x},${i.y},${i.w},${i.h},display.color(${c}));\n`;
+    if(i.type==="line") out+=`    sprite.drawLine(${i.x},${i.y},${i.x+i.w},${i.y+i.h},display.color(${c}));\n`;
+    if(i.type==="circle") out+=`    sprite.drawCircle(${i.x},${i.y},${i.w},display.color(${c}));\n`;
+    if(i.type==="fillCircle") out+=`    sprite.drawFillCircle(${i.x},${i.y},${i.w},display.color(${c}));\n`;
+    if(i.type==="text"){
+      out+=`    sprite.setTextSize(${i.size});
+    sprite.setTextColor(${c});
+    sprite.drawText("${i.text}",${i.x},${i.y});
+`;
+    }
+  });
+
+  out+=`
+    sprite.pushSprite();
+}
+`;
+  code.textContent = out;
+}
+
+// Export JS
+function exportJS(){
+  const name = document.getElementById("fileName").value||"app";
+  const blob = new Blob([code.textContent], {type:"text/javascript"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name+".js";
+  a.click();
+}
+
+shapeSelect.onchange=e=>{ selected=items[e.target.value]; syncUI(); };
 render();
 </script>
 </body>

@@ -113,7 +113,7 @@ code { display:block; background:#2b0055; border:1px solid #4b2e83; padding:12px
 <code id="code"></code>
 
 <div class="credits">
-  <a href="https://github.com/sloth" target="_blank" style="color:#aaa;text-decoration:none">
+  <a href="https://github.com/tebin623" target="_blank" style="color:#aaa;text-decoration:none">
     Made by SLOTH
   </a>
 </div>
@@ -195,17 +195,14 @@ function syncUI(){
   });
 });
 
-// +/- buttons
 const btns = [["x","xMinus","xPlus"],["y","yMinus","yPlus"],["w","wMinus","wPlus"],["h","hMinus","hPlus"],["textSize","textMinus","textPlus"]];
 btns.forEach(([prop,minus,plus])=>{
   document.getElementById(minus).onclick=()=>{ if(selected){ selected[prop]-=1; render(); } };
   document.getElementById(plus).onclick=()=>{ if(selected){ selected[prop]+=1; render(); } };
 });
 
-// RGB converter
 function rgb(hex){ hex=hex.replace("#",""); return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)]; }
 
-// Generate JS code with loop & keyboard
 function generateCode(){
   let out =
 `var keyboard = require("keyboard");
@@ -241,8 +238,7 @@ while (true) {
 `;
   code.textContent = out;
 }
-
-// Export JS
+  
 function exportJS(){
   const name = document.getElementById("fileName").value||"app";
   const blob = new Blob([code.textContent], {type:"text/javascript"});
@@ -257,3 +253,4 @@ render();
 </script>
 </body>
 </html>
+

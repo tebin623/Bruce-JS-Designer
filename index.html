@@ -5,363 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bruce JS Designer</title>
 <style>
-body { margin:0; padding:16px; background:#1a0033; color:#fff; font-family:'Segoe UI',sans-serif; }
-.container { max-width:960px; margin:auto; }
-h1 { text-align:center; margin-bottom:12px; }
-canvas { display:block; margin:0 auto 12px; background:#000; border-radius:6px; image-rendering:pixelated; touch-action: none; }
-.sliders { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
-.sliders label { flex:1 1 45%; display:flex; flex-direction:column; }
-input, select { width:100%; padding:6px; border-radius:8px; border:none; background:#4b2e83; color:#fff; }
-input[type="color"] { padding:0; height:32px; }
-input[type="range"] { padding:0; }
-.buttons { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-.buttons button { flex:1 1 0; min-width:100px; padding:10px; border:none; border-radius:10px; background:#6c43b2; color:#fff; font-weight:bold; cursor:pointer; }
-.buttons button:hover { background:#8457d6; }
-.buttons .danger { background:#ff4d6d; }
-.buttons .export { background:#4dff88; color:#000; }
-code { display:block; background:#2b0055; border:1px solid #4b2e83; padding:12px; border-radius:8px; white-space:pre-wrap; margin-top:12px; max-height:300px; overflow:auto; }
-.toggle { padding:10px; border-radius:10px; border:none; background:#6c43b2; color:#fff; cursor:pointer; font-weight:bold; }
-.toggle.on { background:#4dff88; color:#000; }
+body{margin:0;padding:16px;background:#1a0033;color:#fff;font-family:'Segoe UI',sans-serif}
+.container{max-width:960px;margin:auto}
+h1{text-align:center;margin-bottom:12px}
+canvas{display:block;margin:0 auto 12px;background:#000;border-radius:6px;image-rendering:pixelated;touch-action:none}
+.sliders{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.sliders label{flex:1 1 45%;display:flex;flex-direction:column}
+input,select{width:100%;padding:6px;border-radius:8px;border:none;background:#4b2e83;color:#fff}
+input[type="color"]{padding:0;height:32px}
+input[type="range"]{padding:0}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.buttons button{flex:1 1 0;min-width:100px;padding:10px;border:none;border-radius:10px;background:#6c43b2;color:#fff;font-weight:bold;cursor:pointer}
+.buttons button:hover{background:#8457d6}
+.buttons .danger{background:#ff4d6d}
+.buttons .export{background:#4dff88;color:#000}
+.credit-btn{display:inline-block;text-decoration:none;background:#4dff88;color:#000;font-weight:bold;padding:10px 16px;border-radius:10px;margin-top:12px;cursor:pointer;transition:0.2s}
+.credit-btn:hover{background:#67ff9c}
+code{display:block;background:#2b0055;border:1px solid #4b2e83;padding:12px;border-radius:8px;white-space:pre-wrap;margin-top:12px;max-height:300px;overflow:auto}
+.toggle{padding:10px;border-radius:10px;border:none;background:#6c43b2;color:#fff;cursor:pointer;font-weight:bold}
+.toggle.on{background:#4dff88;color:#000}
 </style>
 </head>
 <body>
-
 <div class="container">
 <h1>Bruce JS Designer</h1>
-
 <canvas id="screen" width="320" height="170"></canvas>
-
 <div class="sliders">
-  <label>Device
-    <select id="device"></select>
-  </label>
-  <label>Snap to Grid
-    <button id="snapToggle" class="toggle">OFF</button>
-  </label>
-  <label>Text
-    <input type="text" id="text">
-  </label>
-  <label>Text Size
-    <input type="range" id="textSize" min="1" max="8" step="1" value="2">
-  </label>
-  <label>Layer
-    <select id="shapeSelect"></select>
-  </label>
-  <label>File name
-    <input type="text" id="fileName" value="app">
-  </label>
-  <label>Color
-    <input type="color" id="color">
-  </label>
+<label>Device<select id="device"></select></label>
+<label>Snap to Grid<button id="snapToggle" class="toggle">OFF</button></label>
+<label>Text<input type="text" id="text"></label>
+<label>Text Size<input type="range" id="textSize" min="1" max="8" step="1" value="2"></label>
+<label>Layer<select id="shapeSelect"></select></label>
+<label>File name<input type="text" id="fileName" value="app"></label>
+<label>Color<input type="color" id="color"></label>
 </div>
-
 <div class="buttons">
-  <button onclick="addItem('fillRect')">FillRect</button>
-  <button onclick="addItem('rect')">Rect</button>
-  <button onclick="addItem('line')">Line</button>
-  <button onclick="addItem('circle')">Circle</button>
-  <button onclick="addItem('fillCircle')">FillCircle</button>
-  <button onclick="addItem('text')">Text</button>
-  <button onclick="duplicateItem()">Duplicate</button>
-  <button class="danger" onclick="deleteItem()">Delete</button>
-  <button class="export" onclick="exportJS()">Export JS</button>
+<button onclick="addItem('fillRect')">FillRect</button>
+<button onclick="addItem('rect')">Rect</button>
+<button onclick="addItem('line')">Line</button>
+<button onclick="addItem('circle')">Circle</button>
+<button onclick="addItem('fillCircle')">FillCircle</button>
+<button onclick="addItem('text')">Text</button>
+<button onclick="duplicateItem()">Duplicate</button>
+<button class="danger" onclick="deleteItem()">Delete</button>
+<button class="export" onclick="exportJS()">Export JS</button>
 </div>
-
 <code id="code"></code>
 
-<div class="credits">
-  <a href="https://discord.com/users/sloth110000" target="_blank" style="color:#aaa;text-decoration:none">Made by SLOTH</a>
+<div class="credits" style="position:fixed; bottom:8px; left:50%; transform:translateX(-50%); font-size:0.8rem; z-index:1000;">
+  <a href="https://discord.com/users/sloth110000" target="_blank" style="text-decoration:none; background:#4dff88; color:#000; padding:6px 12px; border-radius:8px; font-weight:bold;">
+    Made by SLOTH
+  </a>
 </div>
-
 <script>
-const canvas = document.getElementById("screen");
-const ctx = canvas.getContext("2d");
-const deviceSelect = document.getElementById("device");
-const shapeSelect = document.getElementById("shapeSelect");
-const textInput = document.getElementById("text");
-const textSizeInput = document.getElementById("textSize");
-const colorInput = document.getElementById("color");
-const code = document.getElementById("code");
-const snapToggle = document.getElementById("snapToggle");
-
-let items = [];
-let selected = null;
-let currentDevice;
-let gridSize = 10; 
-let snapOn = false; 
-let dragging = null, resizing = false, resizeHandle = null, offsetX = 0, offsetY = 0;
-let showGrid = false;
-
-const devices = {
-  "M5StickC / M5Cardputer": [240, 135],
-  "LilyGO T-Embed": [320, 170]
-};
-
-function populateDeviceDropdown() {
-  deviceSelect.innerHTML = "";
-  for(let name in devices){
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    deviceSelect.appendChild(opt);
-  }
-  currentDevice = deviceSelect.value;
-}
-populateDeviceDropdown();
-
-snapToggle.addEventListener("click",()=>{ 
-  snapOn=!snapOn; 
-  snapToggle.textContent = snapOn?"ON":"OFF"; 
-  snapToggle.classList.toggle("on", snapOn); 
-});
-
-function getRandomColor() {
-  const letters = "0123456789ABCDEF";
-  let c = "#";
-  for(let i=0;i<6;i++) c += letters[Math.floor(Math.random()*16)];
-  return c;
-}
-
-function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
-
-function addItem(type){
-  const obj = {type, x:40, y:40, w:40, h:40, size:2, color:getRandomColor(), text:"Hello"};
-  if(type.includes("circle") || type.includes("fillCircle")) obj.w = obj.h = 20;
-  if(snapOn){ obj.x = Math.round(obj.x/gridSize)*gridSize; obj.y = Math.round(obj.y/gridSize)*gridSize; }
-  items.push(obj);
-  selected = obj;
-  updateLayerSelect();
-  render();
-}
-
-function duplicateItem(){
-  if(!selected) return;
-  const copy = {...selected};
-  copy.x += 10; copy.y += 10;
-  if(snapOn){ copy.x = Math.round(copy.x/gridSize)*gridSize; copy.y = Math.round(copy.y/gridSize)*gridSize; }
-  items.push(copy);
-  selected = copy;
-  updateLayerSelect();
-  render();
-}
-
-function deleteItem(){ if(!selected) return; items = items.filter(i=>i!==selected); selected=null; updateLayerSelect(); render(); }
-
-function render(){
-  ctx.fillStyle="#000"; ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  if(showGrid){
-    ctx.strokeStyle="#2b0055"; ctx.lineWidth=0.5;
-    for(let x=0;x<=canvas.width;x+=gridSize){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke(); }
-    for(let y=0;y<=canvas.height;y+=gridSize){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
-  }
-
-  const W = canvas.width;
-  const H = canvas.height;
-
-  items.forEach(i=>{
-    i.x = clamp(i.x,0,W-i.w);
-    i.y = clamp(i.y,0,H-i.h);
-
-    ctx.save(); ctx.translate(i.x,i.y);
-    ctx.strokeStyle=ctx.fillStyle=i.color; ctx.lineWidth=2;
-
-    if(i.type==="fillRect") ctx.fillRect(0,0,i.w,i.h);
-    if(i.type==="rect") ctx.strokeRect(0,0,i.w,i.h);
-    if(i.type==="line"){ ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(i.w,i.h); ctx.stroke(); }
-    if(i.type==="circle"){ ctx.beginPath(); ctx.arc(i.w/2,i.h/2,i.w/2,0,Math.PI*2); ctx.stroke(); }
-    if(i.type==="fillCircle"){ ctx.beginPath(); ctx.arc(i.w/2,i.h/2,i.w/2,0,Math.PI*2); ctx.fill(); }
-    if(i.type==="text"){ ctx.font=`${i.size*8}px Arial`; ctx.fillText(i.text,0,i.h/2+i.size*4); }
-
-    if(i === selected){
-        ctx.strokeStyle = "blue";
-        ctx.lineWidth = 1.5;
-        if(i.type === "text"){
-            const metrics = ctx.measureText(i.text);
-            const textHeight = i.size * 8;
-            ctx.strokeRect(0, i.h/2, metrics.width, textHeight);
-        } else {
-            ctx.strokeRect(0,0,i.w,i.h);
-            const handles=[{x:-5,y:-5},{x:i.w-5,y:-5},{x:-5,y:i.h-5},{x:i.w-5,y:i.h-5}];  
-            handles.forEach(h=>{ ctx.fillStyle="blue"; ctx.beginPath(); ctx.arc(h.x+5,h.y+5,5,0,Math.PI*2); ctx.fill(); });
-        }
-    }
-
-    ctx.restore();
-  });
-
-  syncUI();  
-  generateCode();
-}
-
-function getMousePos(e){ 
-  const rect=canvas.getBoundingClientRect(); 
-  return { x:e.touches?e.touches[0].clientX-rect.left:e.clientX-rect.left, y:e.touches?e.touches[0].clientY-rect.top:e.clientY-rect.top }; 
-}
-
-canvas.addEventListener('mousedown', startDrag);
-canvas.addEventListener('touchstart', startDrag,{passive:false});
-document.addEventListener('mousemove', drag);
-document.addEventListener('touchmove', drag,{passive:false});
-document.addEventListener('mouseup', stopDrag);
-document.addEventListener('touchend', stopDrag);
-
-function startDrag(e){
-  const pos=getMousePos(e);
-  showGrid=false;
-  for(let i=items.length-1;i>=0;i--){
-    const it=items[i];
-    if(it.type!=="text"){ 
-      const corners=[{name:'tl',x:it.x-5,y:it.y-5},{name:'tr',x:it.x+it.w-5,y:it.y-5},{name:'bl',x:it.x-5,y:it.h+it.y-5},{name:'br',x:it.x+it.w-5,y:it.h+it.y-5}];
-      for(let h of corners){ 
-        if(pos.x>=h.x&&pos.x<=h.x+10&&pos.y>=h.y&&pos.y<=h.y+10){ 
-          dragging=it; resizing=true; resizeHandle=h.name; selected=it; showGrid=true; updateLayerSelect(); render(); return; 
-        } 
-      }
-    }
-    if(pos.x>=it.x && pos.x<=it.x+it.w && pos.y>=it.y && pos.y<=it.y+it.h){ 
-      dragging=it; offsetX=pos.x-it.x; offsetY=pos.y-it.y; selected=it; showGrid=true; updateLayerSelect(); render(); return; 
-    }
-  }
-}
-
-function drag(e){
-  if(!dragging) return; e.preventDefault();
-  const pos = getMousePos(e);
-
-  if(resizing){
-    let newX = dragging.x;
-    let newY = dragging.y;
-    let newW = dragging.w;
-    let newH = dragging.h;
-    const minSize = 5;
-
-    if(resizeHandle.includes('t')){
-      newY = Math.min(pos.y, dragging.y + dragging.h - minSize);
-      newH = dragging.h + (dragging.y - newY);
-    }
-    if(resizeHandle.includes('b')){
-      newH = Math.max(minSize, pos.y - dragging.y);
-    }
-    if(resizeHandle.includes('l')){
-      newX = Math.min(pos.x, dragging.x + dragging.w - minSize);
-      newW = dragging.w + (dragging.x - newX);
-    }
-    if(resizeHandle.includes('r')){
-      newW = Math.max(minSize, pos.x - dragging.x);
-    }
-
-    newX = clamp(newX,0,canvas.width-newW);
-    newY = clamp(newY,0,canvas.height-newH);
-    newW = clamp(newW,minSize,canvas.width-newX);
-    newH = clamp(newH,minSize,canvas.height-newY);
-
-    if(snapOn){
-      dragging.x = Math.round(newX/gridSize)*gridSize;
-      dragging.y = Math.round(newY/gridSize)*gridSize;
-      dragging.w = Math.round(newW/gridSize)*gridSize;
-      dragging.h = Math.round(newH/gridSize)*gridSize;
-    } else {
-      dragging.x = newX;
-      dragging.y = newY;
-      dragging.w = newW;
-      dragging.h = newH;
-    }
-
-  } else {
-    let newX = pos.x - offsetX;
-    let newY = pos.y - offsetY;
-    if(snapOn){
-      newX = Math.round(newX/gridSize)*gridSize;
-      newY = Math.round(newY/gridSize)*gridSize;
-    }
-    dragging.x = clamp(newX,0,canvas.width-dragging.w);
-    dragging.y = clamp(newY,0,canvas.height-dragging.h);
-  }
-
-  showGrid = true;
-  render();
-}
-
-function stopDrag(){ dragging=null; resizing=false; resizeHandle=null; showGrid=false; render(); }
-
-function updateLayerSelect(){
-  shapeSelect.innerHTML="";
-  items.forEach((i,idx)=>{ 
-    const o=document.createElement("option"); 
-    o.value=idx; 
-    o.text=`${i.type} ${idx+1}`; 
-    if(i===selected) o.selected=true; 
-    shapeSelect.appendChild(o); 
-  });
-}
-
-shapeSelect.onchange=e=>{ selected=items[e.target.value]; render(); }
-
-function syncUI(){ 
-  if(!selected) return; 
-  textInput.value=selected.text; 
-  colorInput.value=selected.color; 
-  if(selected.type==="text") textSizeInput.value=selected.size;
-}
-
-textInput.addEventListener("input",()=>{ if(selected){selected.text=textInput.value; render();} });
-colorInput.addEventListener("input",()=>{ if(selected){selected.color=colorInput.value; render();} });
-
-textSizeInput.addEventListener("input",()=>{
-  if(selected && selected.type==="text"){
-    selected.size = parseInt(textSizeInput.value);
-    render();
-  }
-});
-
-function rgb(hex){ hex=hex.replace("#",""); return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)]; }
-
-function generateCode(){
-  const dev = devices[currentDevice];
-  const W = dev[0], H = dev[1];
-  let out = `// Device: ${currentDevice}\n// Made using Bruce JS Designer\n`;
-  out += `var keyboard = require('keyboard');\n`;
-  out += `var display = require('display');\n`;
-  out += `var sprite = display.createSprite();\n\n`;
-  out += `while(true) {\n`;
-  out += `    if(keyboard.getEscPress(true)) break;\n`;
-  out += `    sprite.fill(0);\n\n`;
-
-  items.forEach(i => {
-    const scaleX = W / canvas.width;
-    const scaleY = H / canvas.height;
-    const x = Math.round(i.x * scaleX);
-    const y = Math.round(i.y * scaleY);
-    const w = Math.round(i.w * scaleX);
-    const h = Math.round(i.h * scaleY);
-    const c = rgb(i.color).join(',');
-
-    if(i.type==="fillRect") out += `    sprite.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
-    if(i.type==="rect") out += `    sprite.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
-    if(i.type==="line") out += `    sprite.drawLine(${x}, ${y}, ${x+w}, ${y+h}, display.color(${c}));\n`;
-    if(i.type==="circle") out += `    sprite.drawCircle(${x + Math.floor(w/2)}, ${y + Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;
-    if(i.type==="fillCircle") out += `    sprite.drawFillCircle(${x + Math.floor(w/2)}, ${y + Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;
-    if(i.type==="text") out += `    sprite.setTextSize(${i.size});\n    sprite.setTextColor(${c});\n    sprite.drawText("${i.text}", ${x}, ${y});\n`;
-  });
-
-  out += `\n    sprite.pushSprite();\n`;
-  out += `}\n`;
-  code.textContent = out;
-}
-
-function exportJS(){ 
-  const name=document.getElementById("fileName").value||"app"; 
-  const blob=new Blob([code.textContent],{type:"text/javascript"}); 
-  const a=document.createElement("a"); 
-  a.href=URL.createObjectURL(blob); 
-  a.download=name+".js"; 
-  a.click(); 
-}
-
-deviceSelect.addEventListener("change",()=>{currentDevice=deviceSelect.value; generateCode();});
-
-render();   
+const canvas=document.getElementById("screen");
+const ctx=canvas.getContext("2d");
+const deviceSelect=document.getElementById("device");
+const shapeSelect=document.getElementById("shapeSelect");
+const textInput=document.getElementById("text");
+const textSizeInput=document.getElementById("textSize");
+const colorInput=document.getElementById("color");
+const code=document.getElementById("code");
+const snapToggle=document.getElementById("snapToggle");
+let items=[],selected=null,currentDevice,gridSize=10,snapOn=false,dragging=null,resizing=false,resizeHandle=null,offsetX=0,offsetY=0,showGrid=false;
+const devices={"M5StickC / M5Cardputer":[240,135],"LilyGO T-Embed":[320,170]};
+function populateDeviceDropdown(){deviceSelect.innerHTML="";for(let n in devices){let o=document.createElement("option");o.value=n;o.textContent=n;deviceSelect.appendChild(o)}currentDevice=deviceSelect.value}populateDeviceDropdown();
+snapToggle.addEventListener("click",()=>{snapOn=!snapOn;snapToggle.textContent=snapOn?"ON":"OFF";snapToggle.classList.toggle("on",snapOn)});
+function getRandomColor(){let c="#";for(let i=0;i<6;i++)c+="0123456789ABCDEF"[Math.floor(Math.random()*16)];return c}
+function clamp(v,min,max){return Math.min(Math.max(v,min),max)}
+function addItem(t){const o={type:t,x:40,y:40,w:40,h:40,size:2,color:getRandomColor(),text:"Hello"};if(t.includes("circle")||t.includes("fillCircle"))o.w=o.h=20;if(snapOn){o.x=Math.round(o.x/gridSize)*gridSize;o.y=Math.round(o.y/gridSize)*gridSize}items.push(o);selected=o;updateLayerSelect();render()}
+function duplicateItem(){if(!selected)return;const o={...selected};o.x+=10;o.y+=10;if(snapOn){o.x=Math.round(o.x/gridSize)*gridSize;o.y=Math.round(o.y/gridSize)*gridSize}items.push(o);selected=o;updateLayerSelect();render()}
+function deleteItem(){if(!selected)return;items=items.filter(i=>i!==selected);selected=null;updateLayerSelect();render()}
+function render(){ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);if(showGrid){ctx.strokeStyle="#2b0055";ctx.lineWidth=0.5;for(let x=0;x<=canvas.width;x+=gridSize){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}for(let y=0;y<=canvas.height;y+=gridSize){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}}const W=canvas.width,H=canvas.height;items.forEach(i=>{i.x=clamp(i.x,0,W-i.w);i.y=clamp(i.y,0,H-i.h);ctx.save();ctx.translate(i.x,i.y);ctx.strokeStyle=ctx.fillStyle=i.color;ctx.lineWidth=2;if(i.type==="fillRect")ctx.fillRect(0,0,i.w,i.h);if(i.type==="rect")ctx.strokeRect(0,0,i.w,i.h);if(i.type==="line"){ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(i.w,i.h);ctx.stroke()}if(i.type==="circle"){ctx.beginPath();ctx.arc(i.w/2,i.h/2,i.w/2,0,2*Math.PI);ctx.stroke()}if(i.type==="fillCircle"){ctx.beginPath();ctx.arc(i.w/2,i.h/2,i.w/2,0,2*Math.PI);ctx.fill()}if(i.type==="text"){ctx.font=`${i.size*8}px Arial`;ctx.fillText(i.text,0,i.h/2+i.size*4)}if(i===selected){ctx.strokeStyle="blue";ctx.lineWidth=1.5;if(i.type==="text"){const m=ctx.measureText(i.text);const th=i.size*8;ctx.strokeRect(0,i.h/2,m.width,th)}else{ctx.strokeRect(0,0,i.w,i.h);[{x:-5,y:-5},{x:i.w-5,y:-5},{x:-5,y:i.h-5},{x:i.w-5,y:i.h-5}].forEach(h=>{ctx.fillStyle="blue";ctx.beginPath();ctx.arc(h.x+5,h.y+5,5,0,2*Math.PI);ctx.fill()})}}ctx.restore()});syncUI();generateCode()}
+function getMousePos(e){const r=canvas.getBoundingClientRect();return{x:e.touches?e.touches[0].clientX-r.left:e.clientX-r.left,y:e.touches?e.touches[0].clientY-r.top:e.clientY-r.top}}
+canvas.addEventListener("mousedown",startDrag);
+canvas.addEventListener("touchstart",startDrag,{passive:false});
+document.addEventListener("mousemove",drag);
+document.addEventListener("touchmove",drag,{passive:false});
+document.addEventListener("mouseup",stopDrag);
+document.addEventListener("touchend",stopDrag);
+function startDrag(e){const p=getMousePos(e);showGrid=false;for(let i=items.length-1;i>=0;i--){const it=items[i];if(it.type!=="text"){const c=[{name:'tl',x:it.x-5,y:it.y-5},{name:'tr',x:it.x+it.w-5,y:it.y-5},{name:'bl',x:it.x-5,y:it.h+it.y-5},{name:'br',x:it.x+it.w-5,y:it.h+it.y-5}];for(let h of c){if(p.x>=h.x&&p.x<=h.x+10&&p.y>=h.y&&p.y<=h.y+10){dragging=it;resizing=true;resizeHandle=h.name;selected=it;showGrid=true;updateLayerSelect();render();return}}}if(p.x>=it.x&&p.x<=it.x+it.w&&p.y>=it.y&&p.y<=it.y+it.h){dragging=it;offsetX=p.x-it.x;offsetY=p.y-it.y;selected=it;showGrid=true;updateLayerSelect();render();return}}}
+function drag(e){if(!dragging)return;e.preventDefault();const p=getMousePos(e);if(resizing){let nx=dragging.x,ny=dragging.y,nw=dragging.w,nh=dragging.h,mn=5;if(resizeHandle.includes('t')){ny=Math.min(p.y,dragging.y+dragging.h-mn);nh=dragging.h+(dragging.y-ny)}if(resizeHandle.includes('b')){nh=Math.max(mn,p.y-dragging.y)}if(resizeHandle.includes('l')){nx=Math.min(p.x,dragging.x+dragging.w-mn);nw=dragging.w+(dragging.x-nx)}if(resizeHandle.includes('r')){nw=Math.max(mn,p.x-dragging.x)}nx=clamp(nx,0,canvas.width-nw);ny=clamp(ny,0,canvas.height-nh);nw=clamp(nw,mn,canvas.width-nx);nh=clamp(nh,mn,canvas.height-ny);if(snapOn){dragging.x=Math.round(nx/gridSize)*gridSize;dragging.y=Math.round(ny/gridSize)*gridSize;dragging.w=Math.round(nw/gridSize)*gridSize;dragging.h=Math.round(nh/gridSize)*gridSize}else{dragging.x=nx;dragging.y=ny;dragging.w=nw;dragging.h=nh}}else{let nx=p.x-offsetX,ny=p.y-offsetY;if(snapOn){nx=Math.round(nx/gridSize)*gridSize;ny=Math.round(ny/gridSize)*gridSize}dragging.x=clamp(nx,0,canvas.width-dragging.w);dragging.y=clamp(ny,0,canvas.height-dragging.h)}showGrid=true;render()}
+function stopDrag(){dragging=null;resizing=false;resizeHandle=null;showGrid=false;render()}
+function updateLayerSelect(){shapeSelect.innerHTML="";items.forEach((i,idx)=>{let o=document.createElement("option");o.value=idx;o.text=`${i.type} ${idx+1}`;if(i===selected)o.selected=true;shapeSelect.appendChild(o)})}
+shapeSelect.onchange=e=>{selected=items[e.target.value];render()}
+function syncUI(){if(!selected)return;textInput.value=selected.text;colorInput.value=selected.color;if(selected.type==="text")textSizeInput.value=selected.size}
+textInput.addEventListener("input",()=>{if(selected){selected.text=textInput.value;render()}})
+colorInput.addEventListener("input",()=>{if(selected){selected.color=colorInput.value;render()}})
+textSizeInput.addEventListener("input",()=>{if(selected&&selected.type==="text"){selected.size=parseInt(textSizeInput.value);render()}})
+function rgb(h){h=h.replace("#","");return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]}
+function generateCode(){const dev=devices[currentDevice];const W=dev[0],H=dev[1];let out=`// Device: ${currentDevice}\n// Made using Bruce JS Designer\n`;out+=`var keyboard = require('keyboard');\n`;out+=`var display = require('display');\n`;out+=`var sprite = display.createSprite();\n\n`;out+=`while(true) {\n`;out+=`    if(keyboard.getEscPress(true)) break;\n`;out+=`    sprite.fill(0);\n\n`;items.forEach(i=>{const sx=W/canvas.width,sy=H/canvas.height,x=Math.round(i.x*sx),y=Math.round(i.y*sy),w=Math.round(i.w*sx),h=Math.round(i.h*sy),c=rgb(i.color).join(',');if(i.type==="fillRect")out+=`    sprite.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;if(i.type==="rect")out+=`    sprite.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;if(i.type==="line")out+=`    sprite.drawLine(${x}, ${y}, ${x+w}, ${y+h}, display.color(${c}));\n`;if(i.type==="circle")out+=`    sprite.drawCircle(${x+Math.floor(w/2)}, ${y+Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;if(i.type==="fillCircle")out+=`    sprite.drawFillCircle(${x+Math.floor(w/2)}, ${y+Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;if(i.type==="text")out+=`    sprite.setTextSize(${i.size});\n    sprite.setTextColor(${c});\n    sprite.drawText("${i.text}", ${x}, ${y});\n`});out+=`\n    sprite.pushSprite();\n`;out+=`}\n`;code.textContent=out}
+function exportJS(){const name=document.getElementById("fileName").value||"app";const blob=new Blob([code.textContent],{type:"text/javascript"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name+".js";a.click()}
+deviceSelect.addEventListener("change",()=>{currentDevice=deviceSelect.value;generateCode()})
+render();
 updateLayerSelect();
 </script>
 </body>

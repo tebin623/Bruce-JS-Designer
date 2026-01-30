@@ -13,35 +13,36 @@ canvas { display:block; margin:0 auto 12px; background:#000; border-radius:6px; 
 .sliders label { flex:1 1 45%; display:flex; flex-direction:column; }
 input, select { width:100%; padding:6px; border-radius:8px; border:none; background:#4b2e83; color:#fff; }
 input[type="color"] { padding:0; height:32px; }
+input[type="range"] { padding:0; }
 .buttons { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-.buttons button { flex:1 1 0; min-width:100px; padding:10px; border:none; border-radius:10px; background:#6c43b2; color:#fff; font-weight:bold; cursor:pointer; text-align:center; }
+.buttons button { flex:1 1 0; min-width:100px; padding:10px; border:none; border-radius:10px; background:#6c43b2; color:#fff; font-weight:bold; cursor:pointer; }
 .buttons button:hover { background:#8457d6; }
-.buttons .danger { background:#ff4d6d; } 
-.buttons .danger:hover { background:#ff1a3c; }
-.buttons .export { background:#4dff88; color:#000; } 
-.buttons .export:hover { background:#2cff70; }
+.buttons .danger { background:#ff4d6d; }
+.buttons .export { background:#4dff88; color:#000; }
 code { display:block; background:#2b0055; border:1px solid #4b2e83; padding:12px; border-radius:8px; white-space:pre-wrap; margin-top:12px; max-height:300px; overflow:auto; }
-.credits { position:fixed; bottom:8px; right:16px; font-size:0.8rem; }
 .toggle { padding:10px; border-radius:10px; border:none; background:#6c43b2; color:#fff; cursor:pointer; font-weight:bold; }
 .toggle.on { background:#4dff88; color:#000; }
-@media(max-width:600px){ .sliders label { flex:1 1 100%; } .buttons button { flex:1 1 48%; } }
 </style>
 </head>
 <body>
+
 <div class="container">
 <h1>Bruce JS Designer</h1>
 
 <canvas id="screen" width="320" height="170"></canvas>
 
 <div class="sliders">
-  <label>Device:
+  <label>Device
     <select id="device"></select>
   </label>
-  <label>Snap to Grid:
+  <label>Snap to Grid
     <button id="snapToggle" class="toggle">OFF</button>
   </label>
   <label>Text
     <input type="text" id="text">
+  </label>
+  <label>Text Size
+    <input type="range" id="textSize" min="1" max="8" step="1" value="2">
   </label>
   <label>Layer
     <select id="shapeSelect"></select>
@@ -67,6 +68,7 @@ code { display:block; background:#2b0055; border:1px solid #4b2e83; padding:12px
 </div>
 
 <code id="code"></code>
+
 <div class="credits">
   <a href="https://discord.com/users/sloth110000" target="_blank" style="color:#aaa;text-decoration:none">Made by SLOTH</a>
 </div>
@@ -77,6 +79,7 @@ const ctx = canvas.getContext("2d");
 const deviceSelect = document.getElementById("device");
 const shapeSelect = document.getElementById("shapeSelect");
 const textInput = document.getElementById("text");
+const textSizeInput = document.getElementById("textSize");
 const colorInput = document.getElementById("color");
 const code = document.getElementById("code");
 const snapToggle = document.getElementById("snapToggle");
@@ -85,7 +88,7 @@ let items = [];
 let selected = null;
 let currentDevice;
 let gridSize = 10; 
-let snapOn = false;
+let snapOn = false; 
 let dragging = null, resizing = false, resizeHandle = null, offsetX = 0, offsetY = 0;
 let showGrid = false;
 
@@ -170,17 +173,24 @@ function render(){
     if(i.type==="fillCircle"){ ctx.beginPath(); ctx.arc(i.w/2,i.h/2,i.w/2,0,Math.PI*2); ctx.fill(); }
     if(i.type==="text"){ ctx.font=`${i.size*8}px Arial`; ctx.fillText(i.text,0,i.h/2+i.size*4); }
 
-    if(i===selected){
-      ctx.strokeStyle="blue"; ctx.lineWidth=1.5;
-      ctx.strokeRect(0,0,i.w,i.h);
-      const handles=[{x:-5,y:-5},{x:i.w-5,y:-5},{x:-5,y:i.h-5},{x:i.w-5,y:i.h-5}];
-      handles.forEach(h=>{ ctx.fillStyle="blue"; ctx.beginPath(); ctx.arc(h.x+5,h.y+5,5,0,Math.PI*2); ctx.fill(); });
+    if(i === selected){
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 1.5;
+        if(i.type === "text"){
+            const metrics = ctx.measureText(i.text);
+            const textHeight = i.size * 8;
+            ctx.strokeRect(0, i.h/2, metrics.width, textHeight);
+        } else {
+            ctx.strokeRect(0,0,i.w,i.h);
+            const handles=[{x:-5,y:-5},{x:i.w-5,y:-5},{x:-5,y:i.h-5},{x:i.w-5,y:i.h-5}];  
+            handles.forEach(h=>{ ctx.fillStyle="blue"; ctx.beginPath(); ctx.arc(h.x+5,h.y+5,5,0,Math.PI*2); ctx.fill(); });
+        }
     }
 
     ctx.restore();
   });
 
-  syncUI();
+  syncUI();  
   generateCode();
 }
 
@@ -201,11 +211,13 @@ function startDrag(e){
   showGrid=false;
   for(let i=items.length-1;i>=0;i--){
     const it=items[i];
-    const corners=[{name:'tl',x:it.x-5,y:it.y-5},{name:'tr',x:it.x+it.w-5,y:it.y-5},{name:'bl',x:it.x-5,y:it.h+it.y-5},{name:'br',x:it.x+it.w-5,y:it.h+it.y-5}];
-    for(let h of corners){ 
-      if(pos.x>=h.x&&pos.x<=h.x+10&&pos.y>=h.y&&pos.y<=h.y+10){ 
-        dragging=it; resizing=true; resizeHandle=h.name; selected=it; showGrid=true; updateLayerSelect(); render(); return; 
-      } 
+    if(it.type!=="text"){ 
+      const corners=[{name:'tl',x:it.x-5,y:it.y-5},{name:'tr',x:it.x+it.w-5,y:it.y-5},{name:'bl',x:it.x-5,y:it.h+it.y-5},{name:'br',x:it.x+it.w-5,y:it.h+it.y-5}];
+      for(let h of corners){ 
+        if(pos.x>=h.x&&pos.x<=h.x+10&&pos.y>=h.y&&pos.y<=h.y+10){ 
+          dragging=it; resizing=true; resizeHandle=h.name; selected=it; showGrid=true; updateLayerSelect(); render(); return; 
+        } 
+      }
     }
     if(pos.x>=it.x && pos.x<=it.x+it.w && pos.y>=it.y && pos.y<=it.y+it.h){ 
       dragging=it; offsetX=pos.x-it.x; offsetY=pos.y-it.y; selected=it; showGrid=true; updateLayerSelect(); render(); return; 
@@ -283,11 +295,25 @@ function updateLayerSelect(){
     shapeSelect.appendChild(o); 
   });
 }
+
 shapeSelect.onchange=e=>{ selected=items[e.target.value]; render(); }
 
-function syncUI(){ if(!selected) return; textInput.value=selected.text; colorInput.value=selected.color; }
+function syncUI(){ 
+  if(!selected) return; 
+  textInput.value=selected.text; 
+  colorInput.value=selected.color; 
+  if(selected.type==="text") textSizeInput.value=selected.size;
+}
+
 textInput.addEventListener("input",()=>{ if(selected){selected.text=textInput.value; render();} });
 colorInput.addEventListener("input",()=>{ if(selected){selected.color=colorInput.value; render();} });
+
+textSizeInput.addEventListener("input",()=>{
+  if(selected && selected.type==="text"){
+    selected.size = parseInt(textSizeInput.value);
+    render();
+  }
+});
 
 function rgb(hex){ hex=hex.replace("#",""); return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)]; }
 
@@ -321,7 +347,6 @@ function generateCode(){
 
   out += `\n    sprite.pushSprite();\n`;
   out += `}\n`;
-
   code.textContent = out;
 }
 
@@ -336,7 +361,7 @@ function exportJS(){
 
 deviceSelect.addEventListener("change",()=>{currentDevice=deviceSelect.value; generateCode();});
 
-render(); 
+render();   
 updateLayerSelect();
 </script>
 </body>

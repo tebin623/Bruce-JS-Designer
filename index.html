@@ -30,6 +30,7 @@ code{display:block;background:#2b0055;border:1px solid #4b2e83;padding:12px;bord
 <div class="container">
 <h1>Bruce JS Designer</h1>
 <canvas id="screen" width="320" height="170"></canvas>
+
 <div class="sliders">
 <label>Device<select id="device"></select></label>
 <label>Snap to Grid<button id="snapToggle" class="toggle">OFF</button></label>
@@ -39,6 +40,7 @@ code{display:block;background:#2b0055;border:1px solid #4b2e83;padding:12px;bord
 <label>File name<input type="text" id="fileName" value="app"></label>
 <label>Color<input type="color" id="color"></label>
 </div>
+
 <div class="buttons">
 <button onclick="addItem('fillRect')">FillRect</button>
 <button onclick="addItem('rect')">Rect</button>
@@ -50,6 +52,7 @@ code{display:block;background:#2b0055;border:1px solid #4b2e83;padding:12px;bord
 <button class="danger" onclick="deleteItem()">Delete</button>
 <button class="export" onclick="exportJS()">Export JS</button>
 </div>
+
 <code id="code"></code>
 
 <div class="credits" style="position:fixed; bottom:8px; left:50%; transform:translateX(-50%); font-size:0.8rem; z-index:1000;">
@@ -57,6 +60,7 @@ code{display:block;background:#2b0055;border:1px solid #4b2e83;padding:12px;bord
     Made by SLOTH
   </a>
 </div>
+
 <script>
 const canvas=document.getElementById("screen");
 const ctx=canvas.getContext("2d");
@@ -67,38 +71,200 @@ const textSizeInput=document.getElementById("textSize");
 const colorInput=document.getElementById("color");
 const code=document.getElementById("code");
 const snapToggle=document.getElementById("snapToggle");
-let items=[],selected=null,currentDevice,gridSize=10,snapOn=false,dragging=null,resizing=false,resizeHandle=null,offsetX=0,offsetY=0,showGrid=false;
+
+let items=[],selected=null,currentDevice,gridSize=10,snapOn=false;
+let dragging=null,resizing=false,resizeHandle=null,offsetX=0,offsetY=0,showGrid=false;
+
 const devices={"M5StickC / M5Cardputer":[240,135],"LilyGO T-Embed":[320,170]};
-function populateDeviceDropdown(){deviceSelect.innerHTML="";for(let n in devices){let o=document.createElement("option");o.value=n;o.textContent=n;deviceSelect.appendChild(o)}currentDevice=deviceSelect.value}populateDeviceDropdown();
-snapToggle.addEventListener("click",()=>{snapOn=!snapOn;snapToggle.textContent=snapOn?"ON":"OFF";snapToggle.classList.toggle("on",snapOn)});
+
+function populateDeviceDropdown(){
+    deviceSelect.innerHTML="";
+    for(let n in devices){
+        let o=document.createElement("option");
+        o.value=n;
+        o.textContent=n;
+        deviceSelect.appendChild(o);
+    }
+    currentDevice=deviceSelect.value;
+}
+populateDeviceDropdown();
+
+snapToggle.addEventListener("click",()=>{
+    snapOn=!snapOn;
+    snapToggle.textContent=snapOn?"ON":"OFF";
+    snapToggle.classList.toggle("on",snapOn);
+});
+
 function getRandomColor(){let c="#";for(let i=0;i<6;i++)c+="0123456789ABCDEF"[Math.floor(Math.random()*16)];return c}
 function clamp(v,min,max){return Math.min(Math.max(v,min),max)}
-function addItem(t){const o={type:t,x:40,y:40,w:40,h:40,size:2,color:getRandomColor(),text:"Hello"};if(t.includes("circle")||t.includes("fillCircle"))o.w=o.h=20;if(snapOn){o.x=Math.round(o.x/gridSize)*gridSize;o.y=Math.round(o.y/gridSize)*gridSize}items.push(o);selected=o;updateLayerSelect();render()}
+
+function addItem(t){
+    const o={type:t,x:40,y:40,w:40,h:40,size:2,color:getRandomColor(),text:"Hello"};
+    if(t.includes("circle")||t.includes("fillCircle")) o.w=o.h=20;
+    if(snapOn){o.x=Math.round(o.x/gridSize)*gridSize;o.y=Math.round(o.y/gridSize)*gridSize}
+    items.push(o);
+    selected=o;
+    updateLayerSelect();
+    render();
+}
+
 function duplicateItem(){if(!selected)return;const o={...selected};o.x+=10;o.y+=10;if(snapOn){o.x=Math.round(o.x/gridSize)*gridSize;o.y=Math.round(o.y/gridSize)*gridSize}items.push(o);selected=o;updateLayerSelect();render()}
 function deleteItem(){if(!selected)return;items=items.filter(i=>i!==selected);selected=null;updateLayerSelect();render()}
-function render(){ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);if(showGrid){ctx.strokeStyle="#2b0055";ctx.lineWidth=0.5;for(let x=0;x<=canvas.width;x+=gridSize){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}for(let y=0;y<=canvas.height;y+=gridSize){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}}const W=canvas.width,H=canvas.height;items.forEach(i=>{i.x=clamp(i.x,0,W-i.w);i.y=clamp(i.y,0,H-i.h);ctx.save();ctx.translate(i.x,i.y);ctx.strokeStyle=ctx.fillStyle=i.color;ctx.lineWidth=2;if(i.type==="fillRect")ctx.fillRect(0,0,i.w,i.h);if(i.type==="rect")ctx.strokeRect(0,0,i.w,i.h);if(i.type==="line"){ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(i.w,i.h);ctx.stroke()}if(i.type==="circle"){ctx.beginPath();ctx.arc(i.w/2,i.h/2,i.w/2,0,2*Math.PI);ctx.stroke()}if(i.type==="fillCircle"){ctx.beginPath();ctx.arc(i.w/2,i.h/2,i.w/2,0,2*Math.PI);ctx.fill()}if(i.type==="text"){ctx.font=`${i.size*8}px Arial`;ctx.fillText(i.text,0,i.h/2+i.size*4)}if(i===selected){ctx.strokeStyle="blue";ctx.lineWidth=1.5;if(i.type==="text"){const m=ctx.measureText(i.text);const th=i.size*8;ctx.strokeRect(0,i.h/2,m.width,th)}else{ctx.strokeRect(0,0,i.w,i.h);[{x:-5,y:-5},{x:i.w-5,y:-5},{x:-5,y:i.h-5},{x:i.w-5,y:i.h-5}].forEach(h=>{ctx.fillStyle="blue";ctx.beginPath();ctx.arc(h.x+5,h.y+5,5,0,2*Math.PI);ctx.fill()})}}ctx.restore()});syncUI();generateCode()}
-function getMousePos(e){const r=canvas.getBoundingClientRect();return{x:e.touches?e.touches[0].clientX-r.left:e.clientX-r.left,y:e.touches?e.touches[0].clientY-r.top:e.clientY-r.top}}
-canvas.addEventListener("mousedown",startDrag);
-canvas.addEventListener("touchstart",startDrag,{passive:false});
-document.addEventListener("mousemove",drag);
-document.addEventListener("touchmove",drag,{passive:false});
-document.addEventListener("mouseup",stopDrag);
-document.addEventListener("touchend",stopDrag);
-function startDrag(e){const p=getMousePos(e);showGrid=false;for(let i=items.length-1;i>=0;i--){const it=items[i];if(it.type!=="text"){const c=[{name:'tl',x:it.x-5,y:it.y-5},{name:'tr',x:it.x+it.w-5,y:it.y-5},{name:'bl',x:it.x-5,y:it.h+it.y-5},{name:'br',x:it.x+it.w-5,y:it.h+it.y-5}];for(let h of c){if(p.x>=h.x&&p.x<=h.x+10&&p.y>=h.y&&p.y<=h.y+10){dragging=it;resizing=true;resizeHandle=h.name;selected=it;showGrid=true;updateLayerSelect();render();return}}}if(p.x>=it.x&&p.x<=it.x+it.w&&p.y>=it.y&&p.y<=it.y+it.h){dragging=it;offsetX=p.x-it.x;offsetY=p.y-it.y;selected=it;showGrid=true;updateLayerSelect();render();return}}}
-function drag(e){if(!dragging)return;e.preventDefault();const p=getMousePos(e);if(resizing){let nx=dragging.x,ny=dragging.y,nw=dragging.w,nh=dragging.h,mn=5;if(resizeHandle.includes('t')){ny=Math.min(p.y,dragging.y+dragging.h-mn);nh=dragging.h+(dragging.y-ny)}if(resizeHandle.includes('b')){nh=Math.max(mn,p.y-dragging.y)}if(resizeHandle.includes('l')){nx=Math.min(p.x,dragging.x+dragging.w-mn);nw=dragging.w+(dragging.x-nx)}if(resizeHandle.includes('r')){nw=Math.max(mn,p.x-dragging.x)}nx=clamp(nx,0,canvas.width-nw);ny=clamp(ny,0,canvas.height-nh);nw=clamp(nw,mn,canvas.width-nx);nh=clamp(nh,mn,canvas.height-ny);if(snapOn){dragging.x=Math.round(nx/gridSize)*gridSize;dragging.y=Math.round(ny/gridSize)*gridSize;dragging.w=Math.round(nw/gridSize)*gridSize;dragging.h=Math.round(nh/gridSize)*gridSize}else{dragging.x=nx;dragging.y=ny;dragging.w=nw;dragging.h=nh}}else{let nx=p.x-offsetX,ny=p.y-offsetY;if(snapOn){nx=Math.round(nx/gridSize)*gridSize;ny=Math.round(ny/gridSize)*gridSize}dragging.x=clamp(nx,0,canvas.width-dragging.w);dragging.y=clamp(ny,0,canvas.height-dragging.h)}showGrid=true;render()}
+
+function render(){
+    ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    if(showGrid){
+        ctx.strokeStyle="#2b0055";ctx.lineWidth=0.5;
+        for(let x=0;x<=canvas.width;x+=gridSize){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}
+        for(let y=0;y<=canvas.height;y+=gridSize){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}
+    }
+
+    const W=canvas.width,H=canvas.height;
+
+    items.forEach(i=>{
+        let iw = i.w, ih = i.h;
+        if(i.type==="text"){iw = ctx.measureText(i.text).width; ih = i.size*8;}
+        ctx.save();ctx.translate(i.x,i.y);ctx.strokeStyle=ctx.fillStyle=i.color;ctx.lineWidth=2;
+
+        if(i.type==="fillRect")ctx.fillRect(0,0,i.w,i.h);
+        if(i.type==="rect")ctx.strokeRect(0,0,i.w,i.h);
+        if(i.type==="line"){ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(i.w,i.h);ctx.stroke();}
+        if(i.type==="circle"){ctx.beginPath();ctx.arc(i.w/2,i.h/2,i.w/2,0,2*Math.PI);ctx.stroke();}
+        if(i.type==="fillCircle"){ctx.beginPath();ctx.arc(i.w/2,i.h/2,i.w/2,0,2*Math.PI);ctx.fill();}
+        if(i.type==="text"){ctx.font=`${i.size*8}px Arial`;ctx.fillText(i.text,0,ih/2+i.size*4);}
+
+        if(i===selected){
+            ctx.strokeStyle="blue";ctx.lineWidth=1.5;
+            if(i.type==="text"){ctx.strokeRect(0,0,iw,ih);}
+            else{
+                ctx.strokeRect(0,0,i.w,i.h);
+                [{x:0,y:0},{x:i.w,y:0},{x:0,y:i.h},{x:i.w,y:i.h}].forEach(h=>{ctx.fillStyle="blue";ctx.beginPath();ctx.arc(h.x,h.y,5,0,2*Math.PI);ctx.fill();})
+            }
+        }
+        ctx.restore();
+    });
+
+    syncUI();
+    generateCode();
+}
+
+function getMousePos(e){
+    const r=canvas.getBoundingClientRect();
+    return {x:e.touches?e.touches[0].clientX-r.left:e.clientX-r.left,y:e.touches?e.touches[0].clientY-r.top:e.clientY-r.top};
+}
+
+// --- Fixed drag & resize ---
+canvas.addEventListener("mousedown", startDrag);
+canvas.addEventListener("touchstart", startDrag,{passive:false});
+document.addEventListener("mousemove", drag);
+document.addEventListener("touchmove", drag,{passive:false});
+document.addEventListener("mouseup", stopDrag);
+document.addEventListener("touchend", stopDrag);
+
+function startDrag(e){
+    const p = getMousePos(e);
+    showGrid = false;
+    selected = null;
+
+    for(let i=items.length-1;i>=0;i--){
+        const it = items[i];
+        let iw = it.w, ih = it.h;
+        if(it.type === "text"){
+            const m = ctx.measureText(it.text);
+            iw = m.width;
+            ih = it.size*8;
+        }
+
+        const corners = it.type !== "text" ? [
+            {name:'tl',x:it.x-5,y:it.y-5},
+            {name:'tr',x:it.x+it.w-5,y:it.y-5},
+            {name:'bl',x:it.x-5,y:it.y+it.h-5},
+            {name:'br',x:it.x+it.w-5,y:it.y+it.h-5}
+        ] : [];
+
+        for(let h of corners){
+            if(p.x >= h.x && p.x <= h.x+10 && p.y >= h.y && p.y <= h.y+10){
+                dragging = it; resizing = true; resizeHandle = h.name;
+                selected = it; showGrid = true; updateLayerSelect(); render();
+                return;
+            }
+        }
+
+        if(p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih){
+            dragging = it; offsetX = p.x - it.x; offsetY = p.y - it.y;
+            selected = it; showGrid = true; updateLayerSelect(); render();
+            return;
+        }
+    }
+}
+
+function drag(e){
+    if(!dragging) return;
+    e.preventDefault();
+    const p = getMousePos(e);
+
+    if(resizing){
+        let nx=dragging.x,ny=dragging.y,nw=dragging.w,nh=dragging.h,mn=5;
+        if(resizeHandle.includes('t')){ny=Math.min(p.y,dragging.y+dragging.h-mn);nh=dragging.h+(dragging.y-ny);}
+        if(resizeHandle.includes('b')){nh=Math.max(mn,p.y-dragging.y);}
+        if(resizeHandle.includes('l')){nx=Math.min(p.x,dragging.x+dragging.w-mn);nw=dragging.w+(dragging.x-nx);}
+        if(resizeHandle.includes('r')){nw=Math.max(mn,p.x-dragging.x);}
+        nx=clamp(nx,0,canvas.width-nw);ny=clamp(ny,0,canvas.height-nh);nw=clamp(nw,mn,canvas.width-nx);nh=clamp(nh,mn,canvas.height-ny);
+        if(snapOn){dragging.x=Math.round(nx/gridSize)*gridSize;dragging.y=Math.round(ny/gridSize)*gridSize;dragging.w=Math.round(nw/gridSize)*gridSize;dragging.h=Math.round(nh/gridSize)*gridSize;}
+        else{dragging.x=nx;dragging.y=ny;dragging.w=nw;dragging.h=nh;}
+    } else {
+        let nx = p.x - offsetX, ny = p.y - offsetY;
+        if(snapOn){nx=Math.round(nx/gridSize)*gridSize;ny=Math.round(ny/gridSize)*gridSize;}
+        dragging.x = clamp(nx,0,canvas.width-dragging.w); dragging.y = clamp(ny,0,canvas.height-dragging.h);
+    }
+    showGrid=true;render();
+}
+
 function stopDrag(){dragging=null;resizing=false;resizeHandle=null;showGrid=false;render()}
+
+// --- UI sync & layer ---
 function updateLayerSelect(){shapeSelect.innerHTML="";items.forEach((i,idx)=>{let o=document.createElement("option");o.value=idx;o.text=`${i.type} ${idx+1}`;if(i===selected)o.selected=true;shapeSelect.appendChild(o)})}
-shapeSelect.onchange=e=>{selected=items[e.target.value];render()}
+shapeSelect.onchange=e=>{selected=items[e.target.value];render();}
 function syncUI(){if(!selected)return;textInput.value=selected.text;colorInput.value=selected.color;if(selected.type==="text")textSizeInput.value=selected.size}
 textInput.addEventListener("input",()=>{if(selected){selected.text=textInput.value;render()}})
 colorInput.addEventListener("input",()=>{if(selected){selected.color=colorInput.value;render()}})
 textSizeInput.addEventListener("input",()=>{if(selected&&selected.type==="text"){selected.size=parseInt(textSizeInput.value);render()}})
+
 function rgb(h){h=h.replace("#","");return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]}
-function generateCode(){const dev=devices[currentDevice];const W=dev[0],H=dev[1];let out=`// Device: ${currentDevice}\n// Made using Bruce JS Designer\n`;out+=`var keyboard = require('keyboard');\n`;out+=`var display = require('display');\n`;out+=`var sprite = display.createSprite();\n\n`;out+=`while(true) {\n`;out+=`    if(keyboard.getEscPress(true)) break;\n`;out+=`    sprite.fill(0);\n\n`;items.forEach(i=>{const sx=W/canvas.width,sy=H/canvas.height,x=Math.round(i.x*sx),y=Math.round(i.y*sy),w=Math.round(i.w*sx),h=Math.round(i.h*sy),c=rgb(i.color).join(',');if(i.type==="fillRect")out+=`    sprite.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;if(i.type==="rect")out+=`    sprite.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;if(i.type==="line")out+=`    sprite.drawLine(${x}, ${y}, ${x+w}, ${y+h}, display.color(${c}));\n`;if(i.type==="circle")out+=`    sprite.drawCircle(${x+Math.floor(w/2)}, ${y+Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;if(i.type==="fillCircle")out+=`    sprite.drawFillCircle(${x+Math.floor(w/2)}, ${y+Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;if(i.type==="text")out+=`    sprite.setTextSize(${i.size});\n    sprite.setTextColor(${c});\n    sprite.drawText("${i.text}", ${x}, ${y});\n`});out+=`\n    sprite.pushSprite();\n`;out+=`}\n`;code.textContent=out}
+
+function generateCode(){
+    const dev=devices[currentDevice];
+    const W=dev[0],H=dev[1];
+    let out=`// Device: ${currentDevice}\n// Made using Bruce JS Designer\n`;
+    out+=`const keyboard = require('keyboard');\n`;
+    out+=`const display = require('display');\n`;
+    out+=`const sprite = display.createSprite();\n\n`;
+    out+=`while(true) {\n`;
+    out+=`    if(keyboard.getEscPress(true)) break;\n`;
+    out+=`    sprite.fill(0);\n\n`;
+    items.forEach(i=>{
+        const sx=W/canvas.width, sy=H/canvas.height;
+        const x=Math.round(i.x*sx), y=Math.round(i.y*sy), w=Math.round(i.w*sx), h=Math.round(i.h*sy);
+        const c = rgb(i.color).join(',');
+        if(i.type==="fillRect") out += `    sprite.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
+        if(i.type==="rect") out += `    sprite.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
+        if(i.type==="line") out += `    sprite.drawLine(${x}, ${y}, ${x+w}, ${y+h}, display.color(${c}));\n`;
+        if(i.type==="circle") out += `    sprite.drawCircle(${x+Math.floor(w/2)}, ${y+Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;
+        if(i.type==="fillCircle") out += `    sprite.drawFillCircle(${x+Math.floor(w/2)}, ${y+Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;
+        if(i.type==="text") out += `    sprite.setTextSize(${i.size});\n    sprite.setTextColor(${c});\n    sprite.drawText("${i.text}", ${x}, ${y});\n`;
+    });
+    out+=`    sprite.pushSprite();\n`;
+    out+=`}\n`;
+    code.textContent=out;
+}
+
 function exportJS(){const name=document.getElementById("fileName").value||"app";const blob=new Blob([code.textContent],{type:"text/javascript"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name+".js";a.click()}
+
 deviceSelect.addEventListener("change",()=>{currentDevice=deviceSelect.value;generateCode()})
+
 render();
 updateLayerSelect();
 </script>
 </body>
-</html>
+  </html>

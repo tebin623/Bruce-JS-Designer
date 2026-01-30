@@ -9,8 +9,7 @@ body { margin:0; padding:16px; background:#1a0033; color:#fff; font-family:'Sego
 .container { max-width:960px; margin:auto; }
 h1 { text-align:center; margin-bottom:12px; }
 canvas { display:block; margin:0 auto 12px; background:#000; border-radius:6px; image-rendering:pixelated; touch-action: none; }
-.panel { background:#2b0055; padding:16px; border-radius:12px; }
-.sliders { display:flex; flex-wrap:wrap; gap:12px; }
+.sliders { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
 .sliders label { flex:1 1 45%; display:flex; flex-direction:column; }
 input, select { width:100%; padding:6px; border-radius:8px; border:none; background:#4b2e83; color:#fff; }
 input[type="color"] { padding:0; height:32px; }
@@ -23,6 +22,8 @@ input[type="color"] { padding:0; height:32px; }
 .buttons .export:hover { background:#2cff70; }
 code { display:block; background:#2b0055; border:1px solid #4b2e83; padding:12px; border-radius:8px; white-space:pre-wrap; margin-top:12px; max-height:300px; overflow:auto; }
 .credits { position:fixed; bottom:8px; right:16px; font-size:0.8rem; }
+.toggle { padding:10px; border-radius:10px; border:none; background:#6c43b2; color:#fff; cursor:pointer; font-weight:bold; }
+.toggle.on { background:#4dff88; color:#000; }
 @media(max-width:600px){ .sliders label { flex:1 1 100%; } .buttons button { flex:1 1 48%; } }
 </style>
 </head>
@@ -32,44 +33,42 @@ code { display:block; background:#2b0055; border:1px solid #4b2e83; padding:12px
 
 <canvas id="screen" width="320" height="170"></canvas>
 
-<label>Device:
-  <select id="device"></select>
-</label>
+<div class="sliders">
+  <label>Device:
+    <select id="device"></select>
+  </label>
+  <label>Snap to Grid:
+    <button id="snapToggle" class="toggle">OFF</button>
+  </label>
+  <label>Text
+    <input type="text" id="text">
+  </label>
+  <label>Layer
+    <select id="shapeSelect"></select>
+  </label>
+  <label>File name
+    <input type="text" id="fileName" value="app">
+  </label>
+  <label>Color
+    <input type="color" id="color">
+  </label>
+</div>
 
-<div class="panel">
-  <div class="sliders">
-    <label>Text
-      <input type="text" id="text">
-    </label>
-    <label>Layer
-      <select id="shapeSelect"></select>
-    </label>
-    <label>File name
-      <input type="text" id="fileName" value="app">
-    </label>
-    <label>Color
-      <input type="color" id="color">
-    </label>
-  </div>
-
-  <div class="buttons">
-    <button onclick="addItem('fillRect')">FillRect</button>
-    <button onclick="addItem('rect')">Rect</button>
-    <button onclick="addItem('line')">Line</button>
-    <button onclick="addItem('circle')">Circle</button>
-    <button onclick="addItem('fillCircle')">FillCircle</button>
-    <button onclick="addItem('text')">Text</button>
-    <button onclick="duplicateItem()">Duplicate</button>
-    <button class="danger" onclick="deleteItem()">Delete</button>
-    <button class="export" onclick="exportJS()">Export JS</button>
-  </div>
+<div class="buttons">
+  <button onclick="addItem('fillRect')">FillRect</button>
+  <button onclick="addItem('rect')">Rect</button>
+  <button onclick="addItem('line')">Line</button>
+  <button onclick="addItem('circle')">Circle</button>
+  <button onclick="addItem('fillCircle')">FillCircle</button>
+  <button onclick="addItem('text')">Text</button>
+  <button onclick="duplicateItem()">Duplicate</button>
+  <button class="danger" onclick="deleteItem()">Delete</button>
+  <button class="export" onclick="exportJS()">Export JS</button>
 </div>
 
 <code id="code"></code>
 <div class="credits">
-  <a href="https://discord.com/users/sloth110000" target="_blank" style="color:#aaa;text-decoration:none">
-    Made by SLOTH
-  </a>
+  <a href="https://discord.com/users/sloth110000" target="_blank" style="color:#aaa;text-decoration:none">Made by SLOTH</a>
 </div>
 
 <script>
@@ -80,13 +79,15 @@ const shapeSelect = document.getElementById("shapeSelect");
 const textInput = document.getElementById("text");
 const colorInput = document.getElementById("color");
 const code = document.getElementById("code");
+const snapToggle = document.getElementById("snapToggle");
 
 let items = [];
 let selected = null;
 let currentDevice;
-let gridSize = 10;
+let gridSize = 10; 
+let snapOn = false;
+let dragging = null, resizing = false, resizeHandle = null, offsetX = 0, offsetY = 0;
 let showGrid = false;
-let dragging=null, resizing=false, resizeHandle=null, offsetX=0, offsetY=0;
 
 const devices = {
   "M5StickC / M5Cardputer": [240, 135],
@@ -105,6 +106,12 @@ function populateDeviceDropdown() {
 }
 populateDeviceDropdown();
 
+snapToggle.addEventListener("click",()=>{ 
+  snapOn=!snapOn; 
+  snapToggle.textContent = snapOn?"ON":"OFF"; 
+  snapToggle.classList.toggle("on", snapOn); 
+});
+
 function getRandomColor() {
   const letters = "0123456789ABCDEF";
   let c = "#";
@@ -112,13 +119,12 @@ function getRandomColor() {
   return c;
 }
 
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
+function clamp(value, min, max) { return Math.min(Math.max(value, min), max); }
 
 function addItem(type){
   const obj = {type, x:40, y:40, w:40, h:40, size:2, color:getRandomColor(), text:"Hello"};
   if(type.includes("circle") || type.includes("fillCircle")) obj.w = obj.h = 20;
+  if(snapOn){ obj.x = Math.round(obj.x/gridSize)*gridSize; obj.y = Math.round(obj.y/gridSize)*gridSize; }
   items.push(obj);
   selected = obj;
   updateLayerSelect();
@@ -128,21 +134,15 @@ function addItem(type){
 function duplicateItem(){
   if(!selected) return;
   const copy = {...selected};
-  copy.x += 10;
-  copy.y += 10;
+  copy.x += 10; copy.y += 10;
+  if(snapOn){ copy.x = Math.round(copy.x/gridSize)*gridSize; copy.y = Math.round(copy.y/gridSize)*gridSize; }
   items.push(copy);
   selected = copy;
   updateLayerSelect();
   render();
 }
 
-function deleteItem(){ 
-  if(!selected) return; 
-  items = items.filter(i=>i!==selected); 
-  selected = null; 
-  updateLayerSelect(); 
-  render(); 
-}
+function deleteItem(){ if(!selected) return; items = items.filter(i=>i!==selected); selected=null; updateLayerSelect(); render(); }
 
 function render(){
   ctx.fillStyle="#000"; ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -157,8 +157,8 @@ function render(){
   const H = canvas.height;
 
   items.forEach(i=>{
-    i.x = clamp(i.x,0,i.type.includes("circle") || i.type.includes("fillCircle") ? W-i.w : W-i.w);
-    i.y = clamp(i.y,0,i.type.includes("circle") || i.type.includes("fillCircle") ? H-i.h : H-i.h);
+    i.x = clamp(i.x,0,W-i.w);
+    i.y = clamp(i.y,0,H-i.h);
 
     ctx.save(); ctx.translate(i.x,i.y);
     ctx.strokeStyle=ctx.fillStyle=i.color; ctx.lineWidth=2;
@@ -184,7 +184,11 @@ function render(){
   generateCode();
 }
 
-function getMousePos(e){ const rect=canvas.getBoundingClientRect(); return { x:e.touches?e.touches[0].clientX-rect.left:e.clientX-rect.left, y:e.touches?e.touches[0].clientY-rect.top:e.clientY-rect.top }; }
+function getMousePos(e){ 
+  const rect=canvas.getBoundingClientRect(); 
+  return { x:e.touches?e.touches[0].clientX-rect.left:e.clientX-rect.left, y:e.touches?e.touches[0].clientY-rect.top:e.clientY-rect.top }; 
+}
+
 canvas.addEventListener('mousedown', startDrag);
 canvas.addEventListener('touchstart', startDrag,{passive:false});
 document.addEventListener('mousemove', drag);
@@ -198,28 +202,72 @@ function startDrag(e){
   for(let i=items.length-1;i>=0;i--){
     const it=items[i];
     const corners=[{name:'tl',x:it.x-5,y:it.y-5},{name:'tr',x:it.x+it.w-5,y:it.y-5},{name:'bl',x:it.x-5,y:it.h+it.y-5},{name:'br',x:it.x+it.w-5,y:it.h+it.y-5}];
-    for(let h of corners){ if(pos.x>=h.x&&pos.x<=h.x+10&&pos.y>=h.y&&pos.y<=h.y+10){ dragging=it; resizing=true; resizeHandle=h.name; selected=it; showGrid=true; updateLayerSelect(); render(); return; } }
-    if(pos.x>=it.x && pos.x<=it.x+it.w && pos.y>=it.y && pos.y<=it.y+it.h){ dragging=it; offsetX=pos.x-it.x; offsetY=pos.y-it.y; selected=it; showGrid=true; updateLayerSelect(); render(); return; }
+    for(let h of corners){ 
+      if(pos.x>=h.x&&pos.x<=h.x+10&&pos.y>=h.y&&pos.y<=h.y+10){ 
+        dragging=it; resizing=true; resizeHandle=h.name; selected=it; showGrid=true; updateLayerSelect(); render(); return; 
+      } 
+    }
+    if(pos.x>=it.x && pos.x<=it.x+it.w && pos.y>=it.y && pos.y<=it.y+it.h){ 
+      dragging=it; offsetX=pos.x-it.x; offsetY=pos.y-it.y; selected=it; showGrid=true; updateLayerSelect(); render(); return; 
+    }
   }
 }
 
 function drag(e){
   if(!dragging) return; e.preventDefault();
-  const pos=getMousePos(e);
+  const pos = getMousePos(e);
+
   if(resizing){
-    let newX=dragging.x,newY=dragging.y,newW=dragging.w,newH=dragging.h,minSize=10;
-    if(resizeHandle.includes('t')){ newY=Math.min(pos.y,dragging.y+dragging.h-minSize); newH=dragging.h+(dragging.y-newY); }
-    if(resizeHandle.includes('b')) newH=Math.max(minSize,pos.y-dragging.y);
-    if(resizeHandle.includes('l')){ newX=Math.min(pos.x,dragging.x+dragging.w-minSize); newW=dragging.w+(dragging.x-newX); }
-    if(resizeHandle.includes('r')) newW=Math.max(minSize,pos.x-dragging.x);
-    dragging.x=Math.round(newX/gridSize)*gridSize;
-    dragging.y=Math.round(newY/gridSize)*gridSize;
-    dragging.w=Math.round(newW/gridSize)*gridSize;
-    dragging.h=Math.round(newH/gridSize)*gridSize;
+    let newX = dragging.x;
+    let newY = dragging.y;
+    let newW = dragging.w;
+    let newH = dragging.h;
+    const minSize = 5;
+
+    if(resizeHandle.includes('t')){
+      newY = Math.min(pos.y, dragging.y + dragging.h - minSize);
+      newH = dragging.h + (dragging.y - newY);
+    }
+    if(resizeHandle.includes('b')){
+      newH = Math.max(minSize, pos.y - dragging.y);
+    }
+    if(resizeHandle.includes('l')){
+      newX = Math.min(pos.x, dragging.x + dragging.w - minSize);
+      newW = dragging.w + (dragging.x - newX);
+    }
+    if(resizeHandle.includes('r')){
+      newW = Math.max(minSize, pos.x - dragging.x);
+    }
+
+    newX = clamp(newX,0,canvas.width-newW);
+    newY = clamp(newY,0,canvas.height-newH);
+    newW = clamp(newW,minSize,canvas.width-newX);
+    newH = clamp(newH,minSize,canvas.height-newY);
+
+    if(snapOn){
+      dragging.x = Math.round(newX/gridSize)*gridSize;
+      dragging.y = Math.round(newY/gridSize)*gridSize;
+      dragging.w = Math.round(newW/gridSize)*gridSize;
+      dragging.h = Math.round(newH/gridSize)*gridSize;
+    } else {
+      dragging.x = newX;
+      dragging.y = newY;
+      dragging.w = newW;
+      dragging.h = newH;
+    }
+
   } else {
-    dragging.x=Math.round((pos.x-offsetX)/gridSize)*gridSize;
-    dragging.y=Math.round((pos.y-offsetY)/gridSize)*gridSize;
+    let newX = pos.x - offsetX;
+    let newY = pos.y - offsetY;
+    if(snapOn){
+      newX = Math.round(newX/gridSize)*gridSize;
+      newY = Math.round(newY/gridSize)*gridSize;
+    }
+    dragging.x = clamp(newX,0,canvas.width-dragging.w);
+    dragging.y = clamp(newY,0,canvas.height-dragging.h);
   }
+
+  showGrid = true;
   render();
 }
 
@@ -227,7 +275,13 @@ function stopDrag(){ dragging=null; resizing=false; resizeHandle=null; showGrid=
 
 function updateLayerSelect(){
   shapeSelect.innerHTML="";
-  items.forEach((i,idx)=>{ const o=document.createElement("option"); o.value=idx; o.text=`${i.type} ${idx+1}`; if(i===selected) o.selected=true; shapeSelect.appendChild(o); });
+  items.forEach((i,idx)=>{ 
+    const o=document.createElement("option"); 
+    o.value=idx; 
+    o.text=`${i.type} ${idx+1}`; 
+    if(i===selected) o.selected=true; 
+    shapeSelect.appendChild(o); 
+  });
 }
 shapeSelect.onchange=e=>{ selected=items[e.target.value]; render(); }
 

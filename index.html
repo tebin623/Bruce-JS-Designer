@@ -1,147 +1,462 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bruce JS Designer</title>
-<style>
-body{margin:0;padding:16px;background:#1a0033;color:#fff;font-family:'Segoe UI',sans-serif}
-.container{max-width:960px;margin:auto}
-h1{text-align:center;margin-bottom:12px}
-canvas{display:block;margin:0 auto 12px;background:#000;border-radius:6px;image-rendering:pixelated;touch-action:none}
-.sliders{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
-.sliders label{flex:1 1 45%;display:flex;flex-direction:column}
-input,select{width:100%;padding:6px;border-radius:8px;border:none;background:#4b2e83;color:#fff}
-input[type="color"]{padding:0;height:32px}
-input[type="range"]{padding:0}
-.buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.buttons button{flex:1 1 0;min-width:100px;padding:10px;border:none;border-radius:10px;background:#6c43b2;color:#fff;font-weight:bold;cursor:pointer}
-.buttons button:hover{background:#8457d6}
-.buttons .danger{background:#ff4d6d}
-.buttons .export{background:#4dff88;color:#000}
-.credit-btn{display:inline-block;text-decoration:none;background:#4dff88;color:#000;font-weight:bold;padding:10px 16px;border-radius:10px;margin-top:12px;cursor:pointer;transition:0.2s}
-.credit-btn:hover{background:#67ff9c}
-code{display:block;background:#2b0055;border:1px solid #4b2e83;padding:12px;border-radius:8px;white-space:pre-wrap;margin-top:12px;max-height:300px;overflow:auto}
-.toggle{padding:10px;border-radius:10px;border:none;background:#6c43b2;color:#fff;cursor:pointer;font-weight:bold}
-.toggle.on{background:#4dff88;color:#000}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bruce JS Designer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 16px;
+            background: #1a0033;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto 12px;
+            background: #000;
+            border-radius: 6px;
+            image-rendering: pixelated;
+            touch-action: none;
+        }
+
+        .sliders {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .sliders label {
+            flex: 1 1 45%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 6px;
+            border-radius: 8px;
+            border: none;
+            background: #4b2e83;
+            color: #fff;
+        }
+
+        input[type="color"] {
+            padding: 0;
+            height: 32px;
+        }
+
+        input[type="range"] {
+            padding: 0;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .buttons button {
+            flex: 1 1 0;
+            min-width: 100px;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #6c43b2;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background: #8457d6;
+        }
+
+        .buttons .danger {
+            background: #ff4d6d;
+        }
+
+        .buttons .export {
+            background: #4dff88;
+            color: #000;
+        }
+
+        .buttons .duplicate {
+            background: #FFD700;
+            color: #000;
+        }
+
+        .buttons .duplicate:hover {
+            background: #FFEC70;
+        }
+
+        .layer-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .layer-buttons button {
+            flex: 1 1 100px;
+            background: #6c43b2;;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 8px;
+            cursor: pointer;
+            border: none; 
+        }
+
+        .layer-buttons button:hover {
+            background: #6c43b2;;
+        }
+
+        .credit-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #4dff88;
+            color: #000;
+            font-weight: bold;
+            padding: 10px 16px;
+            border-radius: 10px;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .credit-btn:hover {
+            background: #67ff9c;
+        }
+
+        code {
+            display: block;
+            background: #2b0055;
+            border: 1px solid #4b2e83;
+            padding: 12px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            margin-top: 12px;
+            max-height: 300px;
+            overflow: auto;
+        }
+
+        .toggle {
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: #6c43b2;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .toggle.on {
+            background: #4dff88;
+            color: #000;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-<h1>Bruce JS Designer</h1>
-<canvas id="screen" width="320" height="170"></canvas>
+    <h1>Bruce JS Designer</h1>
 
-<div class="sliders">
-<label>Device<select id="device"></select></label>
-<label>Snap to Grid<button id="snapToggle" class="toggle">OFF</button></label>
-<label>Text<input type="text" id="text"></label>
-<label>Text Size<input type="range" id="textSize" min="1" max="8" step="1" value="2"></label>
-<label>Layer<select id="shapeSelect"></select></label>
-<label>File name<input type="text" id="fileName" value="app"></label>
-<label>Color<input type="color" id="color"></label>
-</div>
+    <canvas id="screen"></canvas>
 
-<div class="buttons">
-<button onclick="addItem('fillRect')">FillRect</button>
-<button onclick="addItem('rect')">Rect</button>
-<button onclick="addItem('line')">Line</button>
-<button onclick="addItem('circle')">Circle</button>
-<button onclick="addItem('fillCircle')">FillCircle</button>
-<button onclick="addItem('text')">Text</button>
-<button onclick="duplicateItem()">Duplicate</button>
-<button class="danger" onclick="deleteItem()">Delete</button>
-<button class="export" onclick="exportJS()">Export JS</button>
-</div>
+    <div class="sliders">
+        <label>Device
+            <select id="device"></select>
+        </label>
 
-<code id="code"></code>
+        <label>Snap to Grid
+            <button id="snapToggle" class="toggle">OFF</button>
+        </label>
 
-<div class="credits" style="position:fixed; bottom:8px; left:50%; transform:translateX(-50%); font-size:0.8rem; z-index:1000;">
-  <a href="https://discord.com/users/sloth110000" target="_blank" style="text-decoration:none; background:#4dff88; color:#000; padding:6px 12px; border-radius:8px; font-weight:bold;">
-    Made by SLOTH
-  </a>
+        <label>Text
+            <input type="text" id="text">
+        </label>
+
+        <label>Text Size
+            <input type="range" id="textSize" min="1" max="8" step="1" value="2">
+        </label>
+
+        <label>Layer
+            <select id="shapeSelect"></select>
+        </label>
+
+        <div class="layer-buttons">
+            <button id="layerUp">Forward</button>
+            <button id="layerDown">Backward</button>
+        </div>
+
+        <label>File name
+            <input type="text" id="fileName" value="app">
+        </label>
+
+        <label>Color
+            <input type="color" id="color">
+        </label>
+    </div>
+
+    <div class="buttons">
+        <button onclick="addItem('fillRect')">FillRect</button>
+        <button onclick="addItem('rect')">Rect</button>
+        <button onclick="addItem('line')">Line</button>
+        <button onclick="addItem('circle')">Circle</button>
+        <button onclick="addItem('fillCircle')">FillCircle</button>
+        <button onclick="addItem('text')">Text</button>
+        <button class="duplicate" onclick="duplicateItem()">Duplicate</button>
+        <button class="danger" onclick="deleteItem()">Delete</button>
+        <button class="export" onclick="exportJS()">Export JS</button>
+    </div>
+
+    <code id="code"></code>
+
+    <div class="credits" style="position:fixed; bottom:8px; left:50%; transform:translateX(-50%); font-size:0.8rem; z-index:1000;">
+        <a href="https://discord.com/users/sloth110000" target="_blank"
+           style="text-decoration:none; background:#4dff88; color:#000; padding:6px 12px; border-radius:8px; font-weight:bold;">
+            Made by SLOTH
+        </a>
+    </div>
 </div>
 
 <script>
-const canvas=document.getElementById("screen");
-const ctx=canvas.getContext("2d");
-const deviceSelect=document.getElementById("device");
-const shapeSelect=document.getElementById("shapeSelect");
-const textInput=document.getElementById("text");
-const textSizeInput=document.getElementById("textSize");
-const colorInput=document.getElementById("color");
-const code=document.getElementById("code");
-const snapToggle=document.getElementById("snapToggle");
+const canvas = document.getElementById("screen"),
+      ctx = canvas.getContext("2d"),
+      deviceSelect = document.getElementById("device"),
+      shapeSelect = document.getElementById("shapeSelect"),
+      textInput = document.getElementById("text"),
+      textSizeInput = document.getElementById("textSize"),
+      colorInput = document.getElementById("color"),
+      code = document.getElementById("code"),
+      snapToggle = document.getElementById("snapToggle"),
+      layerUpBtn = document.getElementById("layerUp"),
+      layerDownBtn = document.getElementById("layerDown");
 
-let items=[],selected=null,currentDevice,gridSize=10,snapOn=false;
-let dragging=null,resizing=false,resizeHandle=null,offsetX=0,offsetY=0,showGrid=false;
+let items = [],
+    selected = null,
+    currentDevice,
+    gridSize = 10,
+    snapOn = false,
+    dragging = null,
+    resizing = false,
+    resizeHandle = null,
+    offsetX = 0,
+    offsetY = 0,
+    showGrid = false;
 
-const devices={"M5StickC / M5Cardputer":[240,135],"LilyGO T-Embed":[320,170]};
+const devices = {
+    "M5Stack Cardputer/Adv/ StickC-Plus 1.1/StickC-Plus 2": [240, 135],
+    "M5Stack Core/Core2/CoreS3/SE": [320, 240],
+    "CYD-2432S028": [320, 240],
+    "CYD-3248S035": [480, 320],
+    "Lilygo T-Embed /CC1101/plus": [320, 170],
+    "Lilygo T-LoRa Pager": [480, 222],
+    "Lilygo T-Display-S3": [320, 170],
+    "Lilygo T-Deck (and Pro)": [320, 240],
+    "Lilygo T-Watch-S3": [240, 240]
+};
 
-function populateDeviceDropdown(){
-    deviceSelect.innerHTML="";
-    for(let n in devices){
-        let o=document.createElement("option");
-        o.value=n;
-        o.textContent=n;
+// Populate device dropdown
+function populateDeviceDropdown() {
+    deviceSelect.innerHTML = "";
+    for (let n in devices) {
+        let o = document.createElement("option");
+        o.value = n;
+        o.textContent = n;
         deviceSelect.appendChild(o);
     }
-    currentDevice=deviceSelect.value;
+    currentDevice = deviceSelect.value;
+    updateCanvasSize();
 }
 populateDeviceDropdown();
 
-snapToggle.addEventListener("click",()=>{
-    snapOn=!snapOn;
-    snapToggle.textContent=snapOn?"ON":"OFF";
-    snapToggle.classList.toggle("on",snapOn);
+// Update canvas size based on selected device
+function updateCanvasSize() {
+    const size = devices[currentDevice];
+    canvas.width = size[0];
+    canvas.height = size[1];
+    render();
+}
+
+// Snap toggle
+snapToggle.addEventListener("click", () => {
+    snapOn = !snapOn;
+    snapToggle.textContent = snapOn ? "ON" : "OFF";
+    snapToggle.classList.toggle("on", snapOn);
 });
 
-function getRandomColor(){let c="#";for(let i=0;i<6;i++)c+="0123456789ABCDEF"[Math.floor(Math.random()*16)];return c}
-function clamp(v,min,max){return Math.min(Math.max(v,min),max)}
+// Utilities
+function getRandomColor() {
+    let c = "#";
+    for (let i = 0; i < 6; i++) {
+        c += "0123456789ABCDEF"[Math.floor(Math.random() * 16)];
+    }
+    return c;
+}
 
-function addItem(t){
-    const o={type:t,x:40,y:40,w:40,h:40,size:2,color:getRandomColor(),text:"Hello"};
-    if(t.includes("circle")||t.includes("fillCircle")) o.w=o.h=20;
-    if(snapOn){o.x=Math.round(o.x/gridSize)*gridSize;o.y=Math.round(o.y/gridSize)*gridSize}
+function clamp(v, min, max) {
+    return Math.min(Math.max(v, min), max);
+}
+
+// Item management
+function addItem(t) {
+    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), text: "Hello" };
+    if (t.includes("circle") || t.includes("fillCircle")) o.w = o.h = 20;
+    if (snapOn) {
+        o.x = Math.round(o.x / gridSize) * gridSize;
+        o.y = Math.round(o.y / gridSize) * gridSize;
+    }
     items.push(o);
-    selected=o;
+    selected = o;
     updateLayerSelect();
     render();
 }
 
-function duplicateItem(){if(!selected)return;const o={...selected};o.x+=10;o.y+=10;if(snapOn){o.x=Math.round(o.x/gridSize)*gridSize;o.y=Math.round(o.y/gridSize)*gridSize}items.push(o);selected=o;updateLayerSelect();render()}
-function deleteItem(){if(!selected)return;items=items.filter(i=>i!==selected);selected=null;updateLayerSelect();render()}
+function duplicateItem() {
+    if (!selected) return;
+    const o = { ...selected };
+    o.x += 10;
+    o.y += 10;
+    if (snapOn) {
+        o.x = Math.round(o.x / gridSize) * gridSize;
+        o.y = Math.round(o.y / gridSize) * gridSize;
+    }
+    items.push(o);
+    selected = o;
+    updateLayerSelect();
+    render();
+}
 
-function render(){
-    ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,canvas.height);
+function deleteItem() {
+    if (!selected) return;
+    items = items.filter(i => i !== selected);
+    selected = null;
+    updateLayerSelect();
+    render();
+}
 
-    if(showGrid){
-        ctx.strokeStyle="#2b0055";ctx.lineWidth=0.5;
-        for(let x=0;x<=canvas.width;x+=gridSize){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}
-        for(let y=0;y<=canvas.height;y+=gridSize){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}
+// Layer control
+layerUpBtn.addEventListener("click", () => {
+    if (!selected) return;
+    const idx = items.indexOf(selected);
+    if (idx < items.length - 1) {
+        items.splice(idx, 1);
+        items.splice(idx + 1, 0, selected);
+    }
+    updateLayerSelect();
+    render();
+});
+
+layerDownBtn.addEventListener("click", () => {
+    if (!selected) return;
+    const idx = items.indexOf(selected);
+    if (idx > 0) {
+        items.splice(idx, 1);
+        items.splice(idx - 1, 0, selected);
+    }
+    updateLayerSelect();
+    render();
+});
+
+// Render function
+function render() {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Grid
+    if (showGrid) {
+        ctx.strokeStyle = "#2b0055";
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x <= Math.floor(canvas.width / gridSize) * gridSize; x += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+        }
+        for (let y = 0; y <= Math.floor(canvas.height / gridSize) * gridSize; y += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
     }
 
-    const W=canvas.width,H=canvas.height;
-
-    items.forEach(i=>{
+    // Draw items
+    items.forEach(i => {
         let iw = i.w, ih = i.h;
-        if(i.type==="text"){iw = ctx.measureText(i.text).width; ih = i.size*8;}
-        ctx.save();ctx.translate(i.x,i.y);ctx.strokeStyle=ctx.fillStyle=i.color;ctx.lineWidth=2;
+        if (i.type === "text") {
+            iw = ctx.measureText(i.text).width;
+            ih = i.size * 8;
+        }
 
-        if(i.type==="fillRect")ctx.fillRect(0,0,i.w,i.h);
-        if(i.type==="rect")ctx.strokeRect(0,0,i.w,i.h);
-        if(i.type==="line"){ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(i.w,i.h);ctx.stroke();}
-        if(i.type==="circle"){ctx.beginPath();ctx.arc(i.w/2,i.h/2,i.w/2,0,2*Math.PI);ctx.stroke();}
-        if(i.type==="fillCircle"){ctx.beginPath();ctx.arc(i.w/2,i.h/2,i.w/2,0,2*Math.PI);ctx.fill();}
-        if(i.type==="text"){ctx.font=`${i.size*8}px Arial`;ctx.fillText(i.text,0,ih/2+i.size*4);}
+        ctx.save();
+        ctx.translate(i.x, i.y);
+        ctx.strokeStyle = ctx.fillStyle = i.color;
+        ctx.lineWidth = 2;
 
-        if(i===selected){
-            ctx.strokeStyle="blue";ctx.lineWidth=1.5;
-            if(i.type==="text"){ctx.strokeRect(0,0,iw,ih);}
-            else{
-                ctx.strokeRect(0,0,i.w,i.h);
-                [{x:0,y:0},{x:i.w,y:0},{x:0,y:i.h},{x:i.w,y:i.h}].forEach(h=>{ctx.fillStyle="blue";ctx.beginPath();ctx.arc(h.x,h.y,5,0,2*Math.PI);ctx.fill();})
+        switch (i.type) {
+            case "fillRect":
+                ctx.fillRect(0, 0, i.w, i.h);
+                break;
+            case "rect":
+                ctx.strokeRect(0, 0, i.w, i.h);
+                break;
+            case "line":
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(i.w, i.h);
+                ctx.stroke();
+                break;
+            case "circle":
+                ctx.beginPath();
+                ctx.arc(i.w / 2, i.h / 2, i.w / 2, 0, 2 * Math.PI);
+                ctx.stroke();
+                break;
+            case "fillCircle":
+                ctx.beginPath();
+                ctx.arc(i.w / 2, i.h / 2, i.w / 2, 0, 2 * Math.PI);
+                ctx.fill();
+                break;
+            case "text":
+                ctx.font = `${i.size * 8}px Arial`;
+                ctx.fillText(i.text, 0, ih / 2 + i.size * 4);
+                break;
+        }
+
+        // Selected outline
+        if (i === selected) {
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 1.5;
+
+            if (i.type === "text") {
+                const iw = ctx.measureText(i.text).width;
+                const ih = i.size * 8;
+                ctx.strokeRect(0, 0, iw, ih);
+            } else {
+                ctx.strokeRect(0, 0, i.w, i.h);
+                [{ x: 0, y: 0 }, { x: i.w, y: 0 }, { x: 0, y: i.h }, { x: i.w, y: i.h }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
             }
         }
+
         ctx.restore();
     });
 
@@ -149,122 +464,265 @@ function render(){
     generateCode();
 }
 
-function getMousePos(e){
-    const r=canvas.getBoundingClientRect();
-    return {x:e.touches?e.touches[0].clientX-r.left:e.clientX-r.left,y:e.touches?e.touches[0].clientY-r.top:e.clientY-r.top};
-}
-
-// --- Fixed drag & resize ---
+// Mouse & touch events
 canvas.addEventListener("mousedown", startDrag);
-canvas.addEventListener("touchstart", startDrag,{passive:false});
+canvas.addEventListener("touchstart", startDrag, { passive: false });
 document.addEventListener("mousemove", drag);
-document.addEventListener("touchmove", drag,{passive:false});
+document.addEventListener("touchmove", drag, { passive: false });
 document.addEventListener("mouseup", stopDrag);
 document.addEventListener("touchend", stopDrag);
 
-function startDrag(e){
+function getMousePos(e) {
+    const r = canvas.getBoundingClientRect();
+    return {
+        x: e.touches ? e.touches[0].clientX - r.left : e.clientX - r.left,
+        y: e.touches ? e.touches[0].clientY - r.top : e.clientY - r.top
+    };
+}
+
+function startDrag(e) {
     const p = getMousePos(e);
     showGrid = false;
     selected = null;
 
-    for(let i=items.length-1;i>=0;i--){
+    for (let i = items.length - 1; i >= 0; i--) {
         const it = items[i];
         let iw = it.w, ih = it.h;
-        if(it.type === "text"){
-            const m = ctx.measureText(it.text);
-            iw = m.width;
-            ih = it.size*8;
+        if (it.type === "text") {
+            iw = ctx.measureText(it.text).width;
+            ih = it.size * 8;
         }
 
         const corners = it.type !== "text" ? [
-            {name:'tl',x:it.x-5,y:it.y-5},
-            {name:'tr',x:it.x+it.w-5,y:it.y-5},
-            {name:'bl',x:it.x-5,y:it.y+it.h-5},
-            {name:'br',x:it.x+it.w-5,y:it.y+it.h-5}
+            { name: 'tl', x: it.x - 5, y: it.y - 5 },
+            { name: 'tr', x: it.x + it.w - 5, y: it.y - 5 },
+            { name: 'bl', x: it.x - 5, y: it.y + it.h - 5 },
+            { name: 'br', x: it.x + it.w - 5, y: it.y + it.h - 5 }
         ] : [];
 
-        for(let h of corners){
-            if(p.x >= h.x && p.x <= h.x+10 && p.y >= h.y && p.y <= h.y+10){
-                dragging = it; resizing = true; resizeHandle = h.name;
-                selected = it; showGrid = true; updateLayerSelect(); render();
+        for (let h of corners) {
+            if (p.x >= h.x && p.x <= h.x + 10 && p.y >= h.y && p.y <= h.y + 10) {
+                dragging = it;
+                resizing = true;
+                resizeHandle = h.name;
+                selected = it;
+                showGrid = true;
+                updateLayerSelect();
+                render();
                 return;
             }
         }
 
-        if(p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih){
-            dragging = it; offsetX = p.x - it.x; offsetY = p.y - it.y;
-            selected = it; showGrid = true; updateLayerSelect(); render();
+        if (p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih) {
+            dragging = it;
+            offsetX = p.x - it.x;
+            offsetY = p.y - it.y;
+            selected = it;
+            showGrid = true;
+            updateLayerSelect();
+            render();
             return;
         }
     }
 }
 
-function drag(e){
-    if(!dragging) return;
+function drag(e) {
+    if (!dragging) return;
     e.preventDefault();
+
     const p = getMousePos(e);
 
-    if(resizing){
-        let nx=dragging.x,ny=dragging.y,nw=dragging.w,nh=dragging.h,mn=5;
-        if(resizeHandle.includes('t')){ny=Math.min(p.y,dragging.y+dragging.h-mn);nh=dragging.h+(dragging.y-ny);}
-        if(resizeHandle.includes('b')){nh=Math.max(mn,p.y-dragging.y);}
-        if(resizeHandle.includes('l')){nx=Math.min(p.x,dragging.x+dragging.w-mn);nw=dragging.w+(dragging.x-nx);}
-        if(resizeHandle.includes('r')){nw=Math.max(mn,p.x-dragging.x);}
-        nx=clamp(nx,0,canvas.width-nw);ny=clamp(ny,0,canvas.height-nh);nw=clamp(nw,mn,canvas.width-nx);nh=clamp(nh,mn,canvas.height-ny);
-        if(snapOn){dragging.x=Math.round(nx/gridSize)*gridSize;dragging.y=Math.round(ny/gridSize)*gridSize;dragging.w=Math.round(nw/gridSize)*gridSize;dragging.h=Math.round(nh/gridSize)*gridSize;}
-        else{dragging.x=nx;dragging.y=ny;dragging.w=nw;dragging.h=nh;}
+    if (resizing) {
+        let nx = dragging.x,
+            ny = dragging.y,
+            nw = dragging.w,
+            nh = dragging.h,
+            mn = 5;
+
+        if (resizeHandle.includes('t')) {
+            ny = Math.min(p.y, dragging.y + dragging.h - mn);
+            nh = dragging.h + (dragging.y - ny);
+        }
+        if (resizeHandle.includes('b')) nh = Math.max(mn, p.y - dragging.y);
+        if (resizeHandle.includes('l')) {
+            nx = Math.min(p.x, dragging.x + dragging.w - mn);
+            nw = dragging.w + (dragging.x - nx);
+        }
+        if (resizeHandle.includes('r')) nw = Math.max(mn, p.x - dragging.x);
+
+        nx = clamp(nx, 0, canvas.width - nw);
+        ny = clamp(ny, 0, canvas.height - nh);
+        nw = clamp(nw, mn, canvas.width - nx);
+        nh = clamp(nh, mn, canvas.height - ny);
+
+        if (snapOn) {
+            dragging.x = Math.round(nx / gridSize) * gridSize;
+            dragging.y = Math.round(ny / gridSize) * gridSize;
+            dragging.w = Math.round(nw / gridSize) * gridSize;
+            dragging.h = Math.round(nh / gridSize) * gridSize;
+        } else {
+            dragging.x = nx;
+            dragging.y = ny;
+            dragging.w = nw;
+            dragging.h = nh;
+        }
     } else {
-        let nx = p.x - offsetX, ny = p.y - offsetY;
-        if(snapOn){nx=Math.round(nx/gridSize)*gridSize;ny=Math.round(ny/gridSize)*gridSize;}
-        dragging.x = clamp(nx,0,canvas.width-dragging.w); dragging.y = clamp(ny,0,canvas.height-dragging.h);
+        let nx = p.x - offsetX;
+        let ny = p.y - offsetY;
+
+        if (snapOn) {
+            nx = Math.round(nx / gridSize) * gridSize;
+            ny = Math.round(ny / gridSize) * gridSize;
+        }
+
+        if (selected && selected.type === "text") {
+            selected.x = clamp(nx, 0, canvas.width - selected.w);
+            selected.y = clamp(ny, 0, canvas.height - selected.h);
+        } else {
+            dragging.x = clamp(nx, 0, canvas.width - dragging.w);
+            dragging.y = clamp(ny, 0, canvas.height - dragging.h);
+        }
     }
-    showGrid=true;render();
+
+    showGrid = true;
+    render();
 }
 
-function stopDrag(){dragging=null;resizing=false;resizeHandle=null;showGrid=false;render()}
+function stopDrag() {
+    dragging = null;
+    resizing = false;
+    resizeHandle = null;
+    showGrid = false;
+    render();
+}
 
-// --- UI sync & layer ---
-function updateLayerSelect(){shapeSelect.innerHTML="";items.forEach((i,idx)=>{let o=document.createElement("option");o.value=idx;o.text=`${i.type} ${idx+1}`;if(i===selected)o.selected=true;shapeSelect.appendChild(o)})}
-shapeSelect.onchange=e=>{selected=items[e.target.value];render();}
-function syncUI(){if(!selected)return;textInput.value=selected.text;colorInput.value=selected.color;if(selected.type==="text")textSizeInput.value=selected.size}
-textInput.addEventListener("input",()=>{if(selected){selected.text=textInput.value;render()}})
-colorInput.addEventListener("input",()=>{if(selected){selected.color=colorInput.value;render()}})
-textSizeInput.addEventListener("input",()=>{if(selected&&selected.type==="text"){selected.size=parseInt(textSizeInput.value);render()}})
-
-function rgb(h){h=h.replace("#","");return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)]}
-
-function generateCode(){
-    const dev=devices[currentDevice];
-    const W=dev[0],H=dev[1];
-    let out=`// Device: ${currentDevice}\n// Made using Bruce JS Designer\n`;
-    out+=`const keyboard = require('keyboard');\n`;
-    out+=`const display = require('display');\n`;
-    out+=`const sprite = display.createSprite();\n\n`;
-    out+=`while(true) {\n`;
-    out+=`    if(keyboard.getEscPress(true)) break;\n`;
-    out+=`    sprite.fill(0);\n\n`;
-    items.forEach(i=>{
-        const sx=W/canvas.width, sy=H/canvas.height;
-        const x=Math.round(i.x*sx), y=Math.round(i.y*sy), w=Math.round(i.w*sx), h=Math.round(i.h*sy);
-        const c = rgb(i.color).join(',');
-        if(i.type==="fillRect") out += `    sprite.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
-        if(i.type==="rect") out += `    sprite.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
-        if(i.type==="line") out += `    sprite.drawLine(${x}, ${y}, ${x+w}, ${y+h}, display.color(${c}));\n`;
-        if(i.type==="circle") out += `    sprite.drawCircle(${x+Math.floor(w/2)}, ${y+Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;
-        if(i.type==="fillCircle") out += `    sprite.drawFillCircle(${x+Math.floor(w/2)}, ${y+Math.floor(h/2)}, ${Math.floor(w/2)}, display.color(${c}));\n`;
-        if(i.type==="text") out += `    sprite.setTextSize(${i.size});\n    sprite.setTextColor(${c});\n    sprite.drawText("${i.text}", ${x}, ${y});\n`;
+// Layer dropdown
+function updateLayerSelect() {
+    shapeSelect.innerHTML = "";
+    items.forEach((i, idx) => {
+        let o = document.createElement("option");
+        o.value = idx;
+        o.text = `${i.type} ${idx + 1}`;
+        if (i === selected) o.selected = true;
+        shapeSelect.appendChild(o);
     });
-    out+=`    sprite.pushSprite();\n`;
-    out+=`}\n`;
-    code.textContent=out;
 }
 
-function exportJS(){const name=document.getElementById("fileName").value||"app";const blob=new Blob([code.textContent],{type:"text/javascript"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name+".js";a.click()}
+shapeSelect.onchange = e => {
+    selected = items[e.target.value];
+    render();
+};
 
-deviceSelect.addEventListener("change",()=>{currentDevice=deviceSelect.value;generateCode()})
+// UI sync
+function syncUI() {
+    if (!selected) return;
+    textInput.value = selected.text;
+    colorInput.value = selected.color;
+    if (selected.type === "text") textSizeInput.value = selected.size;
+}
 
-render();
-updateLayerSelect();
+textInput.addEventListener("input", () => {
+    if (selected && selected.type === "text") {
+        selected.text = textInput.value;
+        render();
+    }
+});
+
+colorInput.addEventListener("input", () => {
+    if (selected) {
+        selected.color = colorInput.value;
+        render();
+    }
+});
+
+textSizeInput.addEventListener("input", () => {
+    if (selected && selected.type === "text") {
+        selected.size = parseInt(textSizeInput.value);
+        render();
+    }
+});
+
+// Color utility
+function rgb(h) {
+    h = h.replace("#", "");
+    return [
+        parseInt(h.substr(0, 2), 16),
+        parseInt(h.substr(2, 2), 16),
+        parseInt(h.substr(4, 2), 16)
+    ];
+}
+
+// Code generation
+function generateCode() {
+    const dev = devices[currentDevice];
+    const W = dev[0], H = dev[1];
+
+    let out = `const keyboard = require('keyboard');
+const display = require('display');
+    
+const sprite = display.createSprite()
+    
+while(true){
+
+if(keyboard.getEscPress(true)) 
+break;
+
+sprite.fill(0);
+\n`;
+ 
+
+    items.forEach(i => {
+        const sx = W / canvas.width,
+              sy = H / canvas.height;
+        const x = Math.round(i.x * sx),
+              y = Math.round(i.y * sy),
+              w = Math.round(i.w * sx),
+              h = Math.round(i.h * sy);
+        const c = rgb(i.color).join(',');
+
+        switch (i.type) {
+            case "fillRect":
+                out += `sprite.drawFillRect(${x},${y},${w},${h},display.color(${c}));\n`;
+                break;
+            case "rect":
+                out += `sprite.drawRect(${x},${y},${w},${h},display.color(${c}));\n`;
+                break;
+            case "line":
+                out += `sprite.drawLine(${x},${y},${x + w},${y + h},display.color(${c}));\n`;
+                break;
+            case "circle":
+                out += `sprite.drawCircle(${x + Math.floor(w / 2)},${y + Math.floor(h / 2)},${Math.floor(w / 2)},display.color(${c}));\n`;
+                break;
+            case "fillCircle":
+                out += `sprite.drawFillCircle(${x + Math.floor(w / 2)},${y + Math.floor(h / 2)},${Math.floor(w / 2)},display.color(${c}));\n`;
+                break;
+            case "text":
+                out += `sprite.setTextSize(${i.size});
+sprite.setTextColor(${c});
+sprite.drawText("${i.text}",${x},${y});\n`;
+                break;
+        }
+    });
+
+    out += `\nsprite.pushSprite();\n}`;
+    code.textContent = out;
+}
+function exportJS() {
+        const name = document.getElementById("fileName").value || "app";
+        const blob = new Blob([code.textContent], { type: "text/javascript" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = name + ".js";
+        a.click();
+    }
+
+    deviceSelect.addEventListener("change", () => {
+        currentDevice = deviceSelect.value;
+        updateCanvasSize();
+    });
+
+    render();
+    updateLayerSelect();
 </script>
 </body>
-  </html>
+</html>

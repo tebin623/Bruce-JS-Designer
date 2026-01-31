@@ -270,7 +270,6 @@ const devices = {
     "Lilygo T-Watch-S3": [240, 240]
 };
 
-// Populate device dropdown
 function populateDeviceDropdown() {
     deviceSelect.innerHTML = "";
     for (let n in devices) {
@@ -284,7 +283,7 @@ function populateDeviceDropdown() {
 }
 populateDeviceDropdown();
 
-// Update canvas size based on selected device
+
 function updateCanvasSize() {
     const size = devices[currentDevice];
     canvas.width = size[0];
@@ -292,14 +291,14 @@ function updateCanvasSize() {
     render();
 }
 
-// Snap toggle
+
 snapToggle.addEventListener("click", () => {
     snapOn = !snapOn;
     snapToggle.textContent = snapOn ? "ON" : "OFF";
     snapToggle.classList.toggle("on", snapOn);
 });
 
-// Utilities
+
 function getRandomColor() {
     let c = "#";
     for (let i = 0; i < 6; i++) {
@@ -312,7 +311,7 @@ function clamp(v, min, max) {
     return Math.min(Math.max(v, min), max);
 }
 
-// Item management
+
 function addItem(t) {
     const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), text: "Hello" };
     if (t.includes("circle") || t.includes("fillCircle")) o.w = o.h = 20;
@@ -349,7 +348,7 @@ function deleteItem() {
     render();
 }
 
-// Layer control
+
 layerUpBtn.addEventListener("click", () => {
     if (!selected) return;
     const idx = items.indexOf(selected);
@@ -372,12 +371,12 @@ layerDownBtn.addEventListener("click", () => {
     render();
 });
 
-// Render function
+
 function render() {
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Grid
+    
     if (showGrid) {
         ctx.strokeStyle = "#2b0055";
         ctx.lineWidth = 0.5;
@@ -395,7 +394,7 @@ function render() {
         }
     }
 
-    // Draw items
+    
     items.forEach(i => {
         let iw = i.w, ih = i.h;
         if (i.type === "text") {
@@ -437,7 +436,7 @@ function render() {
                 break;
         }
 
-        // Selected outline
+        
         if (i === selected) {
             ctx.strokeStyle = "blue";
             ctx.lineWidth = 1.5;
@@ -464,7 +463,7 @@ function render() {
     generateCode();
 }
 
-// Mouse & touch events
+
 canvas.addEventListener("mousedown", startDrag);
 canvas.addEventListener("touchstart", startDrag, { passive: false });
 document.addEventListener("mousemove", drag);
@@ -596,7 +595,7 @@ function stopDrag() {
     render();
 }
 
-// Layer dropdown
+
 function updateLayerSelect() {
     shapeSelect.innerHTML = "";
     items.forEach((i, idx) => {
@@ -613,7 +612,7 @@ shapeSelect.onchange = e => {
     render();
 };
 
-// UI sync
+
 function syncUI() {
     if (!selected) return;
     textInput.value = selected.text;
@@ -642,7 +641,7 @@ textSizeInput.addEventListener("input", () => {
     }
 });
 
-// Color utility
+
 function rgb(h) {
     h = h.replace("#", "");
     return [
@@ -652,19 +651,22 @@ function rgb(h) {
     ];
 }
 
-// Code generation
+
 function generateCode() {
     const dev = devices[currentDevice];
     const W = dev[0], H = dev[1];
 
-    let out = `const keyboard = require('keyboard');
+    let out = `// Device: ${currentDevice}
+// Made with: Bruce JS designer
+
+const keyboard = require('keyboard');
 const display = require('display');
-    
-const sprite = display.createSprite()
-    
+
+const sprite = display.createSprite();
+
 while(true){
 
-if(keyboard.getEscPress(true)) 
+if(keyboard.getEscPress(true))
 break;
 
 sprite.fill(0);

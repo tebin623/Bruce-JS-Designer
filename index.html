@@ -110,7 +110,7 @@
         }
 
         .buttons button {
-            flex: 1 1 160px;
+            flex: 1 1 200px;
             padding: 10px 4px;
             border: none;
             border-radius: 10px;
@@ -263,6 +263,7 @@
         <button onclick="addItem('fillCircle')">FillCircle</button>
         <button onclick="addItem('arc')">Arc</button>
         <button onclick="addItem('text')">Text</button>
+        <button onclick="addItem('pixel')">Pixel</button>
     </div>
 
     <div class="buttons">
@@ -662,6 +663,11 @@ function addItem(t) {
         o.x2 = o.x + o.w/2;
         o.y2 = o.y + o.h;
     }
+    if (t === "pixel") {
+        // Pixel is 1x1
+        o.w = 1;
+        o.h = 1;
+    }
     if (snapOn !== altHeld) {
         o.x = Math.round(o.x / gridSize) * gridSize;
         o.y = Math.round(o.y / gridSize) * gridSize;
@@ -961,6 +967,10 @@ function render() {
                 ctx.fillText(i.text, -2, (textHeight / fontScale) / 2 + i.size*3);
                 ctx.restore(); // Reset the vertical scaling
                 break;
+            case "pixel":
+                ctx.fillStyle = i.color;
+                ctx.fillRect(0, 0, 1, 1);
+                break;
         }
 
         
@@ -1031,6 +1041,12 @@ function render() {
                     ctx.fillStyle = "red";
                     ctx.fill();
                 });
+            } else if (i.type === "pixel") {
+                // For pixels, show just one small handle in the center
+                ctx.beginPath();
+                ctx.arc(0.5, 0.5, 3, 0, 2 * Math.PI);
+                ctx.fillStyle = "blue";
+                ctx.fill();
             } else {
                 ctx.strokeRect(0, 0, i.w, i.h);
                 [{ x: 0, y: 0 }, { x: i.w, y: 0 }, { x: 0, y: i.h }, { x: i.w, y: i.h }].forEach(h => {
@@ -1276,7 +1292,7 @@ function startDrag(e) {
                 return;
             }
         } else {
-            const corners = it.type !== "text" ? [
+            const corners = (it.type !== "text" && it.type !== "pixel") ? [
                 { name: 'tl', x: it.x - 5, y: it.y - 5 },
                 { name: 'tr', x: it.x + it.w - 5, y: it.y - 5 },
                 { name: 'bl', x: it.x - 5, y: it.y + it.h - 5 },
@@ -1297,7 +1313,20 @@ function startDrag(e) {
                 }
             }
 
-            if (p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih) {
+            // Special handling for pixel selection - 5px area around pixel
+            if (it.type === "pixel") {
+                if (p.x >= it.x - 5 && p.x <= it.x + 5 && p.y >= it.y - 5 && p.y <= it.y + 5) {
+                    dragging = it;
+                    offsetX = p.x - it.x;
+                    offsetY = p.y - it.y;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            } else if (p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih) {
                 dragging = it;
                 offsetX = p.x - it.x;
                 offsetY = p.y - it.y;
@@ -2343,6 +2372,9 @@ ${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}
 ${outputPrefix}.setTextColor(${textColorCode}${bgColorCode});
 ${outputPrefix}.drawText("${i.text}", ${x}, ${y});\n`;
                 break;
+            case "pixel":
+                out += `${outputPrefix}.drawPixel(${x}, ${y}, display.color(${c}));\n`;
+                break;
         }
     });
 
@@ -2491,7 +2523,8 @@ function exportJS() {
             ['"fastHLine"', '"fH"'],
             ['"fastVLine"', '"fV"'],
             ['"roundRect"', '"rR"'],
-            ['"fillRoundRect"', '"fRR"']
+            ['"fillRoundRect"', '"fRR"'],
+            ['"pixel"', '"p"']
         ];
         
         replacements.forEach(([from, to]) => {
@@ -2631,7 +2664,8 @@ function exportJS() {
                         ['"fH"', '"fastHLine"'],
                         ['"fV"', '"fastVLine"'],
                         ['"rR"', '"roundRect"'],
-                        ['"fRR"', '"fillRoundRect"']
+                        ['"fRR"', '"fillRoundRect"'],
+                        ['"p"', '"pixel"']
                     ];
                     
                     replacements.forEach(([from, to]) => {

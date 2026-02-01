@@ -818,24 +818,26 @@ function render() {
                 ctx.fillRect(0, 0, i.w, i.h);
                 break;
             case "rect":
-                ctx.strokeRect(0, 0, i.w, i.h);
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0.5, 0.5, i.w - 1, i.h - 1);
                 break;
             case "roundRect":
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 if (ctx.roundRect) {
-                    ctx.roundRect(0, 0, i.w, i.h, i.radius || 5);
+                    ctx.roundRect(0.5, 0.5, i.w - 1, i.h - 1, i.radius || 5);
                 } else {
                     // Fallback for browsers without roundRect support
-                    const r = Math.min(i.radius || 5, i.w / 2, i.h / 2);
-                    ctx.moveTo(r, 0);
-                    ctx.lineTo(i.w - r, 0);
-                    ctx.quadraticCurveTo(i.w, 0, i.w, r);
-                    ctx.lineTo(i.w, i.h - r);
-                    ctx.quadraticCurveTo(i.w, i.h, i.w - r, i.h);
-                    ctx.lineTo(r, i.h);
-                    ctx.quadraticCurveTo(0, i.h, 0, i.h - r);
-                    ctx.lineTo(0, r);
-                    ctx.quadraticCurveTo(0, 0, r, 0);
+                    const r = Math.min(i.radius || 5, (i.w - 1) / 2, (i.h - 1) / 2);
+                    ctx.moveTo(r + 0.5, 0.5);
+                    ctx.lineTo(i.w - r - 0.5, 0.5);
+                    ctx.quadraticCurveTo(i.w - 0.5, 0.5, i.w - 0.5, r + 0.5);
+                    ctx.lineTo(i.w - 0.5, i.h - r - 0.5);
+                    ctx.quadraticCurveTo(i.w - 0.5, i.h - 0.5, i.w - r - 0.5, i.h - 0.5);
+                    ctx.lineTo(r + 0.5, i.h - 0.5);
+                    ctx.quadraticCurveTo(0.5, i.h - 0.5, 0.5, i.h - r - 0.5);
+                    ctx.lineTo(0.5, r + 0.5);
+                    ctx.quadraticCurveTo(0.5, 0.5, r + 0.5, 0.5);
                 }
                 ctx.stroke();
                 break;
@@ -888,8 +890,8 @@ function render() {
                 ctx.strokeStyle = i.color;
                 ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.moveTo(i.x, i.y);
-                ctx.lineTo(i.x + i.w, i.y);
+                ctx.moveTo(i.x, i.y + 0.5);
+                ctx.lineTo(i.x + i.w, i.y + 0.5);
                 ctx.stroke();
                 break;
             case "fastVLine":
@@ -899,8 +901,8 @@ function render() {
                 ctx.strokeStyle = i.color;
                 ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.moveTo(i.x, i.y);
-                ctx.lineTo(i.x, i.y + i.h);
+                ctx.moveTo(i.x + 0.5, i.y);
+                ctx.lineTo(i.x + 0.5, i.y + i.h);
                 ctx.stroke();
                 break;
             case "triangle":
@@ -908,7 +910,7 @@ function render() {
                 ctx.restore(); // Restore to avoid translation
                 ctx.save();
                 ctx.strokeStyle = i.color;
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(i.x0, i.y0);
                 ctx.lineTo(i.x1, i.y1);
@@ -949,6 +951,7 @@ function render() {
                 ctx.fill();
                 break;
             case "circle":
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 // Draw circle at radius
                 const circleRadius = i.radius || 10;
@@ -1000,7 +1003,7 @@ function render() {
                 const iw = ctx.measureText(i.text).width - i.size;
                 const ih = (ctx.measureText(i.text).actualBoundingBoxAscent + ctx.measureText(i.text).actualBoundingBoxDescent) * fontScale;
                 ctx.restore();
-                ctx.strokeRect(0, 0, iw, ih);
+                ctx.strokeRect(0.5, 0.5, iw - 1, ih - 1);
             } else if (i.type === "line" || i.type === "wideLine") {
                 // For lines, show handles at start and end points
                 ctx.restore(); // Restore to avoid translation
@@ -1047,7 +1050,7 @@ function render() {
                 ctx.save();
                 
                 // Draw bounding box
-                ctx.strokeRect(i.x, i.y, i.w, i.h);
+                ctx.strokeRect(i.x + 0.5, i.y + 0.5, i.w - 1, i.h - 1);
                 
                 // Bounding box corner handles (for radius adjustment)
                 [{ x: i.x, y: i.y }, { x: i.x + i.w, y: i.y }, { x: i.x, y: i.y + i.h }, { x: i.x + i.w, y: i.y + i.h }].forEach(h => {
@@ -1083,7 +1086,7 @@ function render() {
                 ctx.fillStyle = "blue";
                 ctx.fill();
             } else {
-                ctx.strokeRect(0, 0, i.w, i.h);
+                ctx.strokeRect(0.5, 0.5, i.w - 1, i.h - 1);
                 [{ x: 0, y: 0 }, { x: i.w, y: 0 }, { x: 0, y: i.h }, { x: i.w, y: i.h }].forEach(h => {
                     ctx.beginPath();
                     ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);

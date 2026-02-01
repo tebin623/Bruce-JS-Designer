@@ -345,9 +345,18 @@ function clamp(v, min, max) {
 function addItem(t) {
     const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), text: "Hello" };
     if (t.includes("circle") || t.includes("fillCircle")) o.w = o.h = 20;
+    if (t === "line") {
+        // For lines, use x,y as start point and x2,y2 as end point
+        o.x2 = o.x + o.w;
+        o.y2 = o.y + o.h;
+    }
     if (snapOn) {
         o.x = Math.round(o.x / gridSize) * gridSize;
         o.y = Math.round(o.y / gridSize) * gridSize;
+        if (o.x2 !== undefined) {
+            o.x2 = Math.round(o.x2 / gridSize) * gridSize;
+            o.y2 = Math.round(o.y2 / gridSize) * gridSize;
+        }
     }
     items.push(o);
     selected = o;
@@ -360,9 +369,17 @@ function duplicateItem() {
     const o = { ...selected };
     o.x += 10;
     o.y += 10;
+    if (o.type === "line") {
+        o.x2 += 10;
+        o.y2 += 10;
+    }
     if (snapOn) {
         o.x = Math.round(o.x / gridSize) * gridSize;
         o.y = Math.round(o.y / gridSize) * gridSize;
+        if (o.x2 !== undefined) {
+            o.x2 = Math.round(o.x2 / gridSize) * gridSize;
+            o.y2 = Math.round(o.y2 / gridSize) * gridSize;
+        }
     }
     items.push(o);
     selected = o;
@@ -459,9 +476,14 @@ function render() {
                 ctx.strokeRect(0, 0, i.w, i.h);
                 break;
             case "line":
+                // Draw line using absolute coordinates
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.lineTo(i.w, i.h);
+                ctx.moveTo(i.x, i.y);
+                ctx.lineTo(i.x2, i.y2);
                 ctx.stroke();
                 break;
             case "circle":
@@ -489,6 +511,16 @@ function render() {
                 const iw = ctx.measureText(i.text).width;
                 const ih = i.size * 8;
                 ctx.strokeRect(0, 0, iw, ih);
+            } else if (i.type === "line") {
+                // For lines, show handles at start and end points
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                [{ x: i.x, y: i.y }, { x: i.x2, y: i.y2 }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
             } else {
                 ctx.strokeRect(0, 0, i.w, i.h);
                 [{ x: 0, y: 0 }, { x: i.w, y: 0 }, { x: 0, y: i.h }, { x: i.w, y: i.h }].forEach(h => {
@@ -539,35 +571,85 @@ function startDrag(e) {
             ih = it.size * 8;
         }
 
-        const corners = it.type !== "text" ? [
-            { name: 'tl', x: it.x - 5, y: it.y - 5 },
-            { name: 'tr', x: it.x + it.w - 5, y: it.y - 5 },
-            { name: 'bl', x: it.x - 5, y: it.y + it.h - 5 },
-            { name: 'br', x: it.x + it.w - 5, y: it.y + it.h - 5 }
-        ] : [];
+        if (it.type === "line") {
+            // Check line endpoints first
+            const points = [
+                { name: 'start', x: it.x - 5, y: it.y - 5 },
+                { name: 'end', x: it.x2 - 5, y: it.y2 - 5 }
+            ];
+            
+            for (let point of points) {
+                if (p.x >= point.x && p.x <= point.x + 10 && p.y >= point.y && p.y <= point.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = point.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking near the line itself
+            const lineLength = Math.sqrt((it.x2 - it.x) ** 2 + (it.y2 - it.y) ** 2);
+            if (lineLength > 0) {
+                const tolerance = 5;
+                const a = it.y2 - it.y;
+                const b = it.x - it.x2;
+                const c = it.x2 * it.y - it.x * it.y2;
+                const distance = Math.abs(a * p.x + b * p.y + c) / Math.sqrt(a * a + b * b);
+                
+                if (distance <= tolerance) {
+                    // Check if point is within line segment bounds
+                    const minX = Math.min(it.x, it.x2) - tolerance;
+                    const maxX = Math.max(it.x, it.x2) + tolerance;
+                    const minY = Math.min(it.y, it.y2) - tolerance;
+                    const maxY = Math.max(it.y, it.y2) + tolerance;
+                    
+                    if (p.x >= minX && p.x <= maxX && p.y >= minY && p.y <= maxY) {
+                        dragging = it;
+                        offsetX = p.x - it.x;
+                        offsetY = p.y - it.y;
+                        selected = it;
+                        showGrid = true;
+                        updateLayerSelect();
+                        render();
+                        return;
+                    }
+                }
+            }
+        } else {
+            const corners = it.type !== "text" ? [
+                { name: 'tl', x: it.x - 5, y: it.y - 5 },
+                { name: 'tr', x: it.x + it.w - 5, y: it.y - 5 },
+                { name: 'bl', x: it.x - 5, y: it.y + it.h - 5 },
+                { name: 'br', x: it.x + it.w - 5, y: it.y + it.h - 5 }
+            ] : [];
 
-        for (let h of corners) {
-            if (p.x >= h.x && p.x <= h.x + 10 && p.y >= h.y && p.y <= h.y + 10) {
+            for (let h of corners) {
+                if (p.x >= h.x && p.x <= h.x + 10 && p.y >= h.y && p.y <= h.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = h.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    render();
+                    return;
+                }
+            }
+
+            if (p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih) {
                 dragging = it;
-                resizing = true;
-                resizeHandle = h.name;
+                offsetX = p.x - it.x;
+                offsetY = p.y - it.y;
                 selected = it;
                 showGrid = true;
                 updateLayerSelect();
                 render();
                 return;
             }
-        }
-
-        if (p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih) {
-            dragging = it;
-            offsetX = p.x - it.x;
-            offsetY = p.y - it.y;
-            selected = it;
-            showGrid = true;
-            updateLayerSelect();
-            render();
-            return;
         }
     }
 }
@@ -579,54 +661,82 @@ function drag(e) {
     const p = getMousePos(e);
 
     if (resizing) {
-        let nx = dragging.x,
-            ny = dragging.y,
-            nw = dragging.w,
-            nh = dragging.h,
-            mn = 5;
-
-        if (resizeHandle.includes('t')) {
-            ny = Math.min(p.y, dragging.y + dragging.h - mn);
-            nh = dragging.h + (dragging.y - ny);
-        }
-        if (resizeHandle.includes('b')) nh = Math.max(mn, p.y - dragging.y);
-        if (resizeHandle.includes('l')) {
-            nx = Math.min(p.x, dragging.x + dragging.w - mn);
-            nw = dragging.w + (dragging.x - nx);
-        }
-        if (resizeHandle.includes('r')) nw = Math.max(mn, p.x - dragging.x);
-
-        nx = clamp(nx, 0, canvas.width - nw);
-        ny = clamp(ny, 0, canvas.height - nh);
-        nw = clamp(nw, mn, canvas.width - nx);
-        nh = clamp(nh, mn, canvas.height - ny);
-
-        if (snapOn) {
-            dragging.x = Math.round(nx / gridSize) * gridSize;
-            dragging.y = Math.round(ny / gridSize) * gridSize;
-            dragging.w = Math.round(nw / gridSize) * gridSize;
-            dragging.h = Math.round(nh / gridSize) * gridSize;
+        if (dragging.type === "line") {
+            // Handle line point dragging
+            if (resizeHandle === 'start') {
+                dragging.x = snapOn ? Math.round(p.x / gridSize) * gridSize : p.x;
+                dragging.y = snapOn ? Math.round(p.y / gridSize) * gridSize : p.y;
+            } else if (resizeHandle === 'end') {
+                dragging.x2 = snapOn ? Math.round(p.x / gridSize) * gridSize : p.x;
+                dragging.y2 = snapOn ? Math.round(p.y / gridSize) * gridSize : p.y;
+            }
         } else {
-            dragging.x = nx;
-            dragging.y = ny;
-            dragging.w = nw;
-            dragging.h = nh;
+            // Handle other shapes resizing
+            let nx = dragging.x,
+                ny = dragging.y,
+                nw = dragging.w,
+                nh = dragging.h,
+                mn = 5;
+
+            if (resizeHandle.includes('t')) {
+                ny = Math.min(p.y, dragging.y + dragging.h - mn);
+                nh = dragging.h + (dragging.y - ny);
+            }
+            if (resizeHandle.includes('b')) nh = Math.max(mn, p.y - dragging.y);
+            if (resizeHandle.includes('l')) {
+                nx = Math.min(p.x, dragging.x + dragging.w - mn);
+                nw = dragging.w + (dragging.x - nx);
+            }
+            if (resizeHandle.includes('r')) nw = Math.max(mn, p.x - dragging.x);
+
+            nx = clamp(nx, 0, canvas.width - nw);
+            ny = clamp(ny, 0, canvas.height - nh);
+            nw = clamp(nw, mn, canvas.width - nx);
+            nh = clamp(nh, mn, canvas.height - ny);
+
+            if (snapOn) {
+                dragging.x = Math.round(nx / gridSize) * gridSize;
+                dragging.y = Math.round(ny / gridSize) * gridSize;
+                dragging.w = Math.round(nw / gridSize) * gridSize;
+                dragging.h = Math.round(nh / gridSize) * gridSize;
+            } else {
+                dragging.x = nx;
+                dragging.y = ny;
+                dragging.w = nw;
+                dragging.h = nh;
+            }
         }
     } else {
-        let nx = p.x - offsetX;
-        let ny = p.y - offsetY;
-
-        if (snapOn) {
-            nx = Math.round(nx / gridSize) * gridSize;
-            ny = Math.round(ny / gridSize) * gridSize;
-        }
-
-        if (selected && selected.type === "text") {
-            selected.x = clamp(nx, 0, canvas.width - selected.w);
-            selected.y = clamp(ny, 0, canvas.height - selected.h);
+        // Handle moving entire shape
+        if (dragging.type === "line") {
+            let dx = p.x - dragging.x - offsetX;
+            let dy = p.y - dragging.y - offsetY;
+            
+            if (snapOn) {
+                dx = Math.round(dx / gridSize) * gridSize;
+                dy = Math.round(dy / gridSize) * gridSize;
+            }
+            
+            dragging.x += dx;
+            dragging.y += dy;
+            dragging.x2 += dx;
+            dragging.y2 += dy;
         } else {
-            dragging.x = clamp(nx, 0, canvas.width - dragging.w);
-            dragging.y = clamp(ny, 0, canvas.height - dragging.h);
+            let nx = p.x - offsetX;
+            let ny = p.y - offsetY;
+
+            if (snapOn) {
+                nx = Math.round(nx / gridSize) * gridSize;
+                ny = Math.round(ny / gridSize) * gridSize;
+            }
+
+            if (selected && selected.type === "text") {
+                selected.x = clamp(nx, 0, canvas.width - selected.w);
+                selected.y = clamp(ny, 0, canvas.height - selected.h);
+            } else {
+                dragging.x = clamp(nx, 0, canvas.width - dragging.w);
+                dragging.y = clamp(ny, 0, canvas.height - dragging.h);
+            }
         }
     }
 
@@ -808,7 +918,12 @@ sprite.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}));
                 out += `sprite.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
                 break;
             case "line":
-                out += `sprite.drawLine(${x}, ${y}, ${x + w}, ${y + h}, display.color(${c}));\n`;
+                // Use actual line coordinates instead of bounding box
+                const x1 = Math.round(i.x * sx);
+                const y1 = Math.round(i.y * sy);
+                const x2 = Math.round(i.x2 * sx);
+                const y2 = Math.round(i.y2 * sy);
+                out += `sprite.drawLine(${x1}, ${y1}, ${x2}, ${y2}, display.color(${c}));\n`;
                 break;
             case "circle":
                 out += `sprite.drawCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${Math.floor(w / 2)}, display.color(${c}));\n`;

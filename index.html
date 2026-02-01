@@ -725,6 +725,16 @@ function exportJS() {
 
     render();
     updateLayerSelect();
+
+    window.addEventListener("beforeunload", (e) => {
+        const confirmationMessage = "⚠️ Are you sure you want to leave? This will clear all your work!";
+    
+    e.preventDefault();
+    e.returnValue = confirmationMessage;
+    return confirmationMessage;
+});
+    
 </script>
 </body>
 </html>
+

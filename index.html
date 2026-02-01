@@ -2459,20 +2459,86 @@ function exportJS() {
         });
     }
 
-    function shareState(event) {
-        const state = {
-            items: items,
-            backgroundColor: backgroundColorInput.value,
-            currentDevice: currentDevice,
-            currentOutputMode: currentOutputMode,
-            gridSize: gridSize,
-            snapOn: snapOn,
-            showGrid: showGrid,
-            fileName: document.getElementById("fileName").value
+    async function shareState(event) {
+        // Create compressed state with shorter property names
+        const compressedState = {
+            i: items,
+            b: backgroundColorInput.value,
+            d: currentDevice,
+            o: currentOutputMode,
+            g: gridSize,
+            s: snapOn,
+            h: showGrid,
+            f: document.getElementById("fileName").value
         };
         
-        const encodedState = btoa(JSON.stringify(state));
-        const shareUrl = window.location.origin + window.location.pathname + '?state=' + encodedState;
+        let jsonString = JSON.stringify(compressedState);
+        
+        // Apply string replacements first
+        const replacements = [
+            ['color', 'c'],
+            ['type', 't'],
+            ['text', 'x'],
+            ['"fillRect"', '"fR"'],
+            ['"rect"', '"r"'],
+            ['"circle"', '"ci"'],
+            ['"fillCircle"', '"fC"'],
+            ['"line"', '"l"'],
+            ['"text"', '"tx"'],
+            ['"triangle"', '"tr"'],
+            ['"fillTriangle"', '"fT"'],
+            ['"wideLine"', '"wL"'],
+            ['"fastHLine"', '"fH"'],
+            ['"fastVLine"', '"fV"'],
+            ['"roundRect"', '"rR"'],
+            ['"fillRoundRect"', '"fRR"']
+        ];
+        
+        replacements.forEach(([from, to]) => {
+            jsonString = jsonString.split(from).join(to);
+        });
+        
+        let encodedState;
+        
+        try {
+            // Try using browser's built-in compression (modern browsers)
+            if (typeof CompressionStream !== 'undefined') {
+                const stream = new CompressionStream('deflate');
+                const writer = stream.writable.getWriter();
+                const reader = stream.readable.getReader();
+                
+                writer.write(new TextEncoder().encode(jsonString));
+                writer.close();
+                
+                const chunks = [];
+                let done = false;
+                while (!done) {
+                    const { value, done: readerDone } = await reader.read();
+                    done = readerDone;
+                    if (value) chunks.push(value);
+                }
+                
+                const compressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+                let offset = 0;
+                chunks.forEach(chunk => {
+                    compressed.set(chunk, offset);
+                    offset += chunk.length;
+                });
+                
+                // Convert to base64
+                let binary = '';
+                compressed.forEach(byte => binary += String.fromCharCode(byte));
+                encodedState = 'z' + btoa(binary); // 'z' prefix indicates compressed
+                
+            } else {
+                throw new Error('CompressionStream not available');
+            }
+        } catch (e) {
+            // Fallback to base64 encoding only
+            encodedState = btoa(jsonString);
+        }
+        
+        const shareUrl = window.location.origin + window.location.pathname + '?s=' + encodedState;
         
         navigator.clipboard.writeText(shareUrl).then(() => {
             // Visual feedback - briefly change button text
@@ -2498,12 +2564,95 @@ function exportJS() {
         });
     }
 
-    function loadStateFromUrl() {
+    async function loadStateFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
-        const encodedState = urlParams.get('state');
+        let encodedState = urlParams.get('s') || urlParams.get('state');
         if (encodedState) {
             try {
-                const state = JSON.parse(atob(encodedState));
+                let jsonString;
+                
+                // Check if this is compressed data (starts with 'z')
+                if (encodedState.startsWith('z') && typeof DecompressionStream !== 'undefined') {
+                    try {
+                        // Decompress using browser's built-in decompression
+                        const compressedData = atob(encodedState.substring(1)); // Remove 'z' prefix
+                        const bytes = new Uint8Array(compressedData.length);
+                        for (let i = 0; i < compressedData.length; i++) {
+                            bytes[i] = compressedData.charCodeAt(i);
+                        }
+                        
+                        const stream = new DecompressionStream('deflate');
+                        const writer = stream.writable.getWriter();
+                        const reader = stream.readable.getReader();
+                        
+                        writer.write(bytes);
+                        writer.close();
+                        
+                        const chunks = [];
+                        let done = false;
+                        while (!done) {
+                            const { value, done: readerDone } = await reader.read();
+                            done = readerDone;
+                            if (value) chunks.push(value);
+                        }
+                        
+                        const decompressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+                        let offset = 0;
+                        chunks.forEach(chunk => {
+                            decompressed.set(chunk, offset);
+                            offset += chunk.length;
+                        });
+                        
+                        jsonString = new TextDecoder().decode(decompressed);
+                    } catch (e) {
+                        // Fallback if decompression fails
+                        jsonString = atob(encodedState);
+                    }
+                } else {
+                    // Regular base64 decoding
+                    jsonString = atob(encodedState.startsWith('z') ? encodedState.substring(1) : encodedState);
+                }
+                
+                // Decompress string replacements if using compressed format
+                if (urlParams.get('s')) {
+                    const replacements = [
+                        ['c', 'color'],
+                        ['t', 'type'],
+                        ['x', 'text'],
+                        ['"fR"', '"fillRect"'],
+                        ['"r"', '"rect"'],
+                        ['"ci"', '"circle"'],
+                        ['"fC"', '"fillCircle"'],
+                        ['"l"', '"line"'],
+                        ['"tx"', '"text"'],
+                        ['"tr"', '"triangle"'],
+                        ['"fT"', '"fillTriangle"'],
+                        ['"wL"', '"wideLine"'],
+                        ['"fH"', '"fastHLine"'],
+                        ['"fV"', '"fastVLine"'],
+                        ['"rR"', '"roundRect"'],
+                        ['"fRR"', '"fillRoundRect"']
+                    ];
+                    
+                    replacements.forEach(([from, to]) => {
+                        jsonString = jsonString.split(from).join(to);
+                    });
+                }
+                
+                const rawState = JSON.parse(jsonString);
+                
+                // Handle both compressed and uncompressed formats
+                const state = rawState.i ? {
+                    items: rawState.i,
+                    backgroundColor: rawState.b,
+                    currentDevice: rawState.d,
+                    currentOutputMode: rawState.o,
+                    gridSize: rawState.g,
+                    snapOn: rawState.s,
+                    showGrid: rawState.h,
+                    fileName: rawState.f
+                } : rawState; // Fallback to old format
+                
                 console.log('Loading shared state:', state);
                 
                 // Restore items
@@ -2574,14 +2723,16 @@ function exportJS() {
 
     // Listen for URL changes (when someone pastes a new URL with state)
     window.addEventListener('popstate', () => {
-        if (window.location.search.includes('state=')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('s') || urlParams.get('state')) {
             loadStateFromUrl();
         }
     });
     
     // Also listen for focus events in case URL was manually changed
     window.addEventListener('focus', () => {
-        if (window.location.search.includes('state=')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('s') || urlParams.get('state')) {
             loadStateFromUrl();
         }
     });
@@ -2600,16 +2751,19 @@ function exportJS() {
     populateDeviceDropdown();
     
     // Try to load shared state from URL first, then saved state, then use defaults
-    if (!loadStateFromUrl() && !loadState()) {
-        // No shared or saved state, use defaults
-        currentDevice = deviceSelect.value;
-        updateCanvasSize();
-        render();
-        updateLayerSelect();
-    }
-    
-    // Initialize history with current state
-    saveToHistory();
+    (async () => {
+        const hasSharedState = await loadStateFromUrl();
+        if (!hasSharedState && !loadState()) {
+            // No shared or saved state, use defaults
+            currentDevice = deviceSelect.value;
+            updateCanvasSize();
+            render();
+            updateLayerSelect();
+        }
+        
+        // Initialize history with current state
+        saveToHistory();
+    })();
 </script>
 </body>
 </html>

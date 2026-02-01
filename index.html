@@ -32,31 +32,70 @@
             touch-action: none;
         }
 
-        .sliders {
+        .main-settings, .properties {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             margin-bottom: 12px;
         }
 
-        .sliders label {
+        .settings-container {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+
+        .main-settings {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .properties {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .main-settings, .properties {
+            margin-top: 20px;
+        }
+
+        .main-settings label, .properties label {
             flex: 1 1 45%;
             display: flex;
             flex-direction: column;
+            font-weight: bold;
+        }
+
+        .main-settings .full-width, .properties .full-width {
+            flex: 1 1 100%;
+        }
+
+        .main-settings .one-third, .properties .one-third {
+            flex: 1 1 calc(33.33% - 8px);
+        }
+
+        .main-settings h2, .properties h2 {
+            margin: 0 0 0 0;
+            font-size: 1.2em;
+            width: 100%;
         }
 
         input, select {
             width: 100%;
-            padding: 6px;
+            padding: 10px 8px;
             border-radius: 8px;
             border: none;
             background: #4b2e83;
             color: #fff;
+            box-sizing: border-box;
+            font-size: 14px;
+            height: 36px;
         }
 
         input[type="color"] {
             padding: 0;
-            height: 32px;
+            height: 36px;
         }
 
         input[type="range"] {
@@ -71,27 +110,43 @@
         }
 
         .buttons button {
-            flex: 1 1 0;
-            min-width: 100px;
-            padding: 10px;
+            flex: 1 1 200px;
+            padding: 10px 4px;
             border: none;
             border-radius: 10px;
             background: #6c43b2;
             color: #fff;
             font-weight: bold;
             cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .buttons button:hover {
             background: #8457d6;
         }
 
+        .buttons.bottom button {
+            flex: 1 1 150px;
+        }
+
         .buttons .danger {
             background: #ff4d6d;
         }
 
+        .buttons .danger:hover {
+            background: #ff6a87;
+        }
+
         .buttons .export {
             background: #4dff88;
+            color: #000;
+        }
+
+        .buttons .export:hover {
+            background: #73fda3;
             color: #000;
         }
 
@@ -104,25 +159,37 @@
             background: #FFEC70;
         }
 
+        .buttons button:disabled {
+            background: #666 !important;
+            color: #999 !important;
+            cursor: not-allowed !important;
+            opacity: 0.5;
+        }
+
+        .buttons button:disabled:hover {
+            background: #666 !important;
+            transform: none !important;
+        }
+
         .layer-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 8px;
         }
 
         .layer-buttons button {
             flex: 1 1 100px;
-            background: #6c43b2;;
+            background: #6c43b2;
             color: #fff;
             font-weight: bold;
             border-radius: 10px;
-            padding: 8px;
+            padding: 10px 8px;
+            height: 36px;
             cursor: pointer;
             border: none; 
         }
 
         .layer-buttons button:hover {
-            background: #6c43b2;;
+            background: #8457d6;
         }
 
         .credit-btn {
@@ -139,7 +206,7 @@
         }
 
         .credit-btn:hover {
-            background: #67ff9c;
+            background: #73fda3;
         }
 
         code {
@@ -164,9 +231,92 @@
             font-weight: bold;
         }
 
+        .toggle:hover {
+            background: #8457d6;
+        }
+
         .toggle.on {
             background: #4dff88;
             color: #000;
+        }
+
+        .toggle.on:hover {
+            background: #73fda3;
+        }
+
+        .import-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .import-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80%;
+        }
+
+        .import-modal h3 {
+            color: #e0e0e0;
+            margin-top: 0;
+        }
+
+        .import-modal textarea {
+            width: 100%;
+            height: 300px;
+            background-color: #0a0a1a;
+            color: #e0e0e0;
+            border: 1px solid #4dff88;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .import-modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .import-modal button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .import-modal .import-btn {
+            background-color: #4dff88;
+            color: #000;
+        }
+
+        .import-modal .import-btn:hover {
+            background-color: #45e079;
+        }
+
+        .import-modal .cancel-btn {
+            background-color: #666;
+            color: #fff;
+        }
+
+        .import-modal .cancel-btn:hover {
+            background-color: #555;
         }
     </style>
 </head>
@@ -176,112 +326,391 @@
 
     <canvas id="screen"></canvas>
 
-    <div class="sliders">
-        <label>Device
-            <select id="device"></select>
-        </label>
-
-        <label>Snap to Grid
-            <button id="snapToggle" class="toggle">OFF</button>
-        </label>
-
-        <label>Text
-            <input type="text" id="text">
-        </label>
-
-        <label>Text Size
-            <input type="range" id="textSize" min="1" max="8" step="1" value="2">
-        </label>
-
-        <label>Layer
-            <select id="shapeSelect"></select>
-        </label>
-
-        <div class="layer-buttons">
-            <button id="layerUp">Forward</button>
-            <button id="layerDown">Backward</button>
-        </div>
-
-        <label>File name
-            <input type="text" id="fileName" value="app">
-        </label>
-
-        <label>Color
-            <input type="color" id="color">
-        </label>
+    <div class="buttons">
+        <button onclick="addItem('rect')">Rect</button>
+        <button onclick="addItem('fillRect')">FillRect</button>
+        <button onclick="addItem('fillRectGradient')">FillRectGradient</button>
+        <button onclick="addItem('roundRect')">RoundRect</button>
+        <button onclick="addItem('fillRoundRect')">FillRoundRect</button>
+        <button onclick="addItem('line')">Line</button>
+        <button onclick="addItem('wideLine')">WideLine</button>
+        <button onclick="addItem('fastHLine')">FastHLine</button>
+        <button onclick="addItem('fastVLine')">FastVLine</button>
+        <button onclick="addItem('triangle')">Triangle</button>
+        <button onclick="addItem('fillTriangle')">FillTriangle</button>
+        <button onclick="addItem('circle')">Circle</button>
+        <button onclick="addItem('fillCircle')">FillCircle</button>
+        <button onclick="addItem('arc')">Arc</button>
+        <button onclick="addItem('text')">Text</button>
+        <button onclick="addItem('pixel')">Pixel</button>
     </div>
 
     <div class="buttons">
-        <button onclick="addItem('fillRect')">FillRect</button>
-        <button onclick="addItem('rect')">Rect</button>
-        <button onclick="addItem('line')">Line</button>
-        <button onclick="addItem('circle')">Circle</button>
-        <button onclick="addItem('fillCircle')">FillCircle</button>
-        <button onclick="addItem('text')">Text</button>
-        <button class="duplicate" onclick="duplicateItem()">Duplicate</button>
-        <button class="danger" onclick="deleteItem()">Delete</button>
-        <button class="export" onclick="exportJS()">Export JS</button>
+        <button id="duplicateBtn" class="duplicate" onclick="duplicateItem()" disabled>Duplicate</button>
+        <button id="deleteBtn" class="danger" onclick="deleteItem()" disabled>Delete</button>
     </div>
 
+    <div class="settings-container">
+        <div class="main-settings">
+            <h2>Main Settings</h2>
+
+            <label class="full-width">Device
+                <select id="device"></select>
+            </label>
+
+            <label class="full-width">File Name
+                <input type="text" id="fileName" value="app">
+            </label>
+
+            <label class="full-width">Background Color
+                <input type="color" id="backgroundColor" value="#000000">
+            </label>
+
+            <label class="full-width">Output Mode
+                <select id="outputMode">
+                    <option value="sprite">Output: sprite</option>
+                    <option value="display">Output: display</option>
+                </select>
+            </label>
+
+            <label class="one-third">Snap to Grid
+                <button id="snapToggle" class="toggle">OFF</button>
+            </label>
+
+            <label class="one-third">Grid Size
+                <input type="number" id="gridSize" min="1" max="50" step="1" value="10">
+            </label>
+
+            <label class="one-third">Always Show Grid
+                <button id="alwaysShowGrid" class="toggle">OFF</button>
+            </label>
+
+        </div>
+
+        <div class="properties">
+            <h2>Layers</h2>
+
+            <label class="full-width">Layer
+                <select id="shapeSelect"></select>
+            </label>
+
+            <div class="layer-buttons full-width">
+                <button id="layerDown">Move Backward</button>
+                <button id="layerUp">Move Forward</button>
+            </div>
+
+            <h2>Properties</h2>
+
+            <div id="noSelectionMessage" style="text-align: center; color: #999;">
+                Select an object to show properties
+            </div>
+
+            <label id="colorControl" class="full-width" style="display: none;">Color
+                <input type="color" id="color">
+            </label>
+
+            <label id="color2Control" class="full-width" style="display: none;">Color 2
+                <input type="color" id="color2">
+            </label>
+
+            <label id="gradientModeControl" class="full-width" style="display: none;">Gradient Mode
+                <select id="gradientMode">
+                    <option value="h">Horizontal</option>
+                    <option value="v">Vertical</option>
+                </select>
+            </label>
+
+            <label id="textControl" style="display: none;">Text
+                <input type="text" id="text">
+            </label>
+
+            <label id="textSizeControl" style="display: none;">Text Size
+                <input type="range" id="textSize" min="1" max="8" step="1" value="2">
+            </label>
+
+            <label id="textBgToggleControl" style="display: none;">Background Color
+                <button id="textBgToggle" class="toggle">NO</button>
+            </label>
+
+            <label id="textBgColorControl" style="display: none;">Text Background Color
+                <input type="color" id="textBgColor" value="#000000">
+            </label>
+
+            <label id="textBgColorPlaceholder" style="display: none;">
+                <!-- Placeholder to preserve spacing when color control is hidden -->
+            </label>
+            
+            <label id="textAlignControl" style="display: none;">Text Align
+                <select id="textAlign">
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Right</option>
+                </select>
+            </label>
+            
+            <label id="textBaselineControl" style="display: none;">Text Baseline
+                <select id="textBaseline">
+                    <option value="top">Top</option>
+                    <option value="middle">Middle</option>
+                    <option value="bottom">Bottom</option>
+                </select>
+            </label>
+
+            <!-- Dynamic shape controls -->
+            <label id="posXControl" style="display: none;">X Position
+                <input type="number" id="posX" step="1">
+            </label>
+
+            <label id="posYControl" style="display: none;">Y Position
+                <input type="number" id="posY" step="1">
+            </label>
+
+            <label id="widthControl" style="display: none;">Width
+                <input type="number" id="width" min="1" step="1">
+            </label>
+
+            <label id="heightControl" style="display: none;">Height
+                <input type="number" id="height" min="1" step="1">
+            </label>
+
+            <label id="radiusControl" style="display: none;">Radius
+                <input type="number" id="radius" min="1" step="1">
+            </label>
+
+            <label id="x2Control" style="display: none;">End X
+                <input type="number" id="x2" step="1">
+            </label>
+
+            <label id="y2Control" style="display: none;">End Y
+                <input type="number" id="y2" step="1">
+            </label>
+
+            <!-- Triangle controls -->
+            <label id="x0Control" style="display: none;">Point 1 X
+                <input type="number" id="x0" step="1">
+            </label>
+
+            <label id="y0Control" style="display: none;">Point 1 Y
+                <input type="number" id="y0" step="1">
+            </label>
+
+            <label id="x1Control" style="display: none;">Point 2 X
+                <input type="number" id="x1" step="1">
+            </label>
+
+            <label id="y1Control" style="display: none;">Point 2 Y
+                <input type="number" id="y1" step="1">
+            </label>
+
+            <label id="x2TriControl" style="display: none;">Point 3 X
+                <input type="number" id="x2Tri" step="1">
+            </label>
+
+            <label id="y2TriControl" style="display: none;">Point 3 Y
+                <input type="number" id="y2Tri" step="1">
+            </label>
+
+            <!-- Line width control -->
+            <label id="lineWidthControl" style="display: none;">Line Width
+                <input type="number" id="lineWidth" min="1" step="1" value="2">
+            </label>
+
+            <!-- Arc controls -->
+            <label id="startAngleControl" style="display: none;">Start Angle (°)
+                <input type="number" id="startAngle" step="1" value="0">
+            </label>
+
+            <label id="endAngleControl" style="display: none;">End Angle (°)
+                <input type="number" id="endAngle" step="1" value="90">
+            </label>
+
+            <label id="innerRadiusControl" style="display: none;">Inner Radius
+                <input type="number" id="innerRadius" min="0" step="1" value="10">
+            </label>
+
+            <label id="outerRadiusControl" style="display: none;">Outer Radius
+                <input type="number" id="outerRadius" min="1" step="1" value="20">
+            </label>
+
+        </div>
+    </div>
+    <div class="buttons bottom">
+        <button onclick="copyToClipboard(event)">Copy JS to Clipboard</button>
+        <button class="export" onclick="shareState(event)">Share JS</button>
+        <button class="export" onclick="importCode()">Import Code</button>
+        <button class="export" onclick="exportJS()">Export JS</button>
+        <button class="danger" onclick="clearAll()">Clear All</button>
+    </div>
+
+    <h2 style="margin-bottom: 0;">Generated Code</h2>
     <code id="code"></code>
 
-    <div class="credits" style="position:fixed; bottom:8px; left:50%; transform:translateX(-50%); font-size:0.8rem; z-index:1000;">
+    <div style="margin: 20px 0; padding: 15px; background: #2b0055; border-radius: 8px; border-left: 4px solid #4dff88; font-size: 0.9rem; line-height: 1.5;">
+        <h4 style="margin: 0 0 10px 0; color: #e0e0e0; font-size: 1rem;">Tips & Shortcuts</h4>
+        <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 15px; align-items: center;">
+            <strong>Grid Snap:</strong> <span>Hold <kbd style="background: #505050; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">ALT</kbd> while dragging shapes to do the opposite of the global snap to grid setting</span>
+            <strong>Undo:</strong> <span><kbd style="background: #505050; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Ctrl + Z</kbd> to undo last action</span>
+            <strong>Redo:</strong> <span><kbd style="background: #505050; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">Ctrl + Y</kbd> to redo last undone action</span>
+            <strong>Auto-Save:</strong> <span>Changes are automatically saved and preserved between sessions</span>
+        </div>
+    </div>
+
+    <div class="credits" style="margin-top: 25px;left:50%; z-index:1000; text-align:center;">
+        <span style=" background:#4dff88; color:#000; padding:6px 12px; border-radius:8px; font-weight:bold; font-size:0.8rem;">
+        Made by 
         <a href="https://discord.com/users/sloth110000" target="_blank"
-           style="text-decoration:none; background:#4dff88; color:#000; padding:6px 12px; border-radius:8px; font-weight:bold;">
-            Made by SLOTH
-        </a>
+           style="text-decoration:underline dotted;color:#000;">SLOTH</a>
+        and
+        <a href="https://github.com/emericklaw" target="_blank"
+           style="text-decoration:underline dotted;color:#000;">Matt</a>
+        </span>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div id="importModal" class="import-modal">
+    <div class="import-modal-content">
+        <h3>Import Display/Sprite Code</h3>
+        <p style="color: #ccc; margin-bottom: 15px;">Paste your display or sprite drawing commands below:</p>
+        <textarea id="importTextarea" placeholder="Example:
+display.fillRect(10, 10, 50, 30, display.color(255, 0, 0));
+display.drawCircle(100, 50, 20, display.color(0, 255, 0));
+..."></textarea>
+        <div class="import-modal-buttons">
+            <button class="cancel-btn" onclick="closeImportModal()">Cancel</button>
+            <button class="import-btn" onclick="executeImport()">Import</button>
+        </div>
     </div>
 </div>
 
 <script>
+console.log('Script starting...');
+
 const canvas = document.getElementById("screen"),
       ctx = canvas.getContext("2d"),
       deviceSelect = document.getElementById("device"),
+      outputModeSelect = document.getElementById("outputMode"),
       shapeSelect = document.getElementById("shapeSelect"),
       textInput = document.getElementById("text"),
       textSizeInput = document.getElementById("textSize"),
       colorInput = document.getElementById("color"),
+      color2Input = document.getElementById("color2"),
+      gradientModeInput = document.getElementById("gradientMode"),
+      backgroundColorInput = document.getElementById("backgroundColor"),
       code = document.getElementById("code"),
       snapToggle = document.getElementById("snapToggle"),
+      gridSizeInput = document.getElementById("gridSize"),
+      alwaysShowGridInput = document.getElementById("alwaysShowGrid"),
       layerUpBtn = document.getElementById("layerUp"),
-      layerDownBtn = document.getElementById("layerDown");
+      layerDownBtn = document.getElementById("layerDown"),
+      // Dynamic shape controls
+      posXInput = document.getElementById("posX"),
+      posYInput = document.getElementById("posY"),
+      widthInput = document.getElementById("width"),
+      heightInput = document.getElementById("height"),
+      radiusInput = document.getElementById("radius"),
+      x2Input = document.getElementById("x2"),
+      y2Input = document.getElementById("y2"),
+      // Triangle controls
+      x0Input = document.getElementById("x0"),
+      y0Input = document.getElementById("y0"),
+      x1Input = document.getElementById("x1"),
+      y1Input = document.getElementById("y1"),
+      x2TriInput = document.getElementById("x2Tri"),
+      y2TriInput = document.getElementById("y2Tri"),
+      // Line width control
+      lineWidthInput = document.getElementById("lineWidth"),
+      // Arc controls
+      startAngleInput = document.getElementById("startAngle"),
+      endAngleInput = document.getElementById("endAngle"),
+      innerRadiusInput = document.getElementById("innerRadius"),
+      outerRadiusInput = document.getElementById("outerRadius"),
+      // Text background controls
+      textBgColorInput = document.getElementById("textBgColor"),
+      textBgToggleInput = document.getElementById("textBgToggle"),
+      // Text alignment controls
+      textAlignInput = document.getElementById("textAlign"),
+      textBaselineInput = document.getElementById("textBaseline");
+
+console.log('Variable declarations completed');
 
 let items = [],
     selected = null,
     currentDevice,
     gridSize = 10,
     snapOn = false,
+    altHeld = false,
     dragging = null,
     resizing = false,
+    changingTextAlign = false, // Track when user is changing text alignment dropdown
+    changingTextBaseline = false, // Track when user is changing text baseline dropdown
     resizeHandle = null,
     offsetX = 0,
     offsetY = 0,
-    showGrid = false;
+    showGrid = false,
+    // History system for undo/redo
+    history = [],
+    historyIndex = -1,
+    maxHistorySize = 50,
+    inputChangeTimeout = null,
+    fontScale=1.175,
+    currentOutputMode = 'display';
 
 const devices = {
-    "M5Stack Cardputer/Adv/ StickC-Plus 1.1/StickC-Plus 2": [240, 135],
+    "M5Stack Cardputer/Adv/StickC 1.1/2/S3": [240, 135],
     "M5Stack Core/Core2/CoreS3/SE": [320, 240],
     "CYD-2432S028": [320, 240],
     "CYD-3248S035": [480, 320],
-    "Lilygo T-Embed /CC1101/plus": [320, 170],
+    "Lilygo T-Embed CC1101 (and Plus)": [320, 170],
     "Lilygo T-LoRa Pager": [480, 222],
     "Lilygo T-Display-S3": [320, 170],
     "Lilygo T-Deck (and Pro)": [320, 240],
     "Lilygo T-Watch-S3": [240, 240]
 };
 
+console.log('Devices object created');
+
 function populateDeviceDropdown() {
     deviceSelect.innerHTML = "";
-    for (let n in devices) {
-        let o = document.createElement("option");
-        o.value = n;
-        o.textContent = n;
-        deviceSelect.appendChild(o);
+    
+    // Group devices by size
+    const devicesBySize = {};
+    for (let deviceName in devices) {
+        const size = devices[deviceName];
+        const sizeKey = `${size[0]} × ${size[1]}`;
+        if (!devicesBySize[sizeKey]) {
+            devicesBySize[sizeKey] = [];
+        }
+        devicesBySize[sizeKey].push(deviceName);
     }
-    currentDevice = deviceSelect.value;
-    updateCanvasSize();
+    
+    // Sort sizes by total pixels (width * height) for logical ordering
+    const sortedSizes = Object.keys(devicesBySize).sort((a, b) => {
+        const sizeA = a.split(' × ').map(Number);
+        const sizeB = b.split(' × ').map(Number);
+        return (sizeA[0] * sizeA[1]) - (sizeB[0] * sizeB[1]);
+    });
+    
+    // Create optgroups for each size
+    for (let sizeKey of sortedSizes) {
+        let optgroup = document.createElement("optgroup");
+        optgroup.label = sizeKey;
+        
+        // Sort devices within each group alphabetically
+        devicesBySize[sizeKey].sort().forEach(deviceName => {
+            let option = document.createElement("option");
+            option.value = deviceName;
+            option.textContent = deviceName;
+            optgroup.appendChild(option);
+        });
+        
+        deviceSelect.appendChild(optgroup);
+    }
+
+    if (!currentDevice) {
+        currentDevice = deviceSelect.value;
+    }
 }
-populateDeviceDropdown();
 
 
 function updateCanvasSize() {
@@ -298,6 +727,21 @@ snapToggle.addEventListener("click", () => {
     snapToggle.classList.toggle("on", snapOn);
 });
 
+gridSizeInput.addEventListener("input", () => {
+    gridSize = parseInt(gridSizeInput.value) || 10;
+    render();
+});
+
+alwaysShowGridInput.addEventListener("click", () => {
+    showGrid = !showGrid;
+    alwaysShowGridInput.textContent = showGrid ? "ON" : "OFF";
+    alwaysShowGridInput.classList.toggle("on", showGrid);
+    render();
+});
+
+backgroundColorInput.addEventListener("input", () => {
+    render();
+});
 
 function getRandomColor() {
     let c = "#";
@@ -313,39 +757,552 @@ function clamp(v, min, max) {
 
 
 function addItem(t) {
-    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), text: "Hello" };
-    if (t.includes("circle") || t.includes("fillCircle")) o.w = o.h = 20;
-    if (snapOn) {
+    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), color2: getRandomColor(), gradientMode: "h", text: "Text", textBgColor: null, textAlign: "left", textBaseline: "top", radius: 5, lineWidth: 2, startAngle: 0, endAngle: 90, innerRadius: 10, outerRadius: 20 };
+    if (t.includes("circle") || t.includes("fillCircle")) {
+        o.radius = 15; // Set radius
+        o.w = o.h = o.radius * 2; // Set bounding box to diameter
+    }
+    if (t === "arc") {
+        o.w = o.h = (o.outerRadius || 20) * 2; // Set bounding box to outer diameter
+    }
+    if (t === "line" || t === "wideLine") {
+        // For lines, use x,y as start point and x2,y2 as end point
+        o.x2 = o.x + o.w;
+        o.y2 = o.y + o.h;
+    }
+    if (t === "fastHLine") {
+        // Horizontal line
+        o.h = 1;
+    }
+    if (t === "fastVLine") {
+        // Vertical line
+        o.w = 1;
+    }
+    if (t === "triangle" || t === "fillTriangle") {
+        // Triangle with 3 points
+        o.x0 = o.x;
+        o.y0 = o.y;
+        o.x1 = o.x + o.w;
+        o.y1 = o.y;
+        o.x2 = o.x + o.w/2;
+        o.y2 = o.y + o.h;
+    }
+    if (t === "pixel") {
+        // Pixel is 1x1
+        o.w = 1;
+        o.h = 1;
+    }
+    if (snapOn !== altHeld) {
         o.x = Math.round(o.x / gridSize) * gridSize;
         o.y = Math.round(o.y / gridSize) * gridSize;
+        if (o.x2 !== undefined) {
+            o.x2 = Math.round(o.x2 / gridSize) * gridSize;
+            o.y2 = Math.round(o.y2 / gridSize) * gridSize;
+        }
+        if (o.x0 !== undefined) {
+            o.x0 = Math.round(o.x0 / gridSize) * gridSize;
+            o.y0 = Math.round(o.y0 / gridSize) * gridSize;
+            o.x1 = Math.round(o.x1 / gridSize) * gridSize;
+            o.y1 = Math.round(o.y1 / gridSize) * gridSize;
+        }
     }
+    saveToHistory(); // Save state before adding item
     items.push(o);
     selected = o;
     updateLayerSelect();
+    syncUI();
     render();
 }
+
+console.log('addItem function defined successfully');
 
 function duplicateItem() {
     if (!selected) return;
     const o = { ...selected };
     o.x += 10;
     o.y += 10;
-    if (snapOn) {
+    if (o.type === "line") {
+        o.x2 += 10;
+        o.y2 += 10;
+    }
+    if (snapOn !== altHeld) {
         o.x = Math.round(o.x / gridSize) * gridSize;
         o.y = Math.round(o.y / gridSize) * gridSize;
+        if (o.x2 !== undefined) {
+            o.x2 = Math.round(o.x2 / gridSize) * gridSize;
+            o.y2 = Math.round(o.y2 / gridSize) * gridSize;
+        }
     }
+    saveToHistory(); // Save state before duplicating
     items.push(o);
     selected = o;
     updateLayerSelect();
+    syncUI();
     render();
 }
 
 function deleteItem() {
     if (!selected) return;
+    saveToHistory(); // Save state before deleting
     items = items.filter(i => i !== selected);
     selected = null;
     updateLayerSelect();
+    syncUI();
     render();
+}
+
+function clearAll() {
+    if (items.length === 0) return;
+    if (confirm('Are you sure you want to clear all? This cannot be undone.')) {
+        saveToHistory(); // Save state before clearing
+        items = [];
+        selected = null;
+        updateLayerSelect();
+        syncUI();
+        render();
+    }
+}
+
+function importCode() {
+    document.getElementById('importModal').style.display = 'block';
+    document.getElementById('importTextarea').value = '';
+    document.getElementById('importTextarea').focus();
+}
+
+function closeImportModal() {
+    document.getElementById('importModal').style.display = 'none';
+}
+
+function executeImport() {
+    const codeText = document.getElementById('importTextarea').value.trim();
+    if (!codeText) {
+        alert('Please enter some code to import.');
+        return;
+    }
+    
+    try {
+        parseAndImportCode(codeText);
+        closeImportModal();
+    } catch (e) {
+        alert('Error parsing code: ' + e.message);
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('importModal');
+    if (e.target === modal) {
+        closeImportModal();
+    }
+});
+
+function parseAndImportCode(codeText) {
+    const lines = codeText.split('\n');
+    const newItems = [];
+    
+    // Get current device dimensions for scaling
+    const dev = devices[currentDevice];
+    const W = dev[0], H = dev[1];
+    const sx = canvas.width / W;
+    const sy = canvas.height / H;
+    
+    // Track text properties for multi-line text commands
+    let currentTextSize = 2;
+    let currentTextColor = '#FFFFFF';
+    let currentTextBgColor = null;
+    let currentTextAlign = 'left';
+    let currentTextBaseline = 'top';
+    
+    for (let line of lines) {
+        line = line.trim();
+        if (!line || line.startsWith('//') || line.startsWith('function') || line.startsWith('const') || line.startsWith('while') || line.startsWith('}')) {
+            continue;
+        }
+        
+        // Parse different drawing commands
+        let match;
+        
+        // Parse text properties first
+        if ((match = line.match(/(display|sprite)\.setTextSize\((\d+)\)/))) {
+            currentTextSize = parseInt(match[2]);
+            continue;
+        }
+        // Check for two-color setTextColor first (more specific pattern)
+        if ((match = line.match(/(display|sprite)\.setTextColor\(display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            currentTextColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            currentTextBgColor = `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`;
+            continue;
+        }
+        // Check for single-color setTextColor (less specific pattern)  
+        else if ((match = line.match(/(display|sprite)\.setTextColor\(display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            currentTextColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            currentTextBgColor = null;
+            continue;
+        }
+        else if ((match = line.match(/(display|sprite)\.setTextBgColor\(display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            currentTextBgColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            continue;
+        }
+        // Parse setTextAlign()
+        else if ((match = line.match(/(display|sprite)\.setTextAlign\(([^,)]+)(?:,\s*([^)]+))?\)/))) {
+            const alignParam = match[2].trim().replace(/[\"']/g, '');
+            const baselineParam = match[3] ? match[3].trim().replace(/[\"']/g, '') : null;
+            
+            // Parse align parameter (string or number)
+            if (alignParam === 'left' || alignParam === 'l' || alignParam === '0') {
+                currentTextAlign = 'left';
+            } else if (alignParam === 'center' || alignParam === 'c' || alignParam === '1') {
+                currentTextAlign = 'center';
+            } else if (alignParam === 'right' || alignParam === 'r' || alignParam === '2') {
+                currentTextAlign = 'right';
+            }
+            
+            // Parse baseline parameter (string or number)
+            if (baselineParam) {
+                if (baselineParam === 'top' || baselineParam === 't' || baselineParam === '0') {
+                    currentTextBaseline = 'top';
+                } else if (baselineParam === 'middle' || baselineParam === 'm' || baselineParam === '1') {
+                    currentTextBaseline = 'middle';
+                } else if (baselineParam === 'bottom' || baselineParam === 'b' || baselineParam === '2') {
+                    currentTextBaseline = 'bottom';
+                }
+            }
+            continue;
+        }
+        // Parse setTextAlign()
+        else if ((match = line.match(/(display|sprite)\.setTextAlign\(([^,)]+)(?:,\s*([^)]+))?\)/))) {
+            const alignParam = match[2].trim().replace(/[\"']/g, '');
+            const baselineParam = match[3] ? match[3].trim().replace(/[\"']/g, '') : null;
+            
+            // Parse align parameter (string or number)
+            if (alignParam === 'left' || alignParam === 'l' || alignParam === '0') {
+                currentTextAlign = 'left';
+            } else if (alignParam === 'center' || alignParam === 'c' || alignParam === '1') {
+                currentTextAlign = 'center';
+            } else if (alignParam === 'right' || alignParam === 'r' || alignParam === '2') {
+                currentTextAlign = 'right';
+            }
+            
+            // Parse baseline parameter (string or number)
+            if (baselineParam) {
+                if (baselineParam === 'top' || baselineParam === 't' || baselineParam === '0') {
+                    currentTextBaseline = 'top';
+                } else if (baselineParam === 'middle' || baselineParam === 'm' || baselineParam === '1') {
+                    currentTextBaseline = 'middle';
+                } else if (baselineParam === 'bottom' || baselineParam === 'b' || baselineParam === '2') {
+                    currentTextBaseline = 'bottom';
+                }
+            }
+            continue;
+        }
+        
+        // Parse fill command
+        if ((match = line.match(/(display|sprite)\.fill\(display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            // Set background color from fill command
+            const bgColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            document.getElementById('backgroundColor').value = bgColor;
+            continue;
+        }
+        
+        // Parse fillRect
+        if ((match = line.match(/(display|sprite)\.drawFillRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fillRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fillRectGradient
+        else if ((match = line.match(/(display|sprite)\.drawFillRectGradient\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*"([hv])"/))) {
+            newItems.push({
+                type: 'fillRectGradient',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`,
+                color2: `#${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}${parseInt(match[11]).toString(16).padStart(2, '0')}`,
+                gradientMode: match[12]
+            });
+        }
+        // Parse drawRect  
+        else if ((match = line.match(/(display|sprite)\.drawRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'rect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse roundRect
+        else if ((match = line.match(/(display|sprite)\.drawRoundRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'roundRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                radius: parseInt(match[6]),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fillRoundRect
+        else if ((match = line.match(/(display|sprite)\.drawFillRoundRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fillRoundRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                radius: parseInt(match[6]),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fillCircle
+        else if ((match = line.match(/(display|sprite)\.drawFillCircle\((\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            // The generated command uses: drawFillCircle(x + Math.floor(w/2), y + Math.floor(h/2), radius)
+            // So we need to reverse: centerX = x + Math.floor(w/2), so x = centerX - Math.floor(w/2)
+            const centerX = parseInt(match[2]);
+            const centerY = parseInt(match[3]);
+            const scaledRadius = parseInt(match[4]);
+            
+            // Convert back to canvas coordinates
+            const canvasCenterX = Math.round(centerX / sx);
+            const canvasCenterY = Math.round(centerY / sy);
+            const canvasRadius = Math.round(scaledRadius / Math.min(sx, sy));
+            
+            // Calculate top-left position (matching the generation: centerX = x + Math.floor(w/2))
+            const canvasWidth = canvasRadius * 2;
+            const canvasHeight = canvasRadius * 2;
+            const canvasX = canvasCenterX - Math.floor(canvasWidth / 2);
+            const canvasY = canvasCenterY - Math.floor(canvasHeight / 2);
+            
+            newItems.push({
+                type: 'fillCircle',
+                x: canvasX,
+                y: canvasY,
+                w: canvasWidth,
+                h: canvasHeight,
+                radius: canvasRadius,
+                color: `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse circle
+        else if ((match = line.match(/(display|sprite)\.drawCircle\((\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            // The generated command uses: drawCircle(x + Math.floor(w/2), y + Math.floor(h/2), radius)
+            // So we need to reverse: centerX = x + Math.floor(w/2), so x = centerX - Math.floor(w/2)
+            const centerX = parseInt(match[2]);
+            const centerY = parseInt(match[3]);
+            const scaledRadius = parseInt(match[4]);
+            
+            // Convert back to canvas coordinates
+            const canvasCenterX = Math.round(centerX / sx);
+            const canvasCenterY = Math.round(centerY / sy);
+            const canvasRadius = Math.round(scaledRadius / Math.min(sx, sy));
+            
+            // Calculate top-left position (matching the generation: centerX = x + Math.floor(w/2))
+            const canvasWidth = canvasRadius * 2;
+            const canvasHeight = canvasRadius * 2;
+            const canvasX = canvasCenterX - Math.floor(canvasWidth / 2);
+            const canvasY = canvasCenterY - Math.floor(canvasHeight / 2);
+            
+            newItems.push({
+                type: 'circle',
+                x: canvasX,
+                y: canvasY,
+                w: canvasWidth,
+                h: canvasHeight,
+                radius: canvasRadius,
+                color: `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse line
+        else if ((match = line.match(/(display|sprite)\.drawLine\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'line',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                x2: Math.round(parseInt(match[4]) / sx),
+                y2: Math.round(parseInt(match[5]) / sy),
+                w: Math.abs(parseInt(match[4]) - parseInt(match[2])),
+                h: Math.abs(parseInt(match[5]) - parseInt(match[3])),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse WideLine
+        else if ((match = line.match(/(display|sprite)\.drawWideLine\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'wideLine',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                x2: Math.round(parseInt(match[4]) / sx),
+                y2: Math.round(parseInt(match[5]) / sy),
+                w: Math.abs(parseInt(match[4]) - parseInt(match[2])),
+                h: Math.abs(parseInt(match[5]) - parseInt(match[3])),
+                lineWidth: Math.round(parseInt(match[6]) / Math.min(sx, sy)),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fastHLine
+        else if ((match = line.match(/(display|sprite)\.drawFastHLine\((\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fastHLine',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: 1,
+                color: `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fastVLine
+        else if ((match = line.match(/(display|sprite)\.drawFastVLine\((\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fastVLine',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: 1,
+                h: Math.round(parseInt(match[4]) / sy),
+                color: `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse drawRoundRect
+        else if ((match = line.match(/(display|sprite)\.drawRoundRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'roundRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                radius: Math.round(parseInt(match[6]) / Math.min(sx, sy)),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse drawFillRoundRect
+        else if ((match = line.match(/(display|sprite)\.drawFillRoundRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fillRoundRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                radius: Math.round(parseInt(match[6]) / Math.min(sx, sy)),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse drawFillRectGradient
+        else if ((match = line.match(/(display|sprite)\.drawFillRectGradient\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*"([hv])"\)/))) {
+            newItems.push({
+                type: 'fillRectGradient',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`,
+                color2: `#${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}${parseInt(match[11]).toString(16).padStart(2, '0')}`,
+                gradientMode: match[12]
+            });
+        }
+        // Parse text
+        else if ((match = line.match(/(display|sprite)\.drawText\("([^"]*)",\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'text',
+                text: match[2],
+                x: Math.round(parseInt(match[3]) / sx),
+                y: Math.round(parseInt(match[4]) / sy),
+                w: 40, // Default width
+                h: 20, // Default height
+                size: currentTextSize || 2,
+                color: currentTextColor || '#FFFFFF',
+                textBgColor: currentTextBgColor,
+                textAlign: currentTextAlign || 'left',
+                textBaseline: currentTextBaseline || 'top'
+            });
+        }
+        // Parse pixel
+        else if ((match = line.match(/(display|sprite)\.drawPixel\((\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'pixel',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: 1,
+                h: 1,
+                color: `#${parseInt(match[4]).toString(16).padStart(2, '0')}${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse triangle
+        else if ((match = line.match(/(display|sprite)\.drawTriangle\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'triangle',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: 40,
+                h: 40,
+                x0: Math.round(parseInt(match[2]) / sx),
+                y0: Math.round(parseInt(match[3]) / sy),
+                x1: Math.round(parseInt(match[4]) / sx),
+                y1: Math.round(parseInt(match[5]) / sy),
+                x2: Math.round(parseInt(match[6]) / sx),
+                y2: Math.round(parseInt(match[7]) / sy),
+                color: `#${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fillTriangle
+        else if ((match = line.match(/(display|sprite)\.drawFillTriangle\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fillTriangle',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: 40,
+                h: 40,
+                x0: Math.round(parseInt(match[2]) / sx),
+                y0: Math.round(parseInt(match[3]) / sy),
+                x1: Math.round(parseInt(match[4]) / sx),
+                y1: Math.round(parseInt(match[5]) / sy),
+                x2: Math.round(parseInt(match[6]) / sx),
+                y2: Math.round(parseInt(match[7]) / sy),
+                color: `#${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse arc (with inner radius, outer radius, and angles)
+        else if ((match = line.match(/(display|sprite)\.drawArc\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            const centerX = Math.round(parseInt(match[2]) / sx);
+            const centerY = Math.round(parseInt(match[3]) / sy);
+            const innerRadius = Math.round(parseInt(match[4]) / Math.min(sx, sy));
+            const outerRadius = Math.round(parseInt(match[5]) / Math.min(sx, sy));
+            const startAngle = parseInt(match[6]);
+            const endAngle = parseInt(match[7]);
+            
+            newItems.push({
+                type: 'arc',
+                x: centerX - outerRadius,
+                y: centerY - outerRadius,
+                w: outerRadius * 2,
+                h: outerRadius * 2,
+                startAngle: startAngle,
+                endAngle: endAngle,
+                innerRadius: innerRadius,
+                outerRadius: outerRadius,
+                color: `#${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}`
+            });
+        }
+    }
+    
+    if (newItems.length > 0) {
+        saveToHistory(); // Save state before importing
+        items.push(...newItems);
+        selected = null; // No item selected after importing
+        updateLayerSelect();
+        syncUI();
+        render();
+        alert(`Imported ${newItems.length} shape(s) successfully!`);
+    } else {
+        alert('No valid drawing commands found in the pasted code.');
+    }
 }
 
 
@@ -353,6 +1310,7 @@ layerUpBtn.addEventListener("click", () => {
     if (!selected) return;
     const idx = items.indexOf(selected);
     if (idx < items.length - 1) {
+        saveToHistory(); // Save state before moving layer
         items.splice(idx, 1);
         items.splice(idx + 1, 0, selected);
     }
@@ -364,6 +1322,7 @@ layerDownBtn.addEventListener("click", () => {
     if (!selected) return;
     const idx = items.indexOf(selected);
     if (idx > 0) {
+        saveToHistory(); // Save state before moving layer
         items.splice(idx, 1);
         items.splice(idx - 1, 0, selected);
     }
@@ -373,12 +1332,16 @@ layerDownBtn.addEventListener("click", () => {
 
 
 function render() {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = backgroundColorInput.value;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     
     if (showGrid) {
-        ctx.strokeStyle = "#2b0055";
+        // Calculate inverse of background color for grid lines
+        const bgRgb = rgb(backgroundColorInput.value);
+        const inverseRgb = bgRgb.map(c => 255 - c);
+        const inverseColor = `rgb(${inverseRgb.join(', ')})`;
+        ctx.strokeStyle = inverseColor;
         ctx.lineWidth = 0.5;
         for (let x = 0; x <= Math.floor(canvas.width / gridSize) * gridSize; x += gridSize) {
             ctx.beginPath();
@@ -411,28 +1374,206 @@ function render() {
             case "fillRect":
                 ctx.fillRect(0, 0, i.w, i.h);
                 break;
-            case "rect":
-                ctx.strokeRect(0, 0, i.w, i.h);
+            case "fillRectGradient":
+                // Create gradient
+                const gradient = i.gradientMode === "v" 
+                    ? ctx.createLinearGradient(0, 0, 0, i.h)
+                    : ctx.createLinearGradient(0, 0, i.w, 0);
+                gradient.addColorStop(0, i.color);
+                gradient.addColorStop(1, i.color2 || i.color);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, i.w, i.h);
                 break;
-            case "line":
+            case "rect":
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0.5, 0.5, i.w - 1, i.h - 1);
+                break;
+            case "roundRect":
+                ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.lineTo(i.w, i.h);
+                if (ctx.roundRect) {
+                    ctx.roundRect(0.5, 0.5, i.w - 1, i.h - 1, i.radius || 5);
+                } else {
+                    // Fallback for browsers without roundRect support
+                    const r = Math.min(i.radius || 5, (i.w - 1) / 2, (i.h - 1) / 2);
+                    ctx.moveTo(r + 0.5, 0.5);
+                    ctx.lineTo(i.w - r - 0.5, 0.5);
+                    ctx.quadraticCurveTo(i.w - 0.5, 0.5, i.w - 0.5, r + 0.5);
+                    ctx.lineTo(i.w - 0.5, i.h - r - 0.5);
+                    ctx.quadraticCurveTo(i.w - 0.5, i.h - 0.5, i.w - r - 0.5, i.h - 0.5);
+                    ctx.lineTo(r + 0.5, i.h - 0.5);
+                    ctx.quadraticCurveTo(0.5, i.h - 0.5, 0.5, i.h - r - 0.5);
+                    ctx.lineTo(0.5, r + 0.5);
+                    ctx.quadraticCurveTo(0.5, 0.5, r + 0.5, 0.5);
+                }
                 ctx.stroke();
                 break;
-            case "circle":
+            case "fillRoundRect":
                 ctx.beginPath();
-                ctx.arc(i.w / 2, i.h / 2, i.w / 2, 0, 2 * Math.PI);
+                if (ctx.roundRect) {
+                    ctx.roundRect(0, 0, i.w, i.h, i.radius || 5);
+                } else {
+                    // Fallback for browsers without roundRect support
+                    const r = Math.min(i.radius || 5, i.w / 2, i.h / 2);
+                    ctx.moveTo(r, 0);
+                    ctx.lineTo(i.w - r, 0);
+                    ctx.quadraticCurveTo(i.w, 0, i.w, r);
+                    ctx.lineTo(i.w, i.h - r);
+                    ctx.quadraticCurveTo(i.w, i.h, i.w - r, i.h);
+                    ctx.lineTo(r, i.h);
+                    ctx.quadraticCurveTo(0, i.h, 0, i.h - r);
+                    ctx.lineTo(0, r);
+                    ctx.quadraticCurveTo(0, 0, r, 0);
+                }
+                ctx.fill();
+                break;
+            case "line":
+                // Draw line using absolute coordinates
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(i.x, i.y);
+                ctx.lineTo(i.x2, i.y2);
+                ctx.stroke();
+                break;
+            case "wideLine":
+                // Draw wide line using absolute coordinates
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = i.lineWidth || 2;
+                ctx.lineCap = "round"; // Add rounded end caps
+                ctx.beginPath();
+                ctx.moveTo(i.x, i.y);
+                ctx.lineTo(i.x2, i.y2);
+                ctx.stroke();
+                break;
+            case "fastHLine":
+                // Fast horizontal line - 1px thick, point to point
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(i.x, i.y + 0.5);
+                ctx.lineTo(i.x + i.w, i.y + 0.5);
+                ctx.stroke();
+                break;
+            case "fastVLine":
+                // Fast vertical line - 1px thick, point to point
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(i.x + 0.5, i.y);
+                ctx.lineTo(i.x + 0.5, i.y + i.h);
+                ctx.stroke();
+                break;
+            case "triangle":
+                // Triangle outline using absolute coordinates
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(i.x0, i.y0);
+                ctx.lineTo(i.x1, i.y1);
+                ctx.lineTo(i.x2, i.y2);
+                ctx.closePath();
+                ctx.stroke();
+                break;
+            case "fillTriangle":
+                // Filled triangle using absolute coordinates
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.fillStyle = i.color;
+                ctx.beginPath();
+                ctx.moveTo(i.x0, i.y0);
+                ctx.lineTo(i.x1, i.y1);
+                ctx.lineTo(i.x2, i.y2);
+                ctx.closePath();
+                ctx.fill();
+                break;
+            case "arc":
+                // Arc using absolute coordinates - draw filled arc segment
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.fillStyle = i.color;
+                
+                const centerX = i.x + i.w / 2;
+                const centerY = i.y + i.h / 2;
+                const startRad = ((i.startAngle || 0) + 90) * Math.PI / 180; // Add 90° to make 0° at bottom
+                const endRad = ((i.endAngle || 90) + 90) * Math.PI / 180;
+                const innerRadius = i.innerRadius || 10;
+                const outerRadius = i.outerRadius || 20;
+                
+                // Draw filled arc segment
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, outerRadius, startRad, endRad);
+                ctx.arc(centerX, centerY, innerRadius, endRad, startRad, true);
+                ctx.closePath();
+                ctx.fill();
+                break;
+            case "circle":
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                // Draw circle at radius
+                const circleRadius = i.radius || 10;
+                ctx.arc(i.w / 2, i.h / 2, circleRadius, 0, 2 * Math.PI);
                 ctx.stroke();
                 break;
             case "fillCircle":
                 ctx.beginPath();
-                ctx.arc(i.w / 2, i.h / 2, i.w / 2, 0, 2 * Math.PI);
+                // Draw filled circle at full radius
+                const fillRadius = i.radius || 10;
+                ctx.arc(i.w / 2, i.h / 2, fillRadius, 0, 2 * Math.PI);
                 ctx.fill();
                 break;
             case "text":
-                ctx.font = `${i.size * 8}px Arial`;
-                ctx.fillText(i.text, 0, ih / 2 + i.size * 4);
+                ctx.font = `bold ${i.size * 10}px "Courier New"`;
+                ctx.letterSpacing = -(i.size)*.05 + "px";
+                
+                // Use (0,0) since context is already translated to (i.x, i.y)
+                const align = i.textAlign || 'left';
+                const baseline = i.textBaseline || 'top';
+                
+                // Set canvas text alignment
+                ctx.textAlign = align;
+                ctx.textBaseline = baseline;
+                
+                // Draw background if specified
+                if (i.textBgColor) {
+                    ctx.save();
+                    const metrics = ctx.measureText(i.text);
+                    let bgX = 0; // Start at origin since context is translated
+                    let bgY = 0;
+                    let bgWidth = metrics.width;
+                    let bgHeight = i.size * 10;
+                    
+                    // Adjust background based on alignment
+                    if (align === 'center') bgX = -bgWidth / 2;
+                    else if (align === 'right') bgX = -bgWidth;
+                    
+                    if (baseline === 'middle') bgY = -bgHeight / 2;
+                    else if (baseline === 'bottom') bgY = -bgHeight;
+                    
+                    ctx.fillStyle = i.textBgColor;
+                    ctx.fillRect(bgX, bgY+i.size+1, bgWidth, bgHeight-(i.size)*3);
+                    ctx.restore();
+                }
+                
+                // Draw text at origin (since context is translated)
+                ctx.fillStyle = i.color;
+                ctx.fillText(i.text, 0, 0);
+                
+                break;
+                break;
+            case "pixel":
+                ctx.fillStyle = i.color;
+                ctx.fillRect(0, 0, 1, 1);
                 break;
         }
 
@@ -442,11 +1583,121 @@ function render() {
             ctx.lineWidth = 1.5;
 
             if (i.type === "text") {
-                const iw = ctx.measureText(i.text).width;
-                const ih = i.size * 8;
-                ctx.strokeRect(0, 0, iw, ih);
+                // Bounding box for text - account for translated context
+                ctx.save();
+                ctx.font = `bold ${i.size * 10}px "Courier New"`;
+                ctx.textAlign = i.textAlign || 'left';
+                ctx.textBaseline = i.textBaseline || 'top';
+                
+                const metrics = ctx.measureText(i.text);
+                // Start at origin (0,0) since context is translated to (i.x, i.y)
+                let boxX = 0;
+                let boxY = 0;
+                let boxW = metrics.width;
+                let boxH = i.size * 10;
+                
+                // Adjust based on alignment (same as text rendering)
+                const align = i.textAlign || 'left';
+                const baseline = i.textBaseline || 'top';
+                
+                if (align === 'center') boxX = -boxW / 2;
+                else if (align === 'right') boxX = -boxW;
+                
+                if (baseline === 'middle') boxY = -boxH / 2;
+                else if (baseline === 'bottom') boxY = -boxH;
+                
+                ctx.strokeRect(boxX - 1, (boxY + i.size + 1) - 1, boxW + 2, (boxH - (i.size) * 3) + 2);
+                
+                // Draw red circle in front of bounding box
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(0, i.size + 1, 3, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.restore();
+            } else if (i.type === "line" || i.type === "wideLine") {
+                // For lines, show handles at start and end points
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                [{ x: i.x, y: i.y }, { x: i.x2, y: i.y2 }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+            } else if (i.type === "fastHLine") {
+                // For fastHLine, show handles at start and end points
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                [{ x: i.x, y: i.y }, { x: i.x + i.w, y: i.y }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+            } else if (i.type === "fastVLine") {
+                // For fastVLine, show handles at start and end points
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                [{ x: i.x, y: i.y }, { x: i.x, y: i.y + i.h }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+            } else if (i.type === "triangle" || i.type === "fillTriangle") {
+                // For triangles, show handles at all three vertices
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                [{ x: i.x0, y: i.y0 }, { x: i.x1, y: i.y1 }, { x: i.x2, y: i.y2 }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+            } else if (i.type === "arc") {
+                // For arcs, show bounding box for radius adjustment and angle handles
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                
+                // Draw bounding box
+                ctx.strokeRect(i.x + 0.5, i.y + 0.5, i.w - 1, i.h - 1);
+                
+                // Bounding box corner handles (for radius adjustment)
+                [{ x: i.x, y: i.y }, { x: i.x + i.w, y: i.y }, { x: i.x, y: i.y + i.h }, { x: i.x + i.w, y: i.y + i.h }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 4, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+                
+                // Angle handles at arc endpoints
+                const centerX = i.x + i.w / 2;
+                const centerY = i.y + i.h / 2;
+                const outerRadius = i.outerRadius || 20;
+                const startRad = ((i.startAngle || 0) + 90) * Math.PI / 180; // Add 90° to make 0° at bottom
+                const endRad = ((i.endAngle || 90) + 90) * Math.PI / 180;
+                
+                const startX = centerX + outerRadius * Math.cos(startRad);
+                const startY = centerY + outerRadius * Math.sin(startRad);
+                const endX = centerX + outerRadius * Math.cos(endRad);
+                const endY = centerY + outerRadius * Math.sin(endRad);
+                
+                // Start and end angle handles (larger, distinct color)
+                [{ x: startX, y: startY }, { x: endX, y: endY }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 6, 0, 2 * Math.PI);
+                    ctx.fillStyle = "red";
+                    ctx.fill();
+                });
+            } else if (i.type === "pixel") {
+                // For pixels, show just one small handle in the center
+                ctx.beginPath();
+                ctx.arc(0.5, 0.5, 3, 0, 2 * Math.PI);
+                ctx.fillStyle = "blue";
+                ctx.fill();
             } else {
-                ctx.strokeRect(0, 0, i.w, i.h);
+                ctx.strokeRect(0.5, 0.5, i.w - 1, i.h - 1);
                 [{ x: 0, y: 0 }, { x: i.w, y: 0 }, { x: 0, y: i.h }, { x: i.w, y: i.h }].forEach(h => {
                     ctx.beginPath();
                     ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
@@ -459,8 +1710,8 @@ function render() {
         ctx.restore();
     });
 
-    syncUI();
     generateCode();
+    saveState();
 }
 
 
@@ -470,6 +1721,43 @@ document.addEventListener("mousemove", drag);
 document.addEventListener("touchmove", drag, { passive: false });
 document.addEventListener("mouseup", stopDrag);
 document.addEventListener("touchend", stopDrag);
+
+// Prevent drag events from interfering with text selection in code element
+document.getElementById("code").addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+});
+
+document.getElementById("code").addEventListener("mouseup", (e) => {
+    e.stopPropagation();
+});
+
+// Track ALT key for temporary snap disable
+document.addEventListener("keydown", (e) => {
+    // Check if import modal is visible - if so, don't handle app shortcuts
+    const importModal = document.getElementById('importModal');
+    const isModalVisible = importModal && importModal.style.display === 'block';
+    
+    if (e.altKey) {
+        e.preventDefault(); // Prevent browser menu activation
+        altHeld = true;
+    } else if (e.key === "Delete" && selected && !isModalVisible) {
+        e.preventDefault(); // Prevent default delete action
+        deleteItem();
+    } else if (e.ctrlKey && e.key === "z" && !isModalVisible) {
+        e.preventDefault(); // Prevent browser undo
+        undo();
+    } else if (e.ctrlKey && e.key === "y" && !isModalVisible) {
+        e.preventDefault(); // Prevent browser redo
+        redo();
+    }
+});
+
+document.addEventListener("keyup", (e) => {
+    if (!e.altKey) {
+        e.preventDefault(); // Prevent browser menu activation
+        altHeld = false;
+    }
+});
 
 function getMousePos(e) {
     const r = canvas.getBoundingClientRect();
@@ -481,48 +1769,331 @@ function getMousePos(e) {
 
 function startDrag(e) {
     const p = getMousePos(e);
-    showGrid = false;
+    if (!showGrid) {
+        showGrid = false;
+    }
     selected = null;
 
     for (let i = items.length - 1; i >= 0; i--) {
         const it = items[i];
         let iw = it.w, ih = it.h;
+        let hitboxX = it.x, hitboxY = it.y;
+        
         if (it.type === "text") {
-            iw = ctx.measureText(it.text).width;
-            ih = it.size * 8;
+            // Simple text collision - calculate text box from red circle position
+            ctx.save();
+            ctx.font = `bold ${it.size * 12}px "Courier New"`;
+            ctx.textAlign = it.textAlign || 'left';
+            ctx.textBaseline = it.textBaseline || 'top';
+            
+            const metrics = ctx.measureText(it.text);
+            iw = metrics.width;
+            ih = it.size * 12; // Simple height
+            
+            // Hitbox starts at red circle position, adjusted by alignment
+            hitboxX = it.x;
+            hitboxY = it.y;
+            
+            const align = it.textAlign || 'left';
+            const baseline = it.textBaseline || 'top';
+            
+            if (align === 'center') hitboxX = it.x - iw / 2;
+            else if (align === 'right') hitboxX = it.x - iw;
+            
+            if (baseline === 'middle') hitboxY = it.y - ih / 2;
+            else if (baseline === 'bottom') hitboxY = it.y - ih;
+            
+            ctx.restore();
         }
 
-        const corners = it.type !== "text" ? [
-            { name: 'tl', x: it.x - 5, y: it.y - 5 },
-            { name: 'tr', x: it.x + it.w - 5, y: it.y - 5 },
-            { name: 'bl', x: it.x - 5, y: it.y + it.h - 5 },
-            { name: 'br', x: it.x + it.w - 5, y: it.y + it.h - 5 }
-        ] : [];
-
-        for (let h of corners) {
-            if (p.x >= h.x && p.x <= h.x + 10 && p.y >= h.y && p.y <= h.y + 10) {
+        if (it.type === "line" || it.type === "wideLine") {
+            // Check line endpoints first
+            const points = [
+                { name: 'start', x: it.x - 5, y: it.y - 5 },
+                { name: 'end', x: it.x2 - 5, y: it.y2 - 5 }
+            ];
+            
+            for (let point of points) {
+                if (p.x >= point.x && p.x <= point.x + 10 && p.y >= point.y && p.y <= point.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = point.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking near the line itself
+            const lineLength = Math.sqrt((it.x2 - it.x) ** 2 + (it.y2 - it.y) ** 2);
+            if (lineLength > 0) {
+                const tolerance = 5;
+                const a = it.y2 - it.y;
+                const b = it.x - it.x2;
+                const c = it.x2 * it.y - it.x * it.y2;
+                const distance = Math.abs(a * p.x + b * p.y + c) / Math.sqrt(a * a + b * b);
+                
+                if (distance <= tolerance) {
+                    // Check if point is within line segment bounds
+                    const minX = Math.min(it.x, it.x2) - tolerance;
+                    const maxX = Math.max(it.x, it.x2) + tolerance;
+                    const minY = Math.min(it.y, it.y2) - tolerance;
+                    const maxY = Math.max(it.y, it.y2) + tolerance;
+                    
+                    if (p.x >= minX && p.x <= maxX && p.y >= minY && p.y <= maxY) {
+                        dragging = it;
+                        offsetX = p.x - it.x;
+                        offsetY = p.y - it.y;
+                        selected = it;
+                        showGrid = true;
+                        updateLayerSelect();
+                        syncUI();
+                        render();
+                        return;
+                    }
+                }
+            }
+        } else if (it.type === "triangle" || it.type === "fillTriangle") {
+            // Check triangle vertices first
+            const vertices = [
+                { name: 'v0', x: it.x0 - 5, y: it.y0 - 5 },
+                { name: 'v1', x: it.x1 - 5, y: it.y1 - 5 },
+                { name: 'v2', x: it.x2 - 5, y: it.y2 - 5 }
+            ];
+            
+            for (let vertex of vertices) {
+                if (p.x >= vertex.x && p.x <= vertex.x + 10 && p.y >= vertex.y && p.y <= vertex.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = vertex.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking inside triangle for whole shape dragging
+            // Simple point-in-triangle test using barycentric coordinates
+            const area = Math.abs((it.x1 - it.x0) * (it.y2 - it.y0) - (it.x2 - it.x0) * (it.y1 - it.y0)) / 2;
+            if (area > 0) {
+                const area1 = Math.abs((it.x0 - p.x) * (it.y1 - p.y) - (it.x1 - p.x) * (it.y0 - p.y)) / 2;
+                const area2 = Math.abs((it.x1 - p.x) * (it.y2 - p.y) - (it.x2 - p.x) * (it.y1 - p.y)) / 2;
+                const area3 = Math.abs((it.x2 - p.x) * (it.y0 - p.y) - (it.x0 - p.x) * (it.y2 - p.y)) / 2;
+                
+                if (Math.abs(area1 + area2 + area3 - area) < 1) {
+                    dragging = it;
+                    offsetX = p.x - it.x0;
+                    offsetY = p.y - it.y0;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+        } else if (it.type === "fastHLine") {
+            // Check fastHLine endpoints first
+            const points = [
+                { name: 'start', x: it.x - 5, y: it.y - 5 },
+                { name: 'end', x: (it.x + it.w) - 5, y: it.y - 5 }
+            ];
+            
+            for (let point of points) {
+                if (p.x >= point.x && p.x <= point.x + 10 && p.y >= point.y && p.y <= point.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = point.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking near the horizontal line
+            const tolerance = 5;
+            if (p.y >= it.y - tolerance && p.y <= it.y + tolerance && 
+                p.x >= it.x - tolerance && p.x <= it.x + it.w + tolerance) {
                 dragging = it;
-                resizing = true;
-                resizeHandle = h.name;
+                offsetX = p.x - it.x;
+                offsetY = p.y - it.y;
                 selected = it;
                 showGrid = true;
                 updateLayerSelect();
+                syncUI();
+                render();
+                return;
+            }
+        } else if (it.type === "fastVLine") {
+            // Check fastVLine endpoints first
+            const points = [
+                { name: 'start', x: it.x - 5, y: it.y - 5 },
+                { name: 'end', x: it.x - 5, y: (it.y + it.h) - 5 }
+            ];
+            
+            for (let point of points) {
+                if (p.x >= point.x && p.x <= point.x + 10 && p.y >= point.y && p.y <= point.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = point.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking near the vertical line
+            const tolerance = 5;
+            if (p.x >= it.x - tolerance && p.x <= it.x + tolerance && 
+                p.y >= it.y - tolerance && p.y <= it.y + it.h + tolerance) {
+                dragging = it;
+                offsetX = p.x - it.x;
+                offsetY = p.y - it.y;
+                selected = it;
+                showGrid = true;
+                updateLayerSelect();
+                syncUI();
+                render();
+                return;
+            }
+        } else if (it.type === "arc") {
+            // Check bounding box corners first (for radius adjustment)
+            const corners = [
+                { name: 'tl', x: it.x - 5, y: it.y - 5 },
+                { name: 'tr', x: it.x + it.w - 5, y: it.y - 5 },
+                { name: 'bl', x: it.x - 5, y: it.y + it.h - 5 },
+                { name: 'br', x: it.x + it.w - 5, y: it.y + it.h - 5 }
+            ];
+            
+            for (let corner of corners) {
+                if (p.x >= corner.x && p.x <= corner.x + 10 && p.y >= corner.y && p.y <= corner.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = corner.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check arc angle handles
+            const centerX = it.x + it.w / 2;
+            const centerY = it.y + it.h / 2;
+            const outerRadius = it.outerRadius || 20;
+            const startRad = ((it.startAngle || 0) + 90) * Math.PI / 180; // Add 90° to make 0° at bottom
+            const endRad = ((it.endAngle || 90) + 90) * Math.PI / 180;
+            
+            const startX = centerX + outerRadius * Math.cos(startRad);
+            const startY = centerY + outerRadius * Math.sin(startRad);
+            const endX = centerX + outerRadius * Math.cos(endRad);
+            const endY = centerY + outerRadius * Math.sin(endRad);
+            
+            const angleHandles = [
+                { name: 'arcStart', x: startX - 5, y: startY - 5, w: 10, h: 10 },
+                { name: 'arcEnd', x: endX - 5, y: endY - 5, w: 10, h: 10 }
+            ];
+            
+            for (let handle of angleHandles) {
+                if (p.x >= handle.x && p.x <= handle.x + handle.w && p.y >= handle.y && p.y <= handle.y + handle.w) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = handle.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking inside arc bounding box for whole shape dragging
+            // Use full bounding box area for easy selection
+            if (p.x >= it.x && p.x <= it.x + it.w && p.y >= it.y && p.y <= it.y + it.h) {
+                dragging = it;
+                offsetX = p.x - it.x;
+                offsetY = p.y - it.y;
+                selected = it;
+                showGrid = true;
+                updateLayerSelect();
+                syncUI();
+                render();
+                return;
+            }
+        } else {
+            const corners = (it.type !== "text" && it.type !== "pixel") ? [
+                { name: 'tl', x: it.x - 5, y: it.y - 5 },
+                { name: 'tr', x: it.x + it.w - 5, y: it.y - 5 },
+                { name: 'bl', x: it.x - 5, y: it.y + it.h - 5 },
+                { name: 'br', x: it.x + it.w - 5, y: it.y + it.h - 5 }
+            ] : [];
+
+            for (let h of corners) {
+                if (p.x >= h.x && p.x <= h.x + 10 && p.y >= h.y && p.y <= h.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = h.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+
+            // Special handling for pixel selection - 5px area around pixel
+            if (it.type === "pixel") {
+                if (p.x >= it.x - 5 && p.x <= it.x + 5 && p.y >= it.y - 5 && p.y <= it.y + 5) {
+                    dragging = it;
+                    offsetX = p.x - it.x;
+                    offsetY = p.y - it.y;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            } else if (p.x >= hitboxX && p.x <= hitboxX + iw && p.y >= hitboxY && p.y <= hitboxY + ih) {
+                dragging = it;
+                
+                // For text objects, x,y IS the alignment point
+                if (it.type === "text") {
+                    offsetX = p.x - it.x;
+                    offsetY = p.y - it.y;
+                } else {
+                    offsetX = p.x - it.x;
+                    offsetY = p.y - it.y;
+                }
+                selected = it;
+                showGrid = true;
+                updateLayerSelect();
+                syncUI();
                 render();
                 return;
             }
         }
-
-        if (p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih) {
-            dragging = it;
-            offsetX = p.x - it.x;
-            offsetY = p.y - it.y;
-            selected = it;
-            showGrid = true;
-            updateLayerSelect();
-            render();
-            return;
-        }
     }
+    
+    // If we get here, no shape was clicked - update UI to reflect deselection
+    updateLayerSelect();
+    syncUI();
+    render();
 }
 
 function drag(e) {
@@ -532,72 +2103,316 @@ function drag(e) {
     const p = getMousePos(e);
 
     if (resizing) {
-        let nx = dragging.x,
-            ny = dragging.y,
-            nw = dragging.w,
-            nh = dragging.h,
-            mn = 5;
+        if (dragging.type === "line" || dragging.type === "wideLine" || dragging.type === "fastHLine" || dragging.type === "fastVLine") {
+            // Handle line point dragging
+            if (resizeHandle === 'start') {
+                dragging.x = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+                dragging.y = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
+            } else if (resizeHandle === 'end') {
+                if (dragging.type === "fastHLine") {
+                    // For fastHLine, only allow horizontal movement of end point
+                    const newX = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+                    dragging.w = Math.max(1, newX - dragging.x);
+                } else if (dragging.type === "fastVLine") {
+                    // For fastVLine, only allow vertical movement of end point
+                    const newY = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
+                    dragging.h = Math.max(1, newY - dragging.y);
+                } else {
+                    // Regular lines
+                    dragging.x2 = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+                    dragging.y2 = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
+                }
+            }
+        } else if (dragging.type === "triangle" || dragging.type === "fillTriangle") {
+            // Handle triangle vertex dragging
+            const newX = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+            const newY = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
+            
+            if (resizeHandle === 'v0') {
+                dragging.x0 = newX;
+                dragging.y0 = newY;
+            } else if (resizeHandle === 'v1') {
+                dragging.x1 = newX;
+                dragging.y1 = newY;
+            } else if (resizeHandle === 'v2') {
+                dragging.x2 = newX;
+                dragging.y2 = newY;
+            }
+        } else if (dragging.type === "arc") {
+            // Handle arc radius adjustment via corner dragging
+            if (resizeHandle === 'tl' || resizeHandle === 'tr' || resizeHandle === 'bl' || resizeHandle === 'br') {
+                let nx = p.x, ny = p.y, nw = dragging.w, nh = dragging.h;
+                
+                if (snapOn !== altHeld) {
+                    nx = Math.round(nx / gridSize) * gridSize;
+                    ny = Math.round(ny / gridSize) * gridSize;
+                }
+                
+                if (resizeHandle === 'br') {
+                    nw = clamp(nx - dragging.x, 20, canvas.width - dragging.x);
+                    nh = clamp(ny - dragging.y, 20, canvas.height - dragging.y);
+                    // Keep arc circular and update outer radius
+                    const newSize = Math.min(nw, nh);
+                    dragging.w = newSize;
+                    dragging.h = newSize;
+                    dragging.outerRadius = newSize / 2;
+                } else if (resizeHandle === 'tl') {
+                    const newX = clamp(nx, 0, dragging.x + dragging.w - 20);
+                    const newY = clamp(ny, 0, dragging.y + dragging.h - 20);
+                    nw = dragging.x + dragging.w - newX;
+                    nh = dragging.y + dragging.h - newY;
+                    const newSize = Math.min(nw, nh);
+                    dragging.x = dragging.x + dragging.w - newSize;
+                    dragging.y = dragging.y + dragging.h - newSize;
+                    dragging.w = newSize;
+                    dragging.h = newSize;
+                    dragging.outerRadius = newSize / 2;
+                } else if (resizeHandle === 'tr') {
+                    const newY = clamp(ny, 0, dragging.y + dragging.h - 20);
+                    nw = clamp(nx - dragging.x, 20, canvas.width - dragging.x);
+                    nh = dragging.y + dragging.h - newY;
+                    const newSize = Math.min(nw, nh);
+                    dragging.y = dragging.y + dragging.h - newSize;
+                    dragging.w = newSize;
+                    dragging.h = newSize;
+                    dragging.outerRadius = newSize / 2;
+                } else if (resizeHandle === 'bl') {
+                    const newX = clamp(nx, 0, dragging.x + dragging.w - 20);
+                    nw = dragging.x + dragging.w - newX;
+                    nh = clamp(ny - dragging.y, 20, canvas.height - dragging.y);
+                    const newSize = Math.min(nw, nh);
+                    dragging.x = dragging.x + dragging.w - newSize;
+                    dragging.w = newSize;
+                    dragging.h = newSize;
+                    dragging.outerRadius = newSize / 2;
+                }
+            }
+            // Handle arc angle dragging
+            else if (resizeHandle === 'arcStart' || resizeHandle === 'arcEnd') {
+                const centerX = dragging.x + dragging.w / 2;
+                const centerY = dragging.y + dragging.h / 2;
+                let angle = Math.atan2(p.y - centerY, p.x - centerX) * 180 / Math.PI;
+                angle -= 90; // Subtract 90° to make 0° at bottom
+                if (angle < 0) angle += 360;
+                
+                if (snapOn !== altHeld) {
+                    angle = Math.round(angle / 15) * 15; // Snap to 15-degree increments
+                } else {
+                    angle = Math.round(angle); // Always round to integer
+                }
+                
+                if (resizeHandle === 'arcStart') {
+                    dragging.startAngle = Math.round(angle);
+                } else {
+                    dragging.endAngle = Math.round(angle);
+                }
+            }
+        } else if (dragging.type === "circle" || dragging.type === "fillCircle") {
+            // Handle circle resizing - keep square and update radius
+            let nx = dragging.x,
+                ny = dragging.y,
+                nw = dragging.w,
+                nh = dragging.h,
+                mn = 10; // Minimum size for circles
 
-        if (resizeHandle.includes('t')) {
-            ny = Math.min(p.y, dragging.y + dragging.h - mn);
-            nh = dragging.h + (dragging.y - ny);
-        }
-        if (resizeHandle.includes('b')) nh = Math.max(mn, p.y - dragging.y);
-        if (resizeHandle.includes('l')) {
-            nx = Math.min(p.x, dragging.x + dragging.w - mn);
-            nw = dragging.w + (dragging.x - nx);
-        }
-        if (resizeHandle.includes('r')) nw = Math.max(mn, p.x - dragging.x);
+            if (resizeHandle.includes('t')) {
+                ny = Math.min(p.y, dragging.y + dragging.h - mn);
+                nh = dragging.h + (dragging.y - ny);
+            }
+            if (resizeHandle.includes('b')) nh = Math.max(mn, p.y - dragging.y);
+            if (resizeHandle.includes('l')) {
+                nx = Math.min(p.x, dragging.x + dragging.w - mn);
+                nw = dragging.w + (dragging.x - nx);
+            }
+            if (resizeHandle.includes('r')) nw = Math.max(mn, p.x - dragging.x);
 
-        nx = clamp(nx, 0, canvas.width - nw);
-        ny = clamp(ny, 0, canvas.height - nh);
-        nw = clamp(nw, mn, canvas.width - nx);
-        nh = clamp(nh, mn, canvas.height - ny);
+            // Keep circles square - use the smaller dimension
+            const newSize = Math.min(nw, nh);
+            
+            // Adjust position based on which handle was dragged
+            if (resizeHandle.includes('t') && resizeHandle.includes('l')) {
+                // Top-left: adjust both x and y
+                nx = dragging.x + dragging.w - newSize;
+                ny = dragging.y + dragging.h - newSize;
+            } else if (resizeHandle.includes('t')) {
+                // Top: adjust y only
+                ny = dragging.y + dragging.h - newSize;
+            } else if (resizeHandle.includes('l')) {
+                // Left: adjust x only
+                nx = dragging.x + dragging.w - newSize;
+            }
+            
+            // Remove canvas boundary restrictions for circle resizing
+            // nx = clamp(nx, 0, canvas.width - newSize);
+            // ny = clamp(ny, 0, canvas.height - newSize);
 
-        if (snapOn) {
-            dragging.x = Math.round(nx / gridSize) * gridSize;
-            dragging.y = Math.round(ny / gridSize) * gridSize;
-            dragging.w = Math.round(nw / gridSize) * gridSize;
-            dragging.h = Math.round(nh / gridSize) * gridSize;
+            if (snapOn !== altHeld) {
+                dragging.x = Math.round(nx / gridSize) * gridSize;
+                dragging.y = Math.round(ny / gridSize) * gridSize;
+                dragging.w = dragging.h = Math.round(newSize / gridSize) * gridSize;
+            } else {
+                dragging.x = nx;
+                dragging.y = ny;
+                dragging.w = dragging.h = newSize;
+            }
+            
+            // Update radius based on new bounding box
+            dragging.radius = Math.round(dragging.w / 2);
         } else {
-            dragging.x = nx;
-            dragging.y = ny;
-            dragging.w = nw;
-            dragging.h = nh;
+            // Handle other shapes resizing
+            let nx = dragging.x,
+                ny = dragging.y,
+                nw = dragging.w,
+                nh = dragging.h,
+                mn = 5;
+
+            if (resizeHandle.includes('t')) {
+                ny = Math.min(p.y, dragging.y + dragging.h - mn);
+                nh = dragging.h + (dragging.y - ny);
+            }
+            if (resizeHandle.includes('b')) nh = Math.max(mn, p.y - dragging.y);
+            if (resizeHandle.includes('l')) {
+                nx = Math.min(p.x, dragging.x + dragging.w - mn);
+                nw = dragging.w + (dragging.x - nx);
+            }
+            if (resizeHandle.includes('r')) nw = Math.max(mn, p.x - dragging.x);
+
+            // Remove canvas boundary restrictions for resizing
+            // nx = clamp(nx, 0, canvas.width - nw);
+            // ny = clamp(ny, 0, canvas.height - nh);
+            // nw = clamp(nw, mn, canvas.width - nx);
+            // nh = clamp(nh, mn, canvas.height - ny);
+
+            if (snapOn !== altHeld) {
+                dragging.x = Math.round(nx / gridSize) * gridSize;
+                dragging.y = Math.round(ny / gridSize) * gridSize;
+                dragging.w = Math.round(nw / gridSize) * gridSize;
+                dragging.h = Math.round(nh / gridSize) * gridSize;
+            } else {
+                dragging.x = nx;
+                dragging.y = ny;
+                dragging.w = nw;
+                dragging.h = nh;
+            }
         }
     } else {
-        let nx = p.x - offsetX;
-        let ny = p.y - offsetY;
-
-        if (snapOn) {
-            nx = Math.round(nx / gridSize) * gridSize;
-            ny = Math.round(ny / gridSize) * gridSize;
-        }
-
-        if (selected && selected.type === "text") {
-            selected.x = clamp(nx, 0, canvas.width - selected.w);
-            selected.y = clamp(ny, 0, canvas.height - selected.h);
+        // Handle moving entire shape
+        if (dragging.type === "line" || dragging.type === "wideLine") {
+            let dx = p.x - dragging.x - offsetX;
+            let dy = p.y - dragging.y - offsetY;
+            
+            if (snapOn !== altHeld) {
+                dx = Math.round(dx / gridSize) * gridSize;
+                dy = Math.round(dy / gridSize) * gridSize;
+            }
+            
+            dragging.x += dx;
+            dragging.y += dy;
+            dragging.x2 += dx;
+            dragging.y2 += dy;
+        } else if (dragging.type === "fastHLine" || dragging.type === "fastVLine") {
+            // Fast lines only move their start position
+            let nx = p.x - offsetX;
+            let ny = p.y - offsetY;
+            
+            if (snapOn !== altHeld) {
+                nx = Math.round(nx / gridSize) * gridSize;
+                ny = Math.round(ny / gridSize) * gridSize;
+            }
+            
+            dragging.x = nx;
+            dragging.y = ny;
+        } else if (dragging.type === "triangle" || dragging.type === "fillTriangle") {
+            let dx = p.x - dragging.x0 - offsetX;
+            let dy = p.y - dragging.y0 - offsetY;
+            
+            if (snapOn !== altHeld) {
+                dx = Math.round(dx / gridSize) * gridSize;
+                dy = Math.round(dy / gridSize) * gridSize;
+            }
+            
+            dragging.x0 += dx;
+            dragging.y0 += dy;
+            dragging.x1 += dx;
+            dragging.y1 += dy;
+            dragging.x2 += dx;
+            dragging.y2 += dy;
+        } else if (dragging.type === "arc") {
+            if (!resizeHandle) {
+                // Normal arc dragging (whole shape movement)
+                let nx = p.x - offsetX;
+                let ny = p.y - offsetY;
+                
+                if (snapOn !== altHeld) {
+                    nx = Math.round(nx / gridSize) * gridSize;
+                    ny = Math.round(ny / gridSize) * gridSize;
+                }
+                
+                dragging.x = nx;
+                dragging.y = ny;
+            }
         } else {
-            dragging.x = clamp(nx, 0, canvas.width - dragging.w);
-            dragging.y = clamp(ny, 0, canvas.height - dragging.h);
+            let nx = p.x - offsetX;
+            let ny = p.y - offsetY;
+
+            if (snapOn !== altHeld) {
+                nx = Math.round(nx / gridSize) * gridSize;
+                ny = Math.round(ny / gridSize) * gridSize;
+            }
+
+            if (selected && selected.type === "text") {
+                // For text, x,y IS the alignment point - move it directly
+                let newX = p.x - offsetX;
+                let newY = p.y - offsetY;
+                
+                if (snapOn !== altHeld) {
+                    newX = Math.round(newX / gridSize) * gridSize;
+                    newY = Math.round(newY / gridSize) * gridSize;
+                }
+                
+                selected.x = newX;
+                selected.y = newY;
+            } else {
+                dragging.x = nx;
+                dragging.y = ny;
+            }
         }
     }
 
     showGrid = true;
+    syncUI(); // Update property inputs during dragging
     render();
 }
 
 function stopDrag() {
+    if (dragging || resizing) {
+        // Save state after completing drag operation
+        saveToHistory();
+    }
     dragging = null;
     resizing = false;
     resizeHandle = null;
-    showGrid = false;
+    // Keep grid visible if Always Show Grid is on
+    if (!showGrid && alwaysShowGridInput.classList.contains('on')) {
+        showGrid = true;
+    } else if (!alwaysShowGridInput.classList.contains('on')) {
+        showGrid = false;
+    }
+    syncUI(); // Update properties when drag ends
     render();
 }
 
 
 function updateLayerSelect() {
     shapeSelect.innerHTML = "";
+    
+    // Add blank/placeholder option
+    let blankOption = document.createElement("option");
+    blankOption.value = "";
+    blankOption.text = "Select a layer...";
+    blankOption.selected = (selected === null);
+    shapeSelect.appendChild(blankOption);
+    
     items.forEach((i, idx) => {
         let o = document.createElement("option");
         o.value = idx;
@@ -609,21 +2424,209 @@ function updateLayerSelect() {
 
 shapeSelect.onchange = e => {
     selected = items[e.target.value];
+    syncUI();
     render();
 };
 
 
 function syncUI() {
-    if (!selected) return;
-    textInput.value = selected.text;
+    // Hide all dynamic controls first
+    document.getElementById('textControl').style.display = 'none';
+    document.getElementById('textSizeControl').style.display = 'none';
+    document.getElementById('textAlignControl').style.display = 'none';
+    document.getElementById('textBaselineControl').style.display = 'none';
+    document.getElementById('textBgColorControl').style.display = 'none';
+    document.getElementById('textBgToggleControl').style.display = 'none';
+    document.getElementById('textBgColorPlaceholder').style.display = 'none';
+    document.getElementById('posXControl').style.display = 'none';
+    document.getElementById('posYControl').style.display = 'none';
+    document.getElementById('widthControl').style.display = 'none';
+    document.getElementById('heightControl').style.display = 'none';
+    document.getElementById('radiusControl').style.display = 'none';
+    document.getElementById('x2Control').style.display = 'none';
+    document.getElementById('y2Control').style.display = 'none';
+    document.getElementById('colorControl').style.display = 'none';
+    document.getElementById('x0Control').style.display = 'none';
+    document.getElementById('y0Control').style.display = 'none';
+    document.getElementById('x1Control').style.display = 'none';
+    document.getElementById('y1Control').style.display = 'none';
+    document.getElementById('x2TriControl').style.display = 'none';
+    document.getElementById('y2TriControl').style.display = 'none';
+    document.getElementById('lineWidthControl').style.display = 'none';
+    document.getElementById('startAngleControl').style.display = 'none';
+    document.getElementById('endAngleControl').style.display = 'none';
+    document.getElementById('innerRadiusControl').style.display = 'none';
+    document.getElementById('outerRadiusControl').style.display = 'none';
+    document.getElementById('color2Control').style.display = 'none';
+    document.getElementById('gradientModeControl').style.display = 'none';
+    
+    if (!selected) {
+        // Show placeholder message when nothing is selected
+        document.getElementById('noSelectionMessage').style.display = 'block';
+        // Disable duplicate and delete buttons when nothing is selected
+        document.getElementById('duplicateBtn').disabled = true;
+        document.getElementById('deleteBtn').disabled = true;
+        return;
+    }
+    
+    // Hide placeholder message when something is selected
+    document.getElementById('noSelectionMessage').style.display = 'none';
+    // Enable duplicate and delete buttons when something is selected
+    document.getElementById('duplicateBtn').disabled = false;
+    document.getElementById('deleteBtn').disabled = false;
+    
+    // Always show position and color for all shapes
+    document.getElementById('posXControl').style.display = 'flex';
+    document.getElementById('posYControl').style.display = 'flex';
+    document.getElementById('colorControl').style.display = 'flex';
+    
+    if (selected.type === 'arc') {
+        // For arcs, show center point instead of top-left corner
+        posXInput.value = Math.round(selected.x + selected.w / 2);
+        posYInput.value = Math.round(selected.y + selected.h / 2);
+    } else if (selected.type === 'triangle' || selected.type === 'fillTriangle') {
+        // For triangles, don't show position controls as they use point-based positioning
+        document.getElementById('posXControl').style.display = 'none';
+        document.getElementById('posYControl').style.display = 'none';
+    } else {
+        posXInput.value = Math.round(selected.x);
+        posYInput.value = Math.round(selected.y);
+    }
+    
+    // Update common controls
+    textInput.value = selected.text || '';
     colorInput.value = selected.color;
-    if (selected.type === "text") textSizeInput.value = selected.size;
+    color2Input.value = selected.color2 || selected.color;
+    gradientModeInput.value = selected.gradientMode || 'h';
+    
+    // Show controls based on shape type
+    switch(selected.type) {
+        case 'fillRect':
+        case 'rect':
+            document.getElementById('widthControl').style.display = 'flex';
+            document.getElementById('heightControl').style.display = 'flex';
+            widthInput.value = Math.round(selected.w);
+            heightInput.value = Math.round(selected.h);
+            break;
+            
+        case 'fastHLine':
+            document.getElementById('widthControl').style.display = 'flex';
+            widthInput.value = Math.round(selected.w);
+            break;
+            
+        case 'fastVLine':
+            document.getElementById('heightControl').style.display = 'flex';
+            heightInput.value = Math.round(selected.h);
+            break;
+            
+        case 'fillRectGradient':
+            document.getElementById('widthControl').style.display = 'flex';
+            document.getElementById('heightControl').style.display = 'flex';
+            document.getElementById('color2Control').style.display = 'flex';
+            document.getElementById('gradientModeControl').style.display = 'flex';
+            widthInput.value = Math.round(selected.w);
+            heightInput.value = Math.round(selected.h);
+            break;
+            
+        case 'roundRect':
+        case 'fillRoundRect':
+            document.getElementById('widthControl').style.display = 'flex';
+            document.getElementById('heightControl').style.display = 'flex';
+            document.getElementById('radiusControl').style.display = 'flex';
+            widthInput.value = Math.round(selected.w);
+            heightInput.value = Math.round(selected.h);
+            radiusInput.value = selected.radius || 5;
+            break;
+            
+        case 'circle':
+            document.getElementById('radiusControl').style.display = 'flex';
+            radiusInput.value = selected.radius || Math.round(selected.w / 2);
+            break;
+            
+        case 'fillCircle':
+            document.getElementById('radiusControl').style.display = 'flex';
+            radiusInput.value = selected.radius || Math.round(selected.w / 2);
+            break;
+            
+        case 'arc':
+            document.getElementById('startAngleControl').style.display = 'flex';
+            document.getElementById('endAngleControl').style.display = 'flex';
+            document.getElementById('innerRadiusControl').style.display = 'flex';
+            document.getElementById('outerRadiusControl').style.display = 'flex';
+            startAngleInput.value = selected.startAngle || 0;
+            endAngleInput.value = selected.endAngle || 90;
+            innerRadiusInput.value = Math.round(selected.innerRadius || 10);
+            outerRadiusInput.value = Math.round(selected.outerRadius || 20);
+            break;
+            
+        case 'line':
+            document.getElementById('x2Control').style.display = 'flex';
+            document.getElementById('y2Control').style.display = 'flex';
+            x2Input.value = Math.round(selected.x2);
+            y2Input.value = Math.round(selected.y2);
+            break;
+            
+        case 'wideLine':
+            document.getElementById('x2Control').style.display = 'flex';
+            document.getElementById('y2Control').style.display = 'flex';
+            document.getElementById('lineWidthControl').style.display = 'flex';
+            x2Input.value = Math.round(selected.x2);
+            y2Input.value = Math.round(selected.y2);
+            lineWidthInput.value = selected.lineWidth || 2;
+            break;
+            
+        case 'triangle':
+        case 'fillTriangle':
+            document.getElementById('x0Control').style.display = 'flex';
+            document.getElementById('y0Control').style.display = 'flex';
+            document.getElementById('x1Control').style.display = 'flex';
+            document.getElementById('y1Control').style.display = 'flex';
+            document.getElementById('x2TriControl').style.display = 'flex';
+            document.getElementById('y2TriControl').style.display = 'flex';
+            x0Input.value = Math.round(selected.x0);
+            y0Input.value = Math.round(selected.y0);
+            x1Input.value = Math.round(selected.x1);
+            y1Input.value = Math.round(selected.y1);
+            x2TriInput.value = Math.round(selected.x2);
+            y2TriInput.value = Math.round(selected.y2);
+            break;
+            
+        case 'text':
+            document.getElementById('textControl').style.display = 'flex';
+            document.getElementById('textSizeControl').style.display = 'flex';
+            document.getElementById('textAlignControl').style.display = 'flex';
+            document.getElementById('textBaselineControl').style.display = 'flex';
+            document.getElementById('textBgToggleControl').style.display = 'flex';
+            textSizeInput.value = selected.size;
+            // Only update dropdown values if user is not currently changing them
+            if (!changingTextAlign) {
+                textAlignInput.value = selected.textAlign || 'left';
+            }
+            if (!changingTextBaseline) {
+                textBaselineInput.value = selected.textBaseline || 'top';
+            }
+            textBgColorInput.value = selected.textBgColor || '#000000';
+            
+            if (selected.textBgColor) {
+                document.getElementById('textBgColorControl').style.display = 'flex';
+                document.getElementById('textBgColorPlaceholder').style.display = 'none';
+                textBgToggleInput.textContent = 'YES';
+                textBgToggleInput.classList.add('on');
+            } else {
+                document.getElementById('textBgColorControl').style.display = 'none';
+                document.getElementById('textBgColorPlaceholder').style.display = 'flex';
+                textBgToggleInput.textContent = 'NO';
+                textBgToggleInput.classList.remove('on');
+            }
+            break;
+    }
 }
 
 textInput.addEventListener("input", () => {
     if (selected && selected.type === "text") {
         selected.text = textInput.value;
         render();
+        trackInputChange();
     }
 });
 
@@ -634,9 +2637,280 @@ colorInput.addEventListener("input", () => {
     }
 });
 
+color2Input.addEventListener("input", () => {
+    if (selected) {
+        selected.color2 = color2Input.value;
+        render();
+        trackInputChange();
+    }
+});
+
+gradientModeInput.addEventListener("change", () => {
+    if (selected) {
+        selected.gradientMode = gradientModeInput.value;
+        render();
+        trackInputChange();
+    }
+});
+
 textSizeInput.addEventListener("input", () => {
     if (selected && selected.type === "text") {
         selected.size = parseInt(textSizeInput.value);
+        render();
+        trackInputChange();
+    }
+});
+
+textBgColorInput.addEventListener("input", () => {
+    if (selected && selected.type === "text" && selected.textBgColor) {
+        selected.textBgColor = textBgColorInput.value;
+        render();
+        trackInputChange();
+    }
+});
+
+textBgToggleInput.addEventListener("click", () => {
+    if (selected && selected.type === "text") {
+        if (selected.textBgColor) {
+            selected.textBgColor = null;
+            textBgToggleInput.textContent = 'NO';
+            textBgToggleInput.classList.remove('on');
+            document.getElementById('textBgColorControl').style.display = 'none';
+            document.getElementById('textBgColorPlaceholder').style.display = 'flex';
+        } else {
+            selected.textBgColor = textBgColorInput.value;
+            textBgToggleInput.textContent = 'YES';
+            textBgToggleInput.classList.add('on');
+            document.getElementById('textBgColorControl').style.display = 'flex';
+            document.getElementById('textBgColorPlaceholder').style.display = 'none';
+        }
+        render();
+        trackInputChange();
+    }
+});
+
+textAlignInput.addEventListener("change", () => {
+    changingTextAlign = false; // Clear flag when change is complete
+    if (selected && selected.type === "text") {
+        selected.textAlign = textAlignInput.value;
+        render();
+        trackInputChange();
+    }
+});
+
+textAlignInput.addEventListener("mousedown", () => {
+    changingTextAlign = true; // Set flag when user starts changing
+});
+
+textAlignInput.addEventListener("focus", () => {
+    changingTextAlign = true; // Set flag when dropdown gets focus
+});
+
+textBaselineInput.addEventListener("change", () => {
+    changingTextBaseline = false; // Clear flag when change is complete
+    if (selected && selected.type === "text") {
+        selected.textBaseline = textBaselineInput.value;
+        render();
+        trackInputChange();
+    }
+});
+
+textBaselineInput.addEventListener("mousedown", () => {
+    changingTextBaseline = true; // Set flag when user starts changing
+});
+
+textBaselineInput.addEventListener("focus", () => {
+    changingTextBaseline = true; // Set flag when dropdown gets focus
+});
+
+// Dynamic shape control event listeners
+posXInput.addEventListener("input", () => {
+    if (selected) {
+        const newX = parseInt(posXInput.value);
+        if (selected.type === 'line' || selected.type === 'wideLine') {
+            const dx = newX - selected.x;
+            selected.x = newX;
+            selected.x2 += dx;
+            x2Input.value = Math.round(selected.x2);
+        } else if (selected.type === 'arc') {
+            // For arcs, position represents center point
+            const centerX = newX;
+            const radius = selected.outerRadius || 20;
+            selected.x = centerX - radius;
+            selected.w = radius * 2;
+            selected.h = radius * 2;
+        } else {
+            selected.x = newX;
+        }
+        render();
+        trackInputChange();
+    }
+});
+
+posYInput.addEventListener("input", () => {
+    if (selected) {
+        const newY = parseInt(posYInput.value);
+        if (selected.type === 'line' || selected.type === 'wideLine') {
+            const dy = newY - selected.y;
+            selected.y = newY;
+            selected.y2 += dy;
+            y2Input.value = Math.round(selected.y2);
+        } else if (selected.type === 'arc') {
+            // For arcs, position represents center point
+            const centerY = newY;
+            const radius = selected.outerRadius || 20;
+            selected.y = centerY - radius;
+            selected.w = radius * 2;
+            selected.h = radius * 2;
+        } else {
+            selected.y = newY;
+        }
+        render();
+    }
+});
+
+widthInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'fillRect' || selected.type === 'rect' || selected.type === 'fillRectGradient' || selected.type === 'fastHLine')) {
+        selected.w = parseInt(widthInput.value);
+        render();
+        trackInputChange();
+    }
+});
+
+heightInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'fillRect' || selected.type === 'rect' || selected.type === 'fillRectGradient' || selected.type === 'fastVLine')) {
+        selected.h = parseInt(heightInput.value);
+        render();
+        trackInputChange();
+    }
+});
+
+radiusInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'circle' || selected.type === 'fillCircle')) {
+        const radius = parseInt(radiusInput.value);
+        selected.radius = radius;
+        // Set bounding box to diameter for both circle types
+        selected.w = selected.h = radius * 2;
+        render();
+        trackInputChange();
+    } else if (selected && (selected.type === 'roundRect' || selected.type === 'fillRoundRect')) {
+        selected.radius = parseInt(radiusInput.value);
+        render();
+        trackInputChange();
+    } else if (selected && selected.type === 'arc') {
+        const newRadius = parseInt(radiusInput.value);
+        selected.w = newRadius * 2;
+        selected.h = newRadius * 2;
+        render();
+    }
+});
+
+x2Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'line' || selected.type === 'wideLine')) {
+        selected.x2 = parseInt(x2Input.value);
+        render();
+    }
+});
+
+y2Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'line' || selected.type === 'wideLine')) {
+        selected.y2 = parseInt(y2Input.value);
+        render();
+    }
+});
+
+// Line width input
+lineWidthInput.addEventListener("input", () => {
+    if (selected && selected.type === 'wideLine') {
+        selected.lineWidth = parseInt(lineWidthInput.value);
+        render();
+        trackInputChange();
+    }
+});
+
+// Triangle point inputs
+x0Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.x0 = parseInt(x0Input.value);
+        render();
+    }
+});
+
+y0Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.y0 = parseInt(y0Input.value);
+        render();
+    }
+});
+
+x1Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.x1 = parseInt(x1Input.value);
+        render();
+    }
+});
+
+y1Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.y1 = parseInt(y1Input.value);
+        render();
+    }
+});
+
+x2TriInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.x2 = parseInt(x2TriInput.value);
+        render();
+    }
+});
+
+y2TriInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.y2 = parseInt(y2TriInput.value);
+        render();
+    }
+});
+
+// Arc control listeners
+startAngleInput.addEventListener("input", () => {
+    if (selected && selected.type === 'arc') {
+        selected.startAngle = parseInt(startAngleInput.value);
+        render();
+    }
+});
+
+endAngleInput.addEventListener("input", () => {
+    if (selected && selected.type === 'arc') {
+        selected.endAngle = parseInt(endAngleInput.value);
+        render();
+    }
+});
+
+innerRadiusInput.addEventListener("input", () => {
+    if (selected && selected.type === 'arc') {
+        selected.innerRadius = Math.round(parseInt(innerRadiusInput.value) || 0);
+        render();
+    }
+});
+
+outerRadiusInput.addEventListener("input", () => {
+    if (selected && selected.type === 'arc') {
+        const newRadius = Math.round(parseInt(outerRadiusInput.value) || 1);
+        
+        // Calculate current center
+        const centerX = selected.x + selected.w / 2;
+        const centerY = selected.y + selected.h / 2;
+        
+        // Update radius
+        selected.outerRadius = newRadius;
+        
+        // Update bounding box size and position to keep center constant
+        const diameter = newRadius * 2;
+        selected.w = diameter;
+        selected.h = diameter;
+        selected.x = centerX - newRadius;
+        selected.y = centerY - newRadius;
+        
         render();
     }
 });
@@ -651,10 +2925,157 @@ function rgb(h) {
     ];
 }
 
+function saveState() {
+    const state = {
+        items: items,
+        backgroundColor: backgroundColorInput.value,
+        currentDevice: currentDevice,
+        currentOutputMode: currentOutputMode,
+        gridSize: gridSize,
+        snapOn: snapOn,
+        showGrid: showGrid,
+        fileName: document.getElementById("fileName").value
+    };
+    localStorage.setItem('bruceJSDesignerState', JSON.stringify(state));
+}
+
+function saveToHistory() {
+    // Remove any future history when making a new change
+    history = history.slice(0, historyIndex + 1);
+    
+    // Deep clone the current state
+    const currentState = {
+        items: JSON.parse(JSON.stringify(items)),
+        selected: selected ? items.indexOf(selected) : -1
+    };
+    
+    history.push(currentState);
+    historyIndex++;
+    
+    // Limit history size
+    if (history.length > maxHistorySize) {
+        history.shift();
+        historyIndex--;
+    }
+}
+
+function undo() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        const state = history[historyIndex];
+        items = JSON.parse(JSON.stringify(state.items));
+        selected = state.selected >= 0 ? items[state.selected] : null;
+        updateLayerSelect();
+        render();
+    }
+}
+
+function redo() {
+    if (historyIndex < history.length - 1) {
+        historyIndex++;
+        const state = history[historyIndex];
+        items = JSON.parse(JSON.stringify(state.items));
+        selected = state.selected >= 0 ? items[state.selected] : null;
+        updateLayerSelect();
+        render();
+    }
+}
+
+function trackInputChange() {
+    // Clear any existing timeout
+    if (inputChangeTimeout) {
+        clearTimeout(inputChangeTimeout);
+    }
+    // Set a new timeout to save history after user stops typing
+    inputChangeTimeout = setTimeout(() => {
+        saveToHistory();
+    }, 1000); // Save after 1 second of no changes
+}
+
+function loadState() {
+    const savedState = localStorage.getItem('bruceJSDesignerState');
+    if (savedState) {
+        try {
+            const state = JSON.parse(savedState);
+            console.log('Loading saved state:', state);
+            
+            // Restore items
+            items = state.items || [];
+            
+            // Restore background color
+            if (state.backgroundColor) {
+                backgroundColorInput.value = state.backgroundColor;
+            }
+            
+            // Restore device selection
+            if (state.currentDevice && devices[state.currentDevice]) {
+                currentDevice = state.currentDevice;
+                deviceSelect.value = state.currentDevice;
+            }
+            
+            // Restore output mode
+            if (state.currentOutputMode) {
+                currentOutputMode = state.currentOutputMode;
+                outputModeSelect.value = state.currentOutputMode;
+            }
+            
+            // Restore grid settings
+            if (state.gridSize) {
+                gridSize = state.gridSize;
+                gridSizeInput.value = gridSize;
+            }
+            
+            if (typeof state.snapOn === 'boolean') {
+                snapOn = state.snapOn;
+                snapToggle.textContent = snapOn ? "ON" : "OFF";
+                snapToggle.classList.toggle("on", snapOn);
+            }
+            
+            if (typeof state.showGrid === 'boolean') {
+                showGrid = state.showGrid;
+                alwaysShowGridInput.textContent = showGrid ? "ON" : "OFF";
+                alwaysShowGridInput.classList.toggle("on", showGrid);
+            }
+            
+            // Restore file name
+            if (state.fileName) {
+                document.getElementById("fileName").value = state.fileName;
+            }
+            
+            // Update UI after loading state
+            updateCanvasSize();
+            updateLayerSelect();
+            render();
+            
+            console.log('State loaded successfully');
+            return true;
+        } catch (e) {
+            console.log('Failed to load saved state:', e);
+        }
+    }
+    return false;
+}
+
 
 function generateCode() {
     const dev = devices[currentDevice];
     const W = dev[0], H = dev[1];
+    const outputPrefix = currentOutputMode;
+
+    // Helper function to get correct prefix for functions that don't support sprite
+    const getPrefix = (functionName) => {
+        const unsupportedInSprite = ['drawFastVLine', 'drawFastHLine', 'drawWideLine', 'drawTriangle', 'drawFillTriangle', 'drawArc'];
+        if (currentOutputMode === 'sprite' && unsupportedInSprite.includes(functionName)) {
+            return 'display';
+        }
+        return outputPrefix;
+    };
+
+    // Helper function to check if item uses display-only functions in sprite mode
+    const isDisplayOnly = (item) => {
+        const displayOnlyTypes = ['wideLine', 'fastHLine', 'fastVLine', 'triangle', 'fillTriangle', 'arc'];
+        return currentOutputMode === 'sprite' && displayOnlyTypes.includes(item.type);
+    };
 
     let out = `// Device: ${currentDevice}
 // Made with: Bruce JS designer
@@ -664,49 +3085,230 @@ const display = require('display');
 
 const sprite = display.createSprite();
 
+draw();
+
 while(true){
+  if (keyboard.getEscPress(true)) break;
+}
 
-if(keyboard.getEscPress(true))
-break;
+function draw() {
 
-sprite.fill(0);
+${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}));
 \n`;
- 
 
-    items.forEach(i => {
+    // Separate items into sprite-compatible and display-only
+    const spriteItems = items.filter(i => !isDisplayOnly(i));
+    const displayOnlyItems = items.filter(i => isDisplayOnly(i));
+
+    // Process sprite-compatible items first
+    spriteItems.forEach(i => {
         const sx = W / canvas.width,
               sy = H / canvas.height;
         const x = Math.round(i.x * sx),
               y = Math.round(i.y * sy),
               w = Math.round(i.w * sx),
               h = Math.round(i.h * sy);
-        const c = rgb(i.color).join(',');
+        const c = rgb(i.color).join(', ');
 
         switch (i.type) {
             case "fillRect":
-                out += `sprite.drawFillRect(${x},${y},${w},${h},display.color(${c}));\n`;
+                out += `${outputPrefix}.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
+                break;
+            case "fillRectGradient":
+                const c2 = rgb(i.color2 || i.color).join(", ");
+                const mode = i.gradientMode || 'h';
+                out += `${outputPrefix}.drawFillRectGradient(${x}, ${y}, ${w}, ${h}, display.color(${c}), display.color(${c2}), "${mode}");\n`;
                 break;
             case "rect":
-                out += `sprite.drawRect(${x},${y},${w},${h},display.color(${c}));\n`;
+                out += `${outputPrefix}.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
+                break;
+            case "roundRect":
+                const radius = Math.round((i.radius || 5) * Math.min(sx, sy));
+                out += `${outputPrefix}.drawRoundRect(${x}, ${y}, ${w}, ${h}, ${radius}, display.color(${c}));\n`;
+                break;
+            case "fillRoundRect":
+                const radiusFill = Math.round((i.radius || 5) * Math.min(sx, sy));
+                out += `${outputPrefix}.drawFillRoundRect(${x}, ${y}, ${w}, ${h}, ${radiusFill}, display.color(${c}));\n`;
                 break;
             case "line":
-                out += `sprite.drawLine(${x},${y},${x + w},${y + h},display.color(${c}));\n`;
+                // Use actual line coordinates instead of bounding box
+                const x1 = Math.round(i.x * sx);
+                const y1 = Math.round(i.y * sy);
+                const x2 = Math.round(i.x2 * sx);
+                const y2 = Math.round(i.y2 * sy);
+                out += `${outputPrefix}.drawLine(${x1}, ${y1}, ${x2}, ${y2}, display.color(${c}));\n`;
+                break;
+            case "wideLine":
+                // Use actual line coordinates and width
+                const wx1 = Math.round(i.x * sx);
+                const wy1 = Math.round(i.y * sy);
+                const wx2 = Math.round(i.x2 * sx);
+                const wy2 = Math.round(i.y2 * sy);
+                const lineWidth = Math.round((i.lineWidth || 2) * Math.min(sx, sy));
+                out += `${getPrefix('drawWideLine')}.drawWideLine(${wx1}, ${wy1}, ${wx2}, ${wy2}, ${lineWidth}, display.color(${c}));\n`;
+                break;
+            case "fastHLine":
+                const hx1 = Math.round(i.x * sx);
+                const hy1 = Math.round(i.y * sy);
+                const hx2 = Math.round((i.x + i.w) * sx);
+                out += `${getPrefix('drawFastHLine')}.drawFastHLine(${hx1}, ${hy1}, ${hx2 - hx1}, display.color(${c}));\n`;
+                break;
+            case "fastVLine":
+                const vx1 = Math.round(i.x * sx);
+                const vy1 = Math.round(i.y * sy);
+                const vy2 = Math.round((i.y + i.h) * sy);
+                out += `${getPrefix('drawFastVLine')}.drawFastVLine(${vx1}, ${vy1}, ${vy2 - vy1}, display.color(${c}));\n`;
+                break;
+            case "fastHLine":
+                const fhx1 = Math.round(i.x * sx);
+                const fhy1 = Math.round(i.y * sy);
+                const fhx2 = Math.round(i.x2 * sx);
+                out += `${outputPrefix}.drawFastHLine(${fhx1}, ${fhy1}, ${fhx2 - fhx1}, display.color(${c}));\n`;
+                break;
+            case "fastVLine":
+                const fvx1 = Math.round(i.x * sx);
+                const fvy1 = Math.round(i.y * sy);
+                const fvy2 = Math.round(i.y2 * sy);
+                out += `${outputPrefix}.drawFastVLine(${fvx1}, ${fvy1}, ${fvy2 - fvy1}, display.color(${c}));\n`;
+                break;
+            case "triangle":
+                const tx0 = Math.round(i.x0 * sx);
+                const ty0 = Math.round(i.y0 * sy);
+                const tx1 = Math.round(i.x1 * sx);
+                const ty1 = Math.round(i.y1 * sy);
+                const tx2 = Math.round(i.x2 * sx);
+                const ty2 = Math.round(i.y2 * sy);
+                out += `${getPrefix('drawTriangle')}.drawTriangle(${tx0}, ${ty0}, ${tx1}, ${ty1}, ${tx2}, ${ty2}, display.color(${c}));\n`;
+                break;
+            case "fillTriangle":
+                const ftx0 = Math.round(i.x0 * sx);
+                const fty0 = Math.round(i.y0 * sy);
+                const ftx1 = Math.round(i.x1 * sx);
+                const fty1 = Math.round(i.y1 * sy);
+                const ftx2 = Math.round(i.x2 * sx);
+                const fty2 = Math.round(i.y2 * sy);
+                out += `${getPrefix('drawFillTriangle')}.drawFillTriangle(${ftx0}, ${fty0}, ${ftx1}, ${fty1}, ${ftx2}, ${fty2}, display.color(${c}));\n`;
+                break;
+            case "arc":
+                const centerX = Math.round((i.x + i.w / 2) * sx);
+                const centerY = Math.round((i.y + i.h / 2) * sy);
+                const r1 = Math.round((i.innerRadius || 10) * Math.min(sx, sy));
+                const r2 = Math.round((i.outerRadius || 20) * Math.min(sx, sy));
+                const startAngle = i.startAngle || 0;
+                const endAngle = i.endAngle || 90;
+                out += `${getPrefix('drawArc')}.drawArc(${centerX}, ${centerY}, ${r1}, ${r2}, ${startAngle}, ${endAngle}, display.color(${c}));\n`;
                 break;
             case "circle":
-                out += `sprite.drawCircle(${x + Math.floor(w / 2)},${y + Math.floor(h / 2)},${Math.floor(w / 2)},display.color(${c}));\n`;
+                const circleRadius = i.radius || Math.floor(w / 2);
+                out += `${outputPrefix}.drawCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${circleRadius}, display.color(${c}));\n`;
                 break;
             case "fillCircle":
-                out += `sprite.drawFillCircle(${x + Math.floor(w / 2)},${y + Math.floor(h / 2)},${Math.floor(w / 2)},display.color(${c}));\n`;
+                const fillCircleRadius = i.radius || Math.floor(w / 2);
+                out += `${outputPrefix}.drawFillCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${fillCircleRadius}, display.color(${c}));\n`;
                 break;
             case "text":
-                out += `sprite.setTextSize(${i.size});
-sprite.setTextColor(${c});
-sprite.drawText("${i.text}",${x},${y});\n`;
+                const textColorCode = `display.color(${c})`;
+                let bgColorCode = '';
+                if (i.textBgColor) {
+                    const textBgColor = rgb(i.textBgColor).join(', ');
+                    bgColorCode = `, display.color(${textBgColor})`;
+                }
+                
+                out += `${outputPrefix}.setTextSize(${i.size});\n`;
+                out += `${outputPrefix}.setTextColor(${textColorCode}${bgColorCode});\n`;
+                
+                // Always add setTextAlign
+                const align = i.textAlign || 'left';
+                const baseline = i.textBaseline || 'top';
+                let alignParam, baselineParam;
+                
+                // Convert to string format
+                alignParam = align === 'left' ? '"left"' : align === 'center' ? '"center"' : '"right"';
+                baselineParam = baseline === 'top' ? '"top"' : baseline === 'middle' ? '"middle"' : '"bottom"';
+                
+                // Always output both alignment and baseline parameters
+                out += `${outputPrefix}.setTextAlign(${alignParam}, ${baselineParam});\n`;
+                
+                // Use x,y coordinates directly as alignment point (same as red circle position)
+                out += `${outputPrefix}.drawText("${i.text}", ${Math.round(i.x * sx)}, ${Math.round(i.y * sy)});\n`;
+                break;
+                break;
+            case "pixel":
+                out += `${outputPrefix}.drawPixel(${x}, ${y}, display.color(${c}));\n`;
                 break;
         }
     });
 
-    out += `\nsprite.pushSprite();\n}`;
+    if (currentOutputMode === "sprite") {
+        out += `\n${outputPrefix}.pushSprite();\n`;
+        
+        // Add display-only items after sprite is pushed
+        if (displayOnlyItems.length > 0) {
+            out += `\n// Display-only functions (not supported by sprite)\n`;
+            displayOnlyItems.forEach(i => {
+                const sx = W / canvas.width,
+                      sy = H / canvas.height;
+                const x = Math.round(i.x * sx),
+                      y = Math.round(i.y * sy),
+                      w = Math.round(i.w * sx),
+                      h = Math.round(i.h * sy);
+                const c = rgb(i.color).join(', ');
+
+                switch (i.type) {
+                    case "wideLine":
+                        const wx1 = Math.round(i.x * sx);
+                        const wy1 = Math.round(i.y * sy);
+                        const wx2 = Math.round(i.x2 * sx);
+                        const wy2 = Math.round(i.y2 * sy);
+                        const lineWidth = Math.round((i.lineWidth || 2) * Math.min(sx, sy));
+                        out += `display.drawWideLine(${wx1}, ${wy1}, ${wx2}, ${wy2}, ${lineWidth}, display.color(${c}));\n`;
+                        break;
+                    case "fastHLine":
+                        const hx1 = Math.round(i.x * sx);
+                        const hy1 = Math.round(i.y * sy);
+                        const hx2 = Math.round((i.x + i.w) * sx);
+                        out += `display.drawFastHLine(${hx1}, ${hy1}, ${hx2 - hx1}, display.color(${c}));\n`;
+                        break;
+                    case "fastVLine":
+                        const vx1 = Math.round(i.x * sx);
+                        const vy1 = Math.round(i.y * sy);
+                        const vy2 = Math.round((i.y + i.h) * sy);
+                        out += `display.drawFastVLine(${vx1}, ${vy1}, ${vy2 - vy1}, display.color(${c}));\n`;
+                        break;
+                    case "triangle":
+                        const tx0 = Math.round(i.x0 * sx);
+                        const ty0 = Math.round(i.y0 * sy);
+                        const tx1 = Math.round(i.x1 * sx);
+                        const ty1 = Math.round(i.y1 * sy);
+                        const tx2 = Math.round(i.x2 * sx);
+                        const ty2 = Math.round(i.y2 * sy);
+                        out += `display.drawTriangle(${tx0}, ${ty0}, ${tx1}, ${ty1}, ${tx2}, ${ty2}, display.color(${c}));\n`;
+                        break;
+                    case "fillTriangle":
+                        const ftx0 = Math.round(i.x0 * sx);
+                        const fty0 = Math.round(i.y0 * sy);
+                        const ftx1 = Math.round(i.x1 * sx);
+                        const fty1 = Math.round(i.y1 * sy);
+                        const ftx2 = Math.round(i.x2 * sx);
+                        const fty2 = Math.round(i.y2 * sy);
+                        out += `display.drawFillTriangle(${ftx0}, ${fty0}, ${ftx1}, ${fty1}, ${ftx2}, ${fty2}, display.color(${c}));\n`;
+                        break;
+                    case "arc":
+                        const centerX = Math.round((i.x + i.w / 2) * sx);
+                        const centerY = Math.round((i.y + i.h / 2) * sy);
+                        const r1 = Math.round((i.innerRadius || 10) * Math.min(sx, sy));
+                        const r2 = Math.round((i.outerRadius || 20) * Math.min(sx, sy));
+                        const startAngle = i.startAngle || 0;
+                        const endAngle = i.endAngle || 90;
+                        out += `display.drawArc(${centerX}, ${centerY}, ${r1}, ${r2}, ${startAngle}, ${endAngle}, display.color(${c}));\n`;
+                        break;
+                }
+            });
+        }
+        out += `}`;
+    } else {
+        out += `\n}`;
+    }
     code.textContent = out;
 }
 function exportJS() {
@@ -718,23 +3320,273 @@ function exportJS() {
         a.click();
     }
 
+    function copyToClipboard(event) {
+        navigator.clipboard.writeText(code.textContent).then(() => {
+            // Visual feedback - briefly change button text
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = "Copied to Clipboard!";
+            button.style.backgroundColor = "#4CAF50";
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = "";
+            }, 1500);
+        }).catch(err => {
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = code.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = "Copied!";
+            button.style.backgroundColor = "#4CAF50";
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = "";
+            }, 1500);
+        });
+    }
+
+    async function shareState(event) {
+        // Create compressed state with shorter property names
+        const compressedState = {
+            i: items,
+            b: backgroundColorInput.value,
+            d: currentDevice,
+            o: currentOutputMode,
+            f: document.getElementById("fileName").value
+        };
+        
+        let jsonString = JSON.stringify(compressedState);
+        
+        let encodedState;
+        
+        try {
+            // Try using browser's built-in compression (modern browsers)
+            if (typeof CompressionStream !== 'undefined') {
+                const stream = new CompressionStream('deflate');
+                const writer = stream.writable.getWriter();
+                const reader = stream.readable.getReader();
+                
+                writer.write(new TextEncoder().encode(jsonString));
+                writer.close();
+                
+                const chunks = [];
+                let done = false;
+                while (!done) {
+                    const { value, done: readerDone } = await reader.read();
+                    done = readerDone;
+                    if (value) chunks.push(value);
+                }
+                
+                const compressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+                let offset = 0;
+                chunks.forEach(chunk => {
+                    compressed.set(chunk, offset);
+                    offset += chunk.length;
+                });
+                
+                // Convert to base64
+                let binary = '';
+                compressed.forEach(byte => binary += String.fromCharCode(byte));
+                encodedState = 'z' + btoa(binary); // 'z' prefix indicates compressed
+                
+            } else {
+                throw new Error('CompressionStream not available');
+            }
+        } catch (e) {
+            // Fallback to base64 encoding only
+            encodedState = btoa(jsonString);
+        }
+        
+        // URL encode the state to make it safe for sharing in any context
+        const shareUrl = window.location.origin + window.location.pathname + '?s=' + encodeURIComponent(encodedState);
+        
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            // Visual feedback - briefly change button text
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = "URL Copied to Clipboard!";
+            button.style.backgroundColor = "#45a049";
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = "#4dff88";
+            }, 1500);
+        }).catch(err => {
+            // Fallback - show URL in prompt
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = "URL Ready";
+            button.style.backgroundColor = "#45a049";
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = "#4dff88";
+            }, 1500);
+            prompt("Copy this URL to share:", shareUrl);
+        });
+    }
+
+    async function loadStateFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let encodedState = urlParams.get('s');
+        if (encodedState) {
+            // URL decode the state (URLSearchParams automatically decodes, but be explicit)
+            encodedState = decodeURIComponent(encodedState);
+            try {
+                let jsonString;
+                
+                // Check if this is compressed data (starts with 'z')
+                if (encodedState.startsWith('z') && typeof DecompressionStream !== 'undefined') {
+                    try {
+                        // Decompress using browser's built-in decompression
+                        const compressedData = atob(encodedState.substring(1)); // Remove 'z' prefix
+                        const bytes = new Uint8Array(compressedData.length);
+                        for (let i = 0; i < compressedData.length; i++) {
+                            bytes[i] = compressedData.charCodeAt(i);
+                        }
+                        
+                        const stream = new DecompressionStream('deflate');
+                        const writer = stream.writable.getWriter();
+                        const reader = stream.readable.getReader();
+                        
+                        writer.write(bytes);
+                        writer.close();
+                        
+                        const chunks = [];
+                        let done = false;
+                        while (!done) {
+                            const { value, done: readerDone } = await reader.read();
+                            done = readerDone;
+                            if (value) chunks.push(value);
+                        }
+                        
+                        const decompressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+                        let offset = 0;
+                        chunks.forEach(chunk => {
+                            decompressed.set(chunk, offset);
+                            offset += chunk.length;
+                        });
+                        
+                        jsonString = new TextDecoder().decode(decompressed);
+                    } catch (e) {
+                        // Fallback if decompression fails
+                        jsonString = atob(encodedState);
+                    }
+                } else {
+                    // Regular base64 decoding
+                    jsonString = atob(encodedState.startsWith('z') ? encodedState.substring(1) : encodedState);
+                }
+                
+                const rawState = JSON.parse(jsonString);
+                
+                // Handle both compressed and uncompressed formats
+                const state = rawState.i ? {
+                    items: rawState.i,
+                    backgroundColor: rawState.b,
+                    currentDevice: rawState.d,
+                    currentOutputMode: rawState.o,
+                    fileName: rawState.f
+                } : rawState; // Fallback to old format
+                
+                console.log('Loading shared state:', state);
+                
+                // Restore items
+                items = state.items || [];
+                
+                // Restore background color
+                if (state.backgroundColor) {
+                    backgroundColorInput.value = state.backgroundColor;
+                }
+                
+                // Restore device selection
+                if (state.currentDevice && devices[state.currentDevice]) {
+                    currentDevice = state.currentDevice;
+                    deviceSelect.value = state.currentDevice;
+                }
+                
+                // Restore output mode
+                if (state.currentOutputMode) {
+                    currentOutputMode = state.currentOutputMode;
+                    outputModeSelect.value = state.currentOutputMode;
+                }
+                
+                // Restore file name
+                if (state.fileName) {
+                    document.getElementById("fileName").value = state.fileName;
+                }
+                
+                // Update UI after loading shared state
+                updateCanvasSize();
+                updateLayerSelect();
+                render();
+                generateCode();
+                
+                // Clear the URL query parameter so refreshes don't overwrite local changes
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, null, window.location.pathname);
+                } else {
+                    // Fallback for older browsers
+                    window.location.search = '';
+                }
+                
+                console.log('Shared state loaded successfully');
+                return true;
+            } catch (e) {
+                console.log('Failed to load shared state from URL:', e);
+            }
+        }
+        return false;
+    }
+
+    // Listen for URL changes (when someone pastes a new URL with state)
+    window.addEventListener('popstate', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('s')) {
+            loadStateFromUrl();
+        }
+    });
+    
+    // Also listen for focus events in case URL was manually changed
+    window.addEventListener('focus', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('s')) {
+            loadStateFromUrl();
+        }
+    });
+
     deviceSelect.addEventListener("change", () => {
         currentDevice = deviceSelect.value;
         updateCanvasSize();
     });
 
-    render();
-    updateLayerSelect();
+    outputModeSelect.addEventListener("change", () => {
+        currentOutputMode = outputModeSelect.value;
+        generateCode(); // Regenerate code with new output mode
+    });
 
-    window.addEventListener("beforeunload", (e) => {
-        const confirmationMessage = "⚠️ Are you sure you want to leave? This will clear all your work!";
+    // Initialize the application
+    populateDeviceDropdown();
     
-    e.preventDefault();
-    e.returnValue = confirmationMessage;
-    return confirmationMessage;
-});
-    
+    // Try to load shared state from URL first, then saved state, then use defaults
+    (async () => {
+        const hasSharedState = await loadStateFromUrl();
+        if (!hasSharedState && !loadState()) {
+            // No shared or saved state, use defaults
+            currentDevice = deviceSelect.value;
+            updateCanvasSize();
+            selected = null; // Ensure no item is selected initially
+            render();
+            updateLayerSelect();
+        }
+        
+        // Initialize history with current state
+        saveToHistory();
+    })();
 </script>
 </body>
 </html>
-

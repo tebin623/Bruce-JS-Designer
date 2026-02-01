@@ -185,6 +185,14 @@
             <button id="snapToggle" class="toggle">OFF</button>
         </label>
 
+        <label>Grid Size
+            <input type="number" id="gridSize" min="1" max="50" step="1" value="10">
+        </label>
+
+        <label>Always Show Grid
+            <input type="checkbox" id="alwaysShowGrid">
+        </label>
+
         <label>Text
             <input type="text" id="text">
         </label>
@@ -243,6 +251,8 @@ const canvas = document.getElementById("screen"),
       colorInput = document.getElementById("color"),
       code = document.getElementById("code"),
       snapToggle = document.getElementById("snapToggle"),
+      gridSizeInput = document.getElementById("gridSize"),
+      alwaysShowGridInput = document.getElementById("alwaysShowGrid"),
       layerUpBtn = document.getElementById("layerUp"),
       layerDownBtn = document.getElementById("layerDown");
 
@@ -296,6 +306,16 @@ snapToggle.addEventListener("click", () => {
     snapOn = !snapOn;
     snapToggle.textContent = snapOn ? "ON" : "OFF";
     snapToggle.classList.toggle("on", snapOn);
+});
+
+gridSizeInput.addEventListener("input", () => {
+    gridSize = parseInt(gridSizeInput.value) || 10;
+    render();
+});
+
+alwaysShowGridInput.addEventListener("change", () => {
+    showGrid = alwaysShowGridInput.checked;
+    render();
 });
 
 
@@ -481,7 +501,9 @@ function getMousePos(e) {
 
 function startDrag(e) {
     const p = getMousePos(e);
-    showGrid = false;
+    if (!alwaysShowGridInput.checked) {
+        showGrid = false;
+    }
     selected = null;
 
     for (let i = items.length - 1; i >= 0; i--) {
@@ -591,7 +613,9 @@ function stopDrag() {
     dragging = null;
     resizing = false;
     resizeHandle = null;
-    showGrid = false;
+    if (!alwaysShowGridInput.checked) {
+        showGrid = false;
+    }
     render();
 }
 

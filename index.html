@@ -128,6 +128,10 @@
             background: #8457d6;
         }
 
+        .buttons.bottom button {
+            flex: 1 1 150px;
+        }
+
         .buttons .danger {
             background: #ff4d6d;
         }
@@ -238,6 +242,81 @@
 
         .toggle.on:hover {
             background: #73fda3;
+        }
+
+        .import-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .import-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80%;
+        }
+
+        .import-modal h3 {
+            color: #e0e0e0;
+            margin-top: 0;
+        }
+
+        .import-modal textarea {
+            width: 100%;
+            height: 300px;
+            background-color: #0a0a1a;
+            color: #e0e0e0;
+            border: 1px solid #4dff88;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .import-modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .import-modal button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .import-modal .import-btn {
+            background-color: #4dff88;
+            color: #000;
+        }
+
+        .import-modal .import-btn:hover {
+            background-color: #45e079;
+        }
+
+        .import-modal .cancel-btn {
+            background-color: #666;
+            color: #fff;
+        }
+
+        .import-modal .cancel-btn:hover {
+            background-color: #555;
         }
     </style>
 </head>
@@ -439,9 +518,10 @@
 
         </div>
     </div>
-    <div class="buttons">
-        <button onclick="copyToClipboard()">Copy JS to Clipboard</button>
+    <div class="buttons bottom">
+        <button onclick="copyToClipboard(event)">Copy JS to Clipboard</button>
         <button class="export" onclick="shareState(event)">Share JS</button>
+        <button class="export" onclick="importCode()">Import Code</button>
         <button class="export" onclick="exportJS()">Export JS</button>
         <button class="danger" onclick="clearAll()">Clear All</button>
     </div>
@@ -468,6 +548,22 @@
         <a href="https://github.com/emericklaw" target="_blank"
            style="text-decoration:underline dotted;color:#000;">Matt</a>
         </span>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div id="importModal" class="import-modal">
+    <div class="import-modal-content">
+        <h3>Import Display/Sprite Code</h3>
+        <p style="color: #ccc; margin-bottom: 15px;">Paste your display or sprite drawing commands below:</p>
+        <textarea id="importTextarea" placeholder="Example:
+display.fillRect(10, 10, 50, 30, display.color(255, 0, 0));
+display.drawCircle(100, 50, 20, display.color(0, 255, 0));
+..."></textarea>
+        <div class="import-modal-buttons">
+            <button class="cancel-btn" onclick="closeImportModal()">Cancel</button>
+            <button class="import-btn" onclick="executeImport()">Import</button>
+        </div>
     </div>
 </div>
 
@@ -735,6 +831,392 @@ function clearAll() {
         updateLayerSelect();
         syncUI();
         render();
+    }
+}
+
+function importCode() {
+    document.getElementById('importModal').style.display = 'block';
+    document.getElementById('importTextarea').value = '';
+    document.getElementById('importTextarea').focus();
+}
+
+function closeImportModal() {
+    document.getElementById('importModal').style.display = 'none';
+}
+
+function executeImport() {
+    const codeText = document.getElementById('importTextarea').value.trim();
+    if (!codeText) {
+        alert('Please enter some code to import.');
+        return;
+    }
+    
+    try {
+        parseAndImportCode(codeText);
+        closeImportModal();
+    } catch (e) {
+        alert('Error parsing code: ' + e.message);
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('importModal');
+    if (e.target === modal) {
+        closeImportModal();
+    }
+});
+
+function parseAndImportCode(codeText) {
+    const lines = codeText.split('\n');
+    const newItems = [];
+    
+    // Get current device dimensions for scaling
+    const dev = devices[currentDevice];
+    const W = dev[0], H = dev[1];
+    const sx = canvas.width / W;
+    const sy = canvas.height / H;
+    
+    // Track text properties for multi-line text commands
+    let currentTextSize = 2;
+    let currentTextColor = '#FFFFFF';
+    let currentTextBgColor = null;
+    
+    for (let line of lines) {
+        line = line.trim();
+        if (!line || line.startsWith('//') || line.startsWith('function') || line.startsWith('const') || line.startsWith('while') || line.startsWith('}')) {
+            continue;
+        }
+        
+        // Parse different drawing commands
+        let match;
+        
+        // Parse text properties first
+        if ((match = line.match(/(display|sprite)\.setTextSize\((\d+)\)/))) {
+            currentTextSize = parseInt(match[2]);
+            continue;
+        }
+        // Check for two-color setTextColor first (more specific pattern)
+        if ((match = line.match(/(display|sprite)\.setTextColor\(display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            currentTextColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            currentTextBgColor = `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`;
+            continue;
+        }
+        // Check for single-color setTextColor (less specific pattern)  
+        else if ((match = line.match(/(display|sprite)\.setTextColor\(display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            currentTextColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            currentTextBgColor = null;
+            continue;
+        }
+        else if ((match = line.match(/(display|sprite)\.setTextBgColor\(display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            currentTextBgColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            continue;
+        }
+        
+        // Parse fill command
+        if ((match = line.match(/(display|sprite)\.fill\(display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            // Set background color from fill command
+            const bgColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            document.getElementById('backgroundColor').value = bgColor;
+            continue;
+        }
+        
+        // Parse fillRect
+        if ((match = line.match(/(display|sprite)\.drawFillRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fillRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fillRectGradient
+        else if ((match = line.match(/(display|sprite)\.drawFillRectGradient\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*"([hv])"/))) {
+            newItems.push({
+                type: 'fillRectGradient',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`,
+                color2: `#${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}${parseInt(match[11]).toString(16).padStart(2, '0')}`,
+                gradientMode: match[12]
+            });
+        }
+        // Parse drawRect  
+        else if ((match = line.match(/(display|sprite)\.drawRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'rect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse roundRect
+        else if ((match = line.match(/(display|sprite)\.drawRoundRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'roundRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                radius: parseInt(match[6]),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fillRoundRect
+        else if ((match = line.match(/(display|sprite)\.drawFillRoundRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fillRoundRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                radius: parseInt(match[6]),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fillCircle
+        else if ((match = line.match(/(display|sprite)\.drawFillCircle\((\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            // The generated command uses: drawFillCircle(x + Math.floor(w/2), y + Math.floor(h/2), radius)
+            // So we need to reverse: centerX = x + Math.floor(w/2), so x = centerX - Math.floor(w/2)
+            const centerX = parseInt(match[2]);
+            const centerY = parseInt(match[3]);
+            const scaledRadius = parseInt(match[4]);
+            
+            // Convert back to canvas coordinates
+            const canvasCenterX = Math.round(centerX / sx);
+            const canvasCenterY = Math.round(centerY / sy);
+            const canvasRadius = Math.round(scaledRadius / Math.min(sx, sy));
+            
+            // Calculate top-left position (matching the generation: centerX = x + Math.floor(w/2))
+            const canvasWidth = canvasRadius * 2;
+            const canvasHeight = canvasRadius * 2;
+            const canvasX = canvasCenterX - Math.floor(canvasWidth / 2);
+            const canvasY = canvasCenterY - Math.floor(canvasHeight / 2);
+            
+            newItems.push({
+                type: 'fillCircle',
+                x: canvasX,
+                y: canvasY,
+                w: canvasWidth,
+                h: canvasHeight,
+                radius: canvasRadius,
+                color: `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse circle
+        else if ((match = line.match(/(display|sprite)\.drawCircle\((\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            // The generated command uses: drawCircle(x + Math.floor(w/2), y + Math.floor(h/2), radius)
+            // So we need to reverse: centerX = x + Math.floor(w/2), so x = centerX - Math.floor(w/2)
+            const centerX = parseInt(match[2]);
+            const centerY = parseInt(match[3]);
+            const scaledRadius = parseInt(match[4]);
+            
+            // Convert back to canvas coordinates
+            const canvasCenterX = Math.round(centerX / sx);
+            const canvasCenterY = Math.round(centerY / sy);
+            const canvasRadius = Math.round(scaledRadius / Math.min(sx, sy));
+            
+            // Calculate top-left position (matching the generation: centerX = x + Math.floor(w/2))
+            const canvasWidth = canvasRadius * 2;
+            const canvasHeight = canvasRadius * 2;
+            const canvasX = canvasCenterX - Math.floor(canvasWidth / 2);
+            const canvasY = canvasCenterY - Math.floor(canvasHeight / 2);
+            
+            newItems.push({
+                type: 'circle',
+                x: canvasX,
+                y: canvasY,
+                w: canvasWidth,
+                h: canvasHeight,
+                radius: canvasRadius,
+                color: `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse line
+        else if ((match = line.match(/(display|sprite)\.drawLine\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'line',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                x2: Math.round(parseInt(match[4]) / sx),
+                y2: Math.round(parseInt(match[5]) / sy),
+                w: Math.abs(parseInt(match[4]) - parseInt(match[2])),
+                h: Math.abs(parseInt(match[5]) - parseInt(match[3])),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse WideLine
+        else if ((match = line.match(/(display|sprite)\.drawWideLine\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'wideLine',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                x2: Math.round(parseInt(match[4]) / sx),
+                y2: Math.round(parseInt(match[5]) / sy),
+                w: Math.abs(parseInt(match[4]) - parseInt(match[2])),
+                h: Math.abs(parseInt(match[5]) - parseInt(match[3])),
+                lineWidth: Math.round(parseInt(match[6]) / Math.min(sx, sy)),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fastHLine
+        else if ((match = line.match(/(display|sprite)\.drawFastHLine\((\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fastHLine',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: 1,
+                color: `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fastVLine
+        else if ((match = line.match(/(display|sprite)\.drawFastVLine\((\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fastVLine',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: 1,
+                h: Math.round(parseInt(match[4]) / sy),
+                color: `#${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse drawRoundRect
+        else if ((match = line.match(/(display|sprite)\.drawRoundRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'roundRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                radius: Math.round(parseInt(match[6]) / Math.min(sx, sy)),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse drawFillRoundRect
+        else if ((match = line.match(/(display|sprite)\.drawFillRoundRect\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fillRoundRect',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                radius: Math.round(parseInt(match[6]) / Math.min(sx, sy)),
+                color: `#${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse drawFillRectGradient
+        else if ((match = line.match(/(display|sprite)\.drawFillRectGradient\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\),\s*"([hv])"\)/))) {
+            newItems.push({
+                type: 'fillRectGradient',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: Math.round(parseInt(match[4]) / sx),
+                h: Math.round(parseInt(match[5]) / sy),
+                color: `#${parseInt(match[6]).toString(16).padStart(2, '0')}${parseInt(match[7]).toString(16).padStart(2, '0')}${parseInt(match[8]).toString(16).padStart(2, '0')}`,
+                color2: `#${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}${parseInt(match[11]).toString(16).padStart(2, '0')}`,
+                gradientMode: match[12]
+            });
+        }
+        // Parse text
+        else if ((match = line.match(/(display|sprite)\.drawText\("([^"]*)",\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'text',
+                text: match[2],
+                x: Math.round(parseInt(match[3]) / sx),
+                y: Math.round(parseInt(match[4]) / sy),
+                w: 40, // Default width
+                h: 20, // Default height
+                size: currentTextSize || 2,
+                color: currentTextColor || '#FFFFFF',
+                textBgColor: currentTextBgColor
+            });
+        }
+        // Parse pixel
+        else if ((match = line.match(/(display|sprite)\.drawPixel\((\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'pixel',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: 1,
+                h: 1,
+                color: `#${parseInt(match[4]).toString(16).padStart(2, '0')}${parseInt(match[5]).toString(16).padStart(2, '0')}${parseInt(match[6]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse triangle
+        else if ((match = line.match(/(display|sprite)\.drawTriangle\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'triangle',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: 40,
+                h: 40,
+                x0: Math.round(parseInt(match[2]) / sx),
+                y0: Math.round(parseInt(match[3]) / sy),
+                x1: Math.round(parseInt(match[4]) / sx),
+                y1: Math.round(parseInt(match[5]) / sy),
+                x2: Math.round(parseInt(match[6]) / sx),
+                y2: Math.round(parseInt(match[7]) / sy),
+                color: `#${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse fillTriangle
+        else if ((match = line.match(/(display|sprite)\.drawFillTriangle\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)/))) {
+            newItems.push({
+                type: 'fillTriangle',
+                x: Math.round(parseInt(match[2]) / sx),
+                y: Math.round(parseInt(match[3]) / sy),
+                w: 40,
+                h: 40,
+                x0: Math.round(parseInt(match[2]) / sx),
+                y0: Math.round(parseInt(match[3]) / sy),
+                x1: Math.round(parseInt(match[4]) / sx),
+                y1: Math.round(parseInt(match[5]) / sy),
+                x2: Math.round(parseInt(match[6]) / sx),
+                y2: Math.round(parseInt(match[7]) / sy),
+                color: `#${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}`
+            });
+        }
+        // Parse arc (with inner radius, outer radius, and angles)
+        else if ((match = line.match(/(display|sprite)\.drawArc\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
+            const centerX = Math.round(parseInt(match[2]) / sx);
+            const centerY = Math.round(parseInt(match[3]) / sy);
+            const innerRadius = Math.round(parseInt(match[4]) / Math.min(sx, sy));
+            const outerRadius = Math.round(parseInt(match[5]) / Math.min(sx, sy));
+            const startAngle = parseInt(match[6]);
+            const endAngle = parseInt(match[7]);
+            
+            newItems.push({
+                type: 'arc',
+                x: centerX - outerRadius,
+                y: centerY - outerRadius,
+                w: outerRadius * 2,
+                h: outerRadius * 2,
+                startAngle: startAngle,
+                endAngle: endAngle,
+                innerRadius: innerRadius,
+                outerRadius: outerRadius,
+                color: `#${parseInt(match[8]).toString(16).padStart(2, '0')}${parseInt(match[9]).toString(16).padStart(2, '0')}${parseInt(match[10]).toString(16).padStart(2, '0')}`
+            });
+        }
+    }
+    
+    if (newItems.length > 0) {
+        saveToHistory(); // Save state before importing
+        items.push(...newItems);
+        selected = null; // No item selected after importing
+        updateLayerSelect();
+        syncUI();
+        render();
+        alert(`Imported ${newItems.length} shape(s) successfully!`);
+    } else {
+        alert('No valid drawing commands found in the pasted code.');
     }
 }
 
@@ -1122,16 +1604,20 @@ document.getElementById("code").addEventListener("mouseup", (e) => {
 
 // Track ALT key for temporary snap disable
 document.addEventListener("keydown", (e) => {
+    // Check if import modal is visible - if so, don't handle app shortcuts
+    const importModal = document.getElementById('importModal');
+    const isModalVisible = importModal && importModal.style.display === 'block';
+    
     if (e.altKey) {
         e.preventDefault(); // Prevent browser menu activation
         altHeld = true;
-    } else if (e.key === "Delete" && selected) {
+    } else if (e.key === "Delete" && selected && !isModalVisible) {
         e.preventDefault(); // Prevent default delete action
         deleteItem();
-    } else if (e.ctrlKey && e.key === "z") {
+    } else if (e.ctrlKey && e.key === "z" && !isModalVisible) {
         e.preventDefault(); // Prevent browser undo
         undo();
-    } else if (e.ctrlKey && e.key === "y") {
+    } else if (e.ctrlKey && e.key === "y" && !isModalVisible) {
         e.preventDefault(); // Prevent browser redo
         redo();
     }
@@ -1754,6 +2240,14 @@ function stopDrag() {
 
 function updateLayerSelect() {
     shapeSelect.innerHTML = "";
+    
+    // Add blank/placeholder option
+    let blankOption = document.createElement("option");
+    blankOption.value = "";
+    blankOption.text = "Select a layer...";
+    blankOption.selected = (selected === null);
+    shapeSelect.appendChild(blankOption);
+    
     items.forEach((i, idx) => {
         let o = document.createElement("option");
         o.value = idx;
@@ -2600,12 +3094,12 @@ function exportJS() {
         a.click();
     }
 
-    function copyToClipboard() {
+    function copyToClipboard(event) {
         navigator.clipboard.writeText(code.textContent).then(() => {
             // Visual feedback - briefly change button text
             const button = event.target;
             const originalText = button.textContent;
-            button.textContent = "Copied!";
+            button.textContent = "Copied to Clipboard!";
             button.style.backgroundColor = "#4CAF50";
             setTimeout(() => {
                 button.textContent = originalText;
@@ -2859,6 +3353,7 @@ function exportJS() {
             // No shared or saved state, use defaults
             currentDevice = deviceSelect.value;
             updateCanvasSize();
+            selected = null; // Ensure no item is selected initially
             render();
             updateLayerSelect();
         }

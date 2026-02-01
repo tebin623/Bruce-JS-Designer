@@ -1599,6 +1599,7 @@ function drag(e) {
     }
 
     showGrid = true;
+    syncUI(); // Update property inputs during dragging
     render();
 }
 
@@ -1616,6 +1617,7 @@ function stopDrag() {
     } else if (!alwaysShowGridInput.classList.contains('on')) {
         showGrid = false;
     }
+    syncUI(); // Update properties when drag ends
     render();
 }
 

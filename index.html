@@ -707,6 +707,7 @@ layerDownBtn.addEventListener("click", () => {
 
 
 function render() {
+    const fontScale=1.175;
     ctx.fillStyle = backgroundColorInput.value;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -892,22 +893,22 @@ function render() {
                 break;
             case "text":
                 ctx.font = `bold ${i.size * 12}px "Courier New"`;
-                ctx.letterSpacing = "-1.5px";
-                //ctx.save();
-                ctx.scale(1, 1.15);
+                ctx.letterSpacing = -(i.size-1)*1.5 + "px";
+                ctx.save();
+                ctx.scale(1, fontScale);
                 
                 const textWidth = ctx.measureText(i.text).width-i.size;
-                const textHeight = ctx.measureText(i.text).actualBoundingBoxAscent + ctx.measureText(i.text).actualBoundingBoxDescent;
+                const textHeight = (ctx.measureText(i.text).actualBoundingBoxAscent + ctx.measureText(i.text).actualBoundingBoxDescent) * fontScale;
                 
                 // Draw background if specified
                 if (i.textBgColor) {
                     ctx.fillStyle = i.textBgColor;
-                    ctx.fillRect(0, 0, textWidth, textHeight);
+                    ctx.fillRect(0, -1, textWidth, textHeight / fontScale); // Adjust for scale
                 }
                 
                 // Draw text
                 ctx.fillStyle = i.color;
-                ctx.fillText(i.text, -2, textHeight / 2 + i.size*3);
+                ctx.fillText(i.text, -2, (textHeight / fontScale) / 2 + i.size*3);
                 ctx.restore(); // Reset the vertical scaling
                 break;
         }
@@ -918,8 +919,12 @@ function render() {
             ctx.lineWidth = 1.5;
 
             if (i.type === "text") {
-                const iw = ctx.measureText(i.text).width;
-                const ih = i.size * 8;
+                ctx.save();
+                ctx.font = `bold ${i.size * 12}px "Courier New"`;
+                ctx.letterSpacing = "-1.5px";
+                const iw = ctx.measureText(i.text).width - i.size;
+                const ih = (ctx.measureText(i.text).actualBoundingBoxAscent + ctx.measureText(i.text).actualBoundingBoxDescent) * fontScale;
+                ctx.restore();
                 ctx.strokeRect(0, 0, iw, ih);
             } else if (i.type === "line" || i.type === "wideLine") {
                 // For lines, show handles at start and end points
@@ -1046,9 +1051,10 @@ function startDrag(e) {
         let iw = it.w, ih = it.h;
         if (it.type === "text") {
             ctx.save();
-            ctx.font = `bold ${it.size * 8}px "Courier New"`;
-            iw = ctx.measureText(it.text).width;
-            ih = it.size * 8;
+            ctx.font = `bold ${it.size * 12}px "Courier New"`;
+            ctx.letterSpacing = "-1.5px";
+            iw = ctx.measureText(it.text).width - it.size;
+            ih = (ctx.measureText(it.text).actualBoundingBoxAscent + ctx.measureText(it.text).actualBoundingBoxDescent) * fontScale;
             ctx.restore();
         }
 

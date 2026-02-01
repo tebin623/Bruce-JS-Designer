@@ -2397,13 +2397,13 @@ function exportJS() {
         };
         
         const encodedState = btoa(JSON.stringify(state));
-        const shareUrl = window.location.origin + window.location.pathname + '#' + encodedState;
+        const shareUrl = window.location.origin + window.location.pathname + '?state=' + encodedState;
         
         navigator.clipboard.writeText(shareUrl).then(() => {
             // Visual feedback - briefly change button text
             const button = event.target;
             const originalText = button.textContent;
-            button.textContent = "URL Copied!";
+            button.textContent = "URL Copied to Clipboard!";
             button.style.backgroundColor = "#45a049";
             setTimeout(() => {
                 button.textContent = originalText;
@@ -2424,10 +2424,11 @@ function exportJS() {
     }
 
     function loadStateFromUrl() {
-        const hash = window.location.hash.substring(1);
-        if (hash) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedState = urlParams.get('state');
+        if (encodedState) {
             try {
-                const state = JSON.parse(atob(hash));
+                const state = JSON.parse(atob(encodedState));
                 console.log('Loading shared state:', state);
                 
                 // Restore items
@@ -2479,6 +2480,14 @@ function exportJS() {
                 render();
                 generateCode();
                 
+                // Clear the URL query parameter so refreshes don't overwrite local changes
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, null, window.location.pathname);
+                } else {
+                    // Fallback for older browsers
+                    window.location.search = '';
+                }
+                
                 console.log('Shared state loaded successfully');
                 return true;
             } catch (e) {
@@ -2487,6 +2496,20 @@ function exportJS() {
         }
         return false;
     }
+
+    // Listen for URL changes (when someone pastes a new URL with state)
+    window.addEventListener('popstate', () => {
+        if (window.location.search.includes('state=')) {
+            loadStateFromUrl();
+        }
+    });
+    
+    // Also listen for focus events in case URL was manually changed
+    window.addEventListener('focus', () => {
+        if (window.location.search.includes('state=')) {
+            loadStateFromUrl();
+        }
+    });
 
     deviceSelect.addEventListener("change", () => {
         currentDevice = deviceSelect.value;

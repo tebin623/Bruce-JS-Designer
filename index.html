@@ -410,9 +410,10 @@
         </div>
     </div>
     <div class="buttons">
-        <button onclick="copyToClipboard()">Copy to Clipboard</button>
-        <button class="danger" onclick="clearAll()">Clear All</button>
+        <button onclick="copyToClipboard()">Copy JS to Clipboard</button>
+        <button class="export" onclick="shareState(event)">Share JS</button>
         <button class="export" onclick="exportJS()">Export JS</button>
+        <button class="danger" onclick="clearAll()">Clear All</button>
     </div>
 
     <h2 style="margin-bottom: 0;">Generated Code</h2>
@@ -2321,6 +2322,110 @@ function exportJS() {
         });
     }
 
+    function shareState(event) {
+        const state = {
+            items: items,
+            backgroundColor: backgroundColorInput.value,
+            currentDevice: currentDevice,
+            currentOutputMode: currentOutputMode,
+            gridSize: gridSize,
+            snapOn: snapOn,
+            showGrid: showGrid,
+            fileName: document.getElementById("fileName").value
+        };
+        
+        const encodedState = btoa(JSON.stringify(state));
+        const shareUrl = window.location.origin + window.location.pathname + '#' + encodedState;
+        
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            // Visual feedback - briefly change button text
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = "URL Copied!";
+            button.style.backgroundColor = "#45a049";
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = "#4dff88";
+            }, 1500);
+        }).catch(err => {
+            // Fallback - show URL in prompt
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = "URL Ready";
+            button.style.backgroundColor = "#45a049";
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = "#4dff88";
+            }, 1500);
+            prompt("Copy this URL to share:", shareUrl);
+        });
+    }
+
+    function loadStateFromUrl() {
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            try {
+                const state = JSON.parse(atob(hash));
+                console.log('Loading shared state:', state);
+                
+                // Restore items
+                items = state.items || [];
+                
+                // Restore background color
+                if (state.backgroundColor) {
+                    backgroundColorInput.value = state.backgroundColor;
+                }
+                
+                // Restore device selection
+                if (state.currentDevice && devices[state.currentDevice]) {
+                    currentDevice = state.currentDevice;
+                    deviceSelect.value = state.currentDevice;
+                }
+                
+                // Restore output mode
+                if (state.currentOutputMode) {
+                    currentOutputMode = state.currentOutputMode;
+                    outputModeSelect.value = state.currentOutputMode;
+                }
+                
+                // Restore grid settings
+                if (state.gridSize) {
+                    gridSize = state.gridSize;
+                    gridSizeInput.value = gridSize;
+                }
+                
+                if (typeof state.snapOn === 'boolean') {
+                    snapOn = state.snapOn;
+                    snapToggle.textContent = snapOn ? "ON" : "OFF";
+                    snapToggle.classList.toggle("on", snapOn);
+                }
+                
+                if (typeof state.showGrid === 'boolean') {
+                    showGrid = state.showGrid;
+                    alwaysShowGridInput.textContent = showGrid ? "ON" : "OFF";
+                    alwaysShowGridInput.classList.toggle("on", showGrid);
+                }
+                
+                // Restore file name
+                if (state.fileName) {
+                    document.getElementById("fileName").value = state.fileName;
+                }
+                
+                // Update UI after loading shared state
+                updateCanvasSize();
+                updateLayerSelect();
+                render();
+                generateCode();
+                
+                console.log('Shared state loaded successfully');
+                return true;
+            } catch (e) {
+                console.log('Failed to load shared state from URL:', e);
+            }
+        }
+        return false;
+    }
+
     deviceSelect.addEventListener("change", () => {
         currentDevice = deviceSelect.value;
         updateCanvasSize();
@@ -2334,9 +2439,9 @@ function exportJS() {
     // Initialize the application
     populateDeviceDropdown();
     
-    // Try to load saved state, if not found, use defaults
-    if (!loadState()) {
-        // No saved state, use defaults
+    // Try to load shared state from URL first, then saved state, then use defaults
+    if (!loadStateFromUrl() && !loadState()) {
+        // No shared or saved state, use defaults
         currentDevice = deviceSelect.value;
         updateCanvasSize();
         render();

@@ -439,6 +439,22 @@
             <label id="textBgColorPlaceholder" style="display: none;">
                 <!-- Placeholder to preserve spacing when color control is hidden -->
             </label>
+            
+            <label id="textAlignControl" style="display: none;">Text Align
+                <select id="textAlign">
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Right</option>
+                </select>
+            </label>
+            
+            <label id="textBaselineControl" style="display: none;">Text Baseline
+                <select id="textBaseline">
+                    <option value="top">Top</option>
+                    <option value="middle">Middle</option>
+                    <option value="bottom">Bottom</option>
+                </select>
+            </label>
 
             <!-- Dynamic shape controls -->
             <label id="posXControl" style="display: none;">X Position
@@ -568,6 +584,8 @@ display.drawCircle(100, 50, 20, display.color(0, 255, 0));
 </div>
 
 <script>
+console.log('Script starting...');
+
 const canvas = document.getElementById("screen"),
       ctx = canvas.getContext("2d"),
       deviceSelect = document.getElementById("device"),
@@ -609,7 +627,12 @@ const canvas = document.getElementById("screen"),
       outerRadiusInput = document.getElementById("outerRadius"),
       // Text background controls
       textBgColorInput = document.getElementById("textBgColor"),
-      textBgToggleInput = document.getElementById("textBgToggle");
+      textBgToggleInput = document.getElementById("textBgToggle"),
+      // Text alignment controls
+      textAlignInput = document.getElementById("textAlign"),
+      textBaselineInput = document.getElementById("textBaseline");
+
+console.log('Variable declarations completed');
 
 let items = [],
     selected = null,
@@ -619,6 +642,8 @@ let items = [],
     altHeld = false,
     dragging = null,
     resizing = false,
+    changingTextAlign = false, // Track when user is changing text alignment dropdown
+    changingTextBaseline = false, // Track when user is changing text baseline dropdown
     resizeHandle = null,
     offsetX = 0,
     offsetY = 0,
@@ -642,6 +667,8 @@ const devices = {
     "Lilygo T-Deck (and Pro)": [320, 240],
     "Lilygo T-Watch-S3": [240, 240]
 };
+
+console.log('Devices object created');
 
 function populateDeviceDropdown() {
     deviceSelect.innerHTML = "";
@@ -730,7 +757,7 @@ function clamp(v, min, max) {
 
 
 function addItem(t) {
-    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), color2: getRandomColor(), gradientMode: "h", text: "Text", textBgColor: null, radius: 5, lineWidth: 2, startAngle: 0, endAngle: 90, innerRadius: 10, outerRadius: 20 };
+    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), color2: getRandomColor(), gradientMode: "h", text: "Text", textBgColor: null, textAlign: "left", textBaseline: "top", radius: 5, lineWidth: 2, startAngle: 0, endAngle: 90, innerRadius: 10, outerRadius: 20 };
     if (t.includes("circle") || t.includes("fillCircle")) {
         o.radius = 15; // Set radius
         o.w = o.h = o.radius * 2; // Set bounding box to diameter
@@ -786,6 +813,8 @@ function addItem(t) {
     syncUI();
     render();
 }
+
+console.log('addItem function defined successfully');
 
 function duplicateItem() {
     if (!selected) return;
@@ -881,6 +910,8 @@ function parseAndImportCode(codeText) {
     let currentTextSize = 2;
     let currentTextColor = '#FFFFFF';
     let currentTextBgColor = null;
+    let currentTextAlign = 'left';
+    let currentTextBaseline = 'top';
     
     for (let line of lines) {
         line = line.trim();
@@ -910,6 +941,58 @@ function parseAndImportCode(codeText) {
         }
         else if ((match = line.match(/(display|sprite)\.setTextBgColor\(display\.color\((\d+),\s*(\d+),\s*(\d+)\)\)/))) {
             currentTextBgColor = `#${parseInt(match[2]).toString(16).padStart(2, '0')}${parseInt(match[3]).toString(16).padStart(2, '0')}${parseInt(match[4]).toString(16).padStart(2, '0')}`;
+            continue;
+        }
+        // Parse setTextAlign()
+        else if ((match = line.match(/(display|sprite)\.setTextAlign\(([^,)]+)(?:,\s*([^)]+))?\)/))) {
+            const alignParam = match[2].trim().replace(/[\"']/g, '');
+            const baselineParam = match[3] ? match[3].trim().replace(/[\"']/g, '') : null;
+            
+            // Parse align parameter (string or number)
+            if (alignParam === 'left' || alignParam === 'l' || alignParam === '0') {
+                currentTextAlign = 'left';
+            } else if (alignParam === 'center' || alignParam === 'c' || alignParam === '1') {
+                currentTextAlign = 'center';
+            } else if (alignParam === 'right' || alignParam === 'r' || alignParam === '2') {
+                currentTextAlign = 'right';
+            }
+            
+            // Parse baseline parameter (string or number)
+            if (baselineParam) {
+                if (baselineParam === 'top' || baselineParam === 't' || baselineParam === '0') {
+                    currentTextBaseline = 'top';
+                } else if (baselineParam === 'middle' || baselineParam === 'm' || baselineParam === '1') {
+                    currentTextBaseline = 'middle';
+                } else if (baselineParam === 'bottom' || baselineParam === 'b' || baselineParam === '2') {
+                    currentTextBaseline = 'bottom';
+                }
+            }
+            continue;
+        }
+        // Parse setTextAlign()
+        else if ((match = line.match(/(display|sprite)\.setTextAlign\(([^,)]+)(?:,\s*([^)]+))?\)/))) {
+            const alignParam = match[2].trim().replace(/[\"']/g, '');
+            const baselineParam = match[3] ? match[3].trim().replace(/[\"']/g, '') : null;
+            
+            // Parse align parameter (string or number)
+            if (alignParam === 'left' || alignParam === 'l' || alignParam === '0') {
+                currentTextAlign = 'left';
+            } else if (alignParam === 'center' || alignParam === 'c' || alignParam === '1') {
+                currentTextAlign = 'center';
+            } else if (alignParam === 'right' || alignParam === 'r' || alignParam === '2') {
+                currentTextAlign = 'right';
+            }
+            
+            // Parse baseline parameter (string or number)
+            if (baselineParam) {
+                if (baselineParam === 'top' || baselineParam === 't' || baselineParam === '0') {
+                    currentTextBaseline = 'top';
+                } else if (baselineParam === 'middle' || baselineParam === 'm' || baselineParam === '1') {
+                    currentTextBaseline = 'middle';
+                } else if (baselineParam === 'bottom' || baselineParam === 'b' || baselineParam === '2') {
+                    currentTextBaseline = 'bottom';
+                }
+            }
             continue;
         }
         
@@ -1135,7 +1218,9 @@ function parseAndImportCode(codeText) {
                 h: 20, // Default height
                 size: currentTextSize || 2,
                 color: currentTextColor || '#FFFFFF',
-                textBgColor: currentTextBgColor
+                textBgColor: currentTextBgColor,
+                textAlign: currentTextAlign || 'left',
+                textBaseline: currentTextBaseline || 'top'
             });
         }
         // Parse pixel
@@ -1448,24 +1533,43 @@ function render() {
                 ctx.fill();
                 break;
             case "text":
-                ctx.font = `bold ${i.size * 12}px "Courier New"`;
-                ctx.letterSpacing = -(i.size-1)*1.5 + "px";
-                ctx.save();
-                ctx.scale(1, fontScale);
+                ctx.font = `bold ${i.size * 10}px "Courier New"`;
+                ctx.letterSpacing = -(i.size)*.05 + "px";
                 
-                const textWidth = ctx.measureText(i.text).width-i.size;
-                const textHeight = (ctx.measureText(i.text).actualBoundingBoxAscent + ctx.measureText(i.text).actualBoundingBoxDescent) * fontScale;
+                // Use (0,0) since context is already translated to (i.x, i.y)
+                const align = i.textAlign || 'left';
+                const baseline = i.textBaseline || 'top';
+                
+                // Set canvas text alignment
+                ctx.textAlign = align;
+                ctx.textBaseline = baseline;
                 
                 // Draw background if specified
                 if (i.textBgColor) {
+                    ctx.save();
+                    const metrics = ctx.measureText(i.text);
+                    let bgX = 0; // Start at origin since context is translated
+                    let bgY = 0;
+                    let bgWidth = metrics.width;
+                    let bgHeight = i.size * 10;
+                    
+                    // Adjust background based on alignment
+                    if (align === 'center') bgX = -bgWidth / 2;
+                    else if (align === 'right') bgX = -bgWidth;
+                    
+                    if (baseline === 'middle') bgY = -bgHeight / 2;
+                    else if (baseline === 'bottom') bgY = -bgHeight;
+                    
                     ctx.fillStyle = i.textBgColor;
-                    ctx.fillRect(0, -1, textWidth, textHeight / fontScale); // Adjust for scale
+                    ctx.fillRect(bgX, bgY+i.size+1, bgWidth, bgHeight-(i.size)*3);
+                    ctx.restore();
                 }
                 
-                // Draw text
+                // Draw text at origin (since context is translated)
                 ctx.fillStyle = i.color;
-                ctx.fillText(i.text, -2, (textHeight / fontScale) / 2 + i.size*3);
-                ctx.restore(); // Reset the vertical scaling
+                ctx.fillText(i.text, 0, 0);
+                
+                break;
                 break;
             case "pixel":
                 ctx.fillStyle = i.color;
@@ -1479,13 +1583,38 @@ function render() {
             ctx.lineWidth = 1.5;
 
             if (i.type === "text") {
+                // Bounding box for text - account for translated context
                 ctx.save();
-                ctx.font = `bold ${i.size * 12}px "Courier New"`;
-                ctx.letterSpacing = "-1.5px";
-                const iw = ctx.measureText(i.text).width - i.size;
-                const ih = (ctx.measureText(i.text).actualBoundingBoxAscent + ctx.measureText(i.text).actualBoundingBoxDescent) * fontScale;
+                ctx.font = `bold ${i.size * 10}px "Courier New"`;
+                ctx.textAlign = i.textAlign || 'left';
+                ctx.textBaseline = i.textBaseline || 'top';
+                
+                const metrics = ctx.measureText(i.text);
+                // Start at origin (0,0) since context is translated to (i.x, i.y)
+                let boxX = 0;
+                let boxY = 0;
+                let boxW = metrics.width;
+                let boxH = i.size * 10;
+                
+                // Adjust based on alignment (same as text rendering)
+                const align = i.textAlign || 'left';
+                const baseline = i.textBaseline || 'top';
+                
+                if (align === 'center') boxX = -boxW / 2;
+                else if (align === 'right') boxX = -boxW;
+                
+                if (baseline === 'middle') boxY = -boxH / 2;
+                else if (baseline === 'bottom') boxY = -boxH;
+                
+                ctx.strokeRect(boxX - 1, (boxY + i.size + 1) - 1, boxW + 2, (boxH - (i.size) * 3) + 2);
+                
+                // Draw red circle in front of bounding box
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(0, i.size + 1, 3, 0, 2 * Math.PI);
+                ctx.fill();
+                
                 ctx.restore();
-                ctx.strokeRect(0.5, 0.5, iw - 1, ih - 1);
             } else if (i.type === "line" || i.type === "wideLine") {
                 // For lines, show handles at start and end points
                 ctx.restore(); // Restore to avoid translation
@@ -1648,12 +1777,32 @@ function startDrag(e) {
     for (let i = items.length - 1; i >= 0; i--) {
         const it = items[i];
         let iw = it.w, ih = it.h;
+        let hitboxX = it.x, hitboxY = it.y;
+        
         if (it.type === "text") {
+            // Simple text collision - calculate text box from red circle position
             ctx.save();
             ctx.font = `bold ${it.size * 12}px "Courier New"`;
-            ctx.letterSpacing = "-1.5px";
-            iw = ctx.measureText(it.text).width - it.size;
-            ih = (ctx.measureText(it.text).actualBoundingBoxAscent + ctx.measureText(it.text).actualBoundingBoxDescent) * fontScale;
+            ctx.textAlign = it.textAlign || 'left';
+            ctx.textBaseline = it.textBaseline || 'top';
+            
+            const metrics = ctx.measureText(it.text);
+            iw = metrics.width;
+            ih = it.size * 12; // Simple height
+            
+            // Hitbox starts at red circle position, adjusted by alignment
+            hitboxX = it.x;
+            hitboxY = it.y;
+            
+            const align = it.textAlign || 'left';
+            const baseline = it.textBaseline || 'top';
+            
+            if (align === 'center') hitboxX = it.x - iw / 2;
+            else if (align === 'right') hitboxX = it.x - iw;
+            
+            if (baseline === 'middle') hitboxY = it.y - ih / 2;
+            else if (baseline === 'bottom') hitboxY = it.y - ih;
+            
             ctx.restore();
         }
 
@@ -1920,10 +2069,17 @@ function startDrag(e) {
                     render();
                     return;
                 }
-            } else if (p.x >= it.x && p.x <= it.x + iw && p.y >= it.y && p.y <= it.y + ih) {
+            } else if (p.x >= hitboxX && p.x <= hitboxX + iw && p.y >= hitboxY && p.y <= hitboxY + ih) {
                 dragging = it;
-                offsetX = p.x - it.x;
-                offsetY = p.y - it.y;
+                
+                // For text objects, x,y IS the alignment point
+                if (it.type === "text") {
+                    offsetX = p.x - it.x;
+                    offsetY = p.y - it.y;
+                } else {
+                    offsetX = p.x - it.x;
+                    offsetY = p.y - it.y;
+                }
                 selected = it;
                 showGrid = true;
                 updateLayerSelect();
@@ -2205,8 +2361,17 @@ function drag(e) {
             }
 
             if (selected && selected.type === "text") {
-                selected.x = nx;
-                selected.y = ny;
+                // For text, x,y IS the alignment point - move it directly
+                let newX = p.x - offsetX;
+                let newY = p.y - offsetY;
+                
+                if (snapOn !== altHeld) {
+                    newX = Math.round(newX / gridSize) * gridSize;
+                    newY = Math.round(newY / gridSize) * gridSize;
+                }
+                
+                selected.x = newX;
+                selected.y = newY;
             } else {
                 dragging.x = nx;
                 dragging.y = ny;
@@ -2268,6 +2433,8 @@ function syncUI() {
     // Hide all dynamic controls first
     document.getElementById('textControl').style.display = 'none';
     document.getElementById('textSizeControl').style.display = 'none';
+    document.getElementById('textAlignControl').style.display = 'none';
+    document.getElementById('textBaselineControl').style.display = 'none';
     document.getElementById('textBgColorControl').style.display = 'none';
     document.getElementById('textBgToggleControl').style.display = 'none';
     document.getElementById('textBgColorPlaceholder').style.display = 'none';
@@ -2427,8 +2594,17 @@ function syncUI() {
         case 'text':
             document.getElementById('textControl').style.display = 'flex';
             document.getElementById('textSizeControl').style.display = 'flex';
+            document.getElementById('textAlignControl').style.display = 'flex';
+            document.getElementById('textBaselineControl').style.display = 'flex';
             document.getElementById('textBgToggleControl').style.display = 'flex';
             textSizeInput.value = selected.size;
+            // Only update dropdown values if user is not currently changing them
+            if (!changingTextAlign) {
+                textAlignInput.value = selected.textAlign || 'left';
+            }
+            if (!changingTextBaseline) {
+                textBaselineInput.value = selected.textBaseline || 'top';
+            }
             textBgColorInput.value = selected.textBgColor || '#000000';
             
             if (selected.textBgColor) {
@@ -2511,6 +2687,40 @@ textBgToggleInput.addEventListener("click", () => {
         render();
         trackInputChange();
     }
+});
+
+textAlignInput.addEventListener("change", () => {
+    changingTextAlign = false; // Clear flag when change is complete
+    if (selected && selected.type === "text") {
+        selected.textAlign = textAlignInput.value;
+        render();
+        trackInputChange();
+    }
+});
+
+textAlignInput.addEventListener("mousedown", () => {
+    changingTextAlign = true; // Set flag when user starts changing
+});
+
+textAlignInput.addEventListener("focus", () => {
+    changingTextAlign = true; // Set flag when dropdown gets focus
+});
+
+textBaselineInput.addEventListener("change", () => {
+    changingTextBaseline = false; // Clear flag when change is complete
+    if (selected && selected.type === "text") {
+        selected.textBaseline = textBaselineInput.value;
+        render();
+        trackInputChange();
+    }
+});
+
+textBaselineInput.addEventListener("mousedown", () => {
+    changingTextBaseline = true; // Set flag when user starts changing
+});
+
+textBaselineInput.addEventListener("focus", () => {
+    changingTextBaseline = true; // Set flag when dropdown gets focus
 });
 
 // Dynamic shape control event listeners
@@ -3003,9 +3213,25 @@ ${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}
                     const textBgColor = rgb(i.textBgColor).join(', ');
                     bgColorCode = `, display.color(${textBgColor})`;
                 }
-                out += `${outputPrefix}.setTextSize(${i.size});
-${outputPrefix}.setTextColor(${textColorCode}${bgColorCode});
-${outputPrefix}.drawText("${i.text}", ${x}, ${y});\n`;
+                
+                out += `${outputPrefix}.setTextSize(${i.size});\n`;
+                out += `${outputPrefix}.setTextColor(${textColorCode}${bgColorCode});\n`;
+                
+                // Always add setTextAlign
+                const align = i.textAlign || 'left';
+                const baseline = i.textBaseline || 'top';
+                let alignParam, baselineParam;
+                
+                // Convert to string format
+                alignParam = align === 'left' ? '"left"' : align === 'center' ? '"center"' : '"right"';
+                baselineParam = baseline === 'top' ? '"top"' : baseline === 'middle' ? '"middle"' : '"bottom"';
+                
+                // Always output both alignment and baseline parameters
+                out += `${outputPrefix}.setTextAlign(${alignParam}, ${baselineParam});\n`;
+                
+                // Use x,y coordinates directly as alignment point (same as red circle position)
+                out += `${outputPrefix}.drawText("${i.text}", ${Math.round(i.x * sx)}, ${Math.round(i.y * sy)});\n`;
+                break;
                 break;
             case "pixel":
                 out += `${outputPrefix}.drawPixel(${x}, ${y}, display.color(${c}));\n`;

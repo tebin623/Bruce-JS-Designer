@@ -267,6 +267,7 @@ let items = [],
     currentDevice,
     gridSize = 10,
     snapOn = false,
+    altHeld = false,
     dragging = null,
     resizing = false,
     resizeHandle = null,
@@ -352,7 +353,7 @@ function addItem(t) {
         o.x2 = o.x + o.w;
         o.y2 = o.y + o.h;
     }
-    if (snapOn) {
+    if (snapOn !== altHeld) {
         o.x = Math.round(o.x / gridSize) * gridSize;
         o.y = Math.round(o.y / gridSize) * gridSize;
         if (o.x2 !== undefined) {
@@ -375,7 +376,7 @@ function duplicateItem() {
         o.x2 += 10;
         o.y2 += 10;
     }
-    if (snapOn) {
+    if (snapOn !== altHeld) {
         o.x = Math.round(o.x / gridSize) * gridSize;
         o.y = Math.round(o.y / gridSize) * gridSize;
         if (o.x2 !== undefined) {
@@ -550,6 +551,21 @@ document.addEventListener("touchmove", drag, { passive: false });
 document.addEventListener("mouseup", stopDrag);
 document.addEventListener("touchend", stopDrag);
 
+// Track ALT key for temporary snap disable
+document.addEventListener("keydown", (e) => {
+    if (e.altKey) {
+        e.preventDefault(); // Prevent browser menu activation
+        altHeld = true;
+    }
+});
+
+document.addEventListener("keyup", (e) => {
+    if (!e.altKey) {
+        e.preventDefault(); // Prevent browser menu activation
+        altHeld = false;
+    }
+});
+
 function getMousePos(e) {
     const r = canvas.getBoundingClientRect();
     return {
@@ -666,11 +682,11 @@ function drag(e) {
         if (dragging.type === "line") {
             // Handle line point dragging
             if (resizeHandle === 'start') {
-                dragging.x = snapOn ? Math.round(p.x / gridSize) * gridSize : p.x;
-                dragging.y = snapOn ? Math.round(p.y / gridSize) * gridSize : p.y;
+                dragging.x = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+                dragging.y = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
             } else if (resizeHandle === 'end') {
-                dragging.x2 = snapOn ? Math.round(p.x / gridSize) * gridSize : p.x;
-                dragging.y2 = snapOn ? Math.round(p.y / gridSize) * gridSize : p.y;
+                dragging.x2 = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+                dragging.y2 = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
             }
         } else {
             // Handle other shapes resizing
@@ -696,7 +712,7 @@ function drag(e) {
             nw = clamp(nw, mn, canvas.width - nx);
             nh = clamp(nh, mn, canvas.height - ny);
 
-            if (snapOn) {
+            if (snapOn !== altHeld) {
                 dragging.x = Math.round(nx / gridSize) * gridSize;
                 dragging.y = Math.round(ny / gridSize) * gridSize;
                 dragging.w = Math.round(nw / gridSize) * gridSize;
@@ -714,7 +730,7 @@ function drag(e) {
             let dx = p.x - dragging.x - offsetX;
             let dy = p.y - dragging.y - offsetY;
             
-            if (snapOn) {
+            if (snapOn !== altHeld) {
                 dx = Math.round(dx / gridSize) * gridSize;
                 dy = Math.round(dy / gridSize) * gridSize;
             }
@@ -727,7 +743,7 @@ function drag(e) {
             let nx = p.x - offsetX;
             let ny = p.y - offsetY;
 
-            if (snapOn) {
+            if (snapOn !== altHeld) {
                 nx = Math.round(nx / gridSize) * gridSize;
                 ny = Math.round(ny / gridSize) * gridSize;
             }

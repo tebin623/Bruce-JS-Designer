@@ -289,11 +289,39 @@ const devices = {
 
 function populateDeviceDropdown() {
     deviceSelect.innerHTML = "";
-    for (let n in devices) {
-        let o = document.createElement("option");
-        o.value = n;
-        o.textContent = n;
-        deviceSelect.appendChild(o);
+    
+    // Group devices by size
+    const devicesBySize = {};
+    for (let deviceName in devices) {
+        const size = devices[deviceName];
+        const sizeKey = `${size[0]} × ${size[1]}`;
+        if (!devicesBySize[sizeKey]) {
+            devicesBySize[sizeKey] = [];
+        }
+        devicesBySize[sizeKey].push(deviceName);
+    }
+    
+    // Sort sizes by total pixels (width * height) for logical ordering
+    const sortedSizes = Object.keys(devicesBySize).sort((a, b) => {
+        const sizeA = a.split(' × ').map(Number);
+        const sizeB = b.split(' × ').map(Number);
+        return (sizeA[0] * sizeA[1]) - (sizeB[0] * sizeB[1]);
+    });
+    
+    // Create optgroups for each size
+    for (let sizeKey of sortedSizes) {
+        let optgroup = document.createElement("optgroup");
+        optgroup.label = sizeKey;
+        
+        // Sort devices within each group alphabetically
+        devicesBySize[sizeKey].sort().forEach(deviceName => {
+            let option = document.createElement("option");
+            option.value = deviceName;
+            option.textContent = deviceName;
+            optgroup.appendChild(option);
+        });
+        
+        deviceSelect.appendChild(optgroup);
     }
 
     if (!currentDevice) {

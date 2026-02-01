@@ -232,6 +232,7 @@
         <button onclick="addItem('text')">Text</button>
         <button class="duplicate" onclick="duplicateItem()">Duplicate</button>
         <button class="danger" onclick="deleteItem()">Delete</button>
+        <button class="danger" onclick="clearAll()">Clear All</button>
         <button class="export" onclick="exportJS()">Export JS</button>
     </div>
 
@@ -293,10 +294,11 @@ function populateDeviceDropdown() {
         o.textContent = n;
         deviceSelect.appendChild(o);
     }
-    currentDevice = deviceSelect.value;
-    updateCanvasSize();
+
+    if (!currentDevice) {
+        currentDevice = deviceSelect.value;
+    }
 }
-populateDeviceDropdown();
 
 
 function updateCanvasSize() {
@@ -374,6 +376,16 @@ function deleteItem() {
     selected = null;
     updateLayerSelect();
     render();
+}
+
+function clearAll() {
+    if (items.length === 0) return;
+    if (confirm('Are you sure you want to clear all? This cannot be undone.')) {
+        items = [];
+        selected = null;
+        updateLayerSelect();
+        render();
+    }
 }
 
 
@@ -493,6 +505,7 @@ function render() {
 
     syncUI();
     generateCode();
+    saveState();
 }
 
 
@@ -687,6 +700,76 @@ function rgb(h) {
     ];
 }
 
+function saveState() {
+    const state = {
+        items: items,
+        backgroundColor: backgroundColorInput.value,
+        currentDevice: currentDevice,
+        gridSize: gridSize,
+        snapOn: snapOn,
+        showGrid: alwaysShowGridInput.checked,
+        fileName: document.getElementById("fileName").value
+    };
+    localStorage.setItem('bruceJSDesignerState', JSON.stringify(state));
+}
+
+function loadState() {
+    const savedState = localStorage.getItem('bruceJSDesignerState');
+    if (savedState) {
+        try {
+            const state = JSON.parse(savedState);
+            console.log('Loading saved state:', state);
+            
+            // Restore items
+            items = state.items || [];
+            
+            // Restore background color
+            if (state.backgroundColor) {
+                backgroundColorInput.value = state.backgroundColor;
+            }
+            
+            // Restore device selection
+            if (state.currentDevice && devices[state.currentDevice]) {
+                currentDevice = state.currentDevice;
+                deviceSelect.value = state.currentDevice;
+            }
+            
+            // Restore grid settings
+            if (state.gridSize) {
+                gridSize = state.gridSize;
+                gridSizeInput.value = gridSize;
+            }
+            
+            if (typeof state.snapOn === 'boolean') {
+                snapOn = state.snapOn;
+                snapToggle.textContent = snapOn ? "ON" : "OFF";
+                snapToggle.classList.toggle("on", snapOn);
+            }
+            
+            if (typeof state.showGrid === 'boolean') {
+                showGrid = state.showGrid;
+                alwaysShowGridInput.checked = state.showGrid;
+            }
+            
+            // Restore file name
+            if (state.fileName) {
+                document.getElementById("fileName").value = state.fileName;
+            }
+            
+            // Update UI after loading state
+            updateCanvasSize();
+            updateLayerSelect();
+            render();
+            
+            console.log('State loaded successfully');
+            return true;
+        } catch (e) {
+            console.log('Failed to load saved state:', e);
+        }
+    }
+    return false;
+}
+
 
 function generateCode() {
     const dev = devices[currentDevice];
@@ -758,8 +841,17 @@ function exportJS() {
         updateCanvasSize();
     });
 
-    render();
-    updateLayerSelect();
+    // Initialize the application
+    populateDeviceDropdown();
+    
+    // Try to load saved state, if not found, use defaults
+    if (!loadState()) {
+        // No saved state, use defaults
+        currentDevice = deviceSelect.value;
+        updateCanvasSize();
+        render();
+        updateLayerSelect();
+    }
 </script>
 </body>
 </html>

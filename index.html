@@ -32,17 +32,41 @@
             touch-action: none;
         }
 
-        .sliders {
+        .main-settings, .properties {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             margin-bottom: 12px;
         }
 
-        .sliders label {
+        .settings-container {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 12px;
+        }
+
+        .main-settings {
+            flex: 1;
+        }
+
+        .properties {
+            flex: 1;
+        }
+
+        .main-settings, .properties {
+            margin-top: 20px;
+        }
+
+        .main-settings label, .properties label {
             flex: 1 1 45%;
             display: flex;
             flex-direction: column;
+        }
+
+        .main-settings h2, .properties h2 {
+            margin: 0 0 0 0;
+            font-size: 1.2em;
+            width: 100%;
         }
 
         input, select {
@@ -107,7 +131,7 @@
         .layer-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 8px;
+            margin-top: 20px;
         }
 
         .layer-buttons button {
@@ -176,53 +200,6 @@
 
     <canvas id="screen"></canvas>
 
-    <div class="sliders">
-        <label>Device
-            <select id="device"></select>
-        </label>
-
-        <label>Snap to Grid
-            <button id="snapToggle" class="toggle">OFF</button>
-        </label>
-
-        <label>Grid Size
-            <input type="number" id="gridSize" min="1" max="50" step="1" value="10">
-        </label>
-
-        <label>Always Show Grid
-            <button id="alwaysShowGrid" class="toggle">OFF</button>
-        </label>
-
-        <label>Text
-            <input type="text" id="text">
-        </label>
-
-        <label>Text Size
-            <input type="range" id="textSize" min="1" max="8" step="1" value="2">
-        </label>
-
-        <label>Layer
-            <select id="shapeSelect"></select>
-        </label>
-
-        <div class="layer-buttons">
-            <button id="layerUp">Forward</button>
-            <button id="layerDown">Backward</button>
-        </div>
-
-        <label>File name
-            <input type="text" id="fileName" value="app">
-        </label>
-
-        <label>Color
-            <input type="color" id="color">
-        </label>
-
-        <label>Background Color
-            <input type="color" id="backgroundColor" value="#000000">
-        </label>
-    </div>
-
     <div class="buttons">
         <button onclick="addItem('fillRect')">FillRect</button>
         <button onclick="addItem('rect')">Rect</button>
@@ -232,6 +209,99 @@
         <button onclick="addItem('text')">Text</button>
         <button class="duplicate" onclick="duplicateItem()">Duplicate</button>
         <button class="danger" onclick="deleteItem()">Delete</button>
+    </div>
+
+    <div class="settings-container">
+        <div class="main-settings">
+            <h2>Main Settings</h2>
+
+            <label>Device
+                <select id="device"></select>
+            </label>
+
+            <label>Background Color
+                <input type="color" id="backgroundColor" value="#000000">
+            </label>
+
+            <label>Snap to Grid
+                <button id="snapToggle" class="toggle">OFF</button>
+            </label>
+
+            <label>Grid Size
+                <input type="number" id="gridSize" min="1" max="50" step="1" value="10">
+            </label>
+
+            <label>Always Show Grid
+                <button id="alwaysShowGrid" class="toggle">OFF</button>
+            </label>
+
+            <label>File name
+                <input type="text" id="fileName" value="app">
+            </label>
+        </div>
+
+        <div class="properties">
+            <h2>Layers</h2>
+
+            <label>Layer
+                <select id="shapeSelect"></select>
+            </label>
+
+            <div class="layer-buttons">
+                <button id="layerUp">Forward</button>
+                <button id="layerDown">Backward</button>
+            </div>
+
+            <h2>Properties</h2>
+
+            <div id="noSelectionMessage" style="text-align: center; color: #999;">
+                Select something to view properties
+            </div>
+
+            <label id="colorControl" style="display: none;">Color
+                <input type="color" id="color">
+            </label>
+
+            <label id="textControl" style="display: none;">Text
+                <input type="text" id="text">
+            </label>
+
+            <label id="textSizeControl" style="display: none;">Text Size
+                <input type="range" id="textSize" min="1" max="8" step="1" value="2">
+            </label>
+
+            <!-- Dynamic shape controls -->
+            <label id="posXControl" style="display: none;">X Position
+                <input type="number" id="posX" step="1">
+            </label>
+
+            <label id="posYControl" style="display: none;">Y Position
+                <input type="number" id="posY" step="1">
+            </label>
+
+            <label id="widthControl" style="display: none;">Width
+                <input type="number" id="width" min="1" step="1">
+            </label>
+
+            <label id="heightControl" style="display: none;">Height
+                <input type="number" id="height" min="1" step="1">
+            </label>
+
+            <label id="radiusControl" style="display: none;">Radius
+                <input type="number" id="radius" min="1" step="1">
+            </label>
+
+            <label id="x2Control" style="display: none;">End X
+                <input type="number" id="x2" step="1">
+            </label>
+
+            <label id="y2Control" style="display: none;">End Y
+                <input type="number" id="y2" step="1">
+            </label>
+
+        </div>
+    </div>
+    <div class="buttons">
         <button class="danger" onclick="clearAll()">Clear All</button>
         <button class="export" onclick="exportJS()">Export JS</button>
     </div>
@@ -260,7 +330,15 @@ const canvas = document.getElementById("screen"),
       gridSizeInput = document.getElementById("gridSize"),
       alwaysShowGridInput = document.getElementById("alwaysShowGrid"),
       layerUpBtn = document.getElementById("layerUp"),
-      layerDownBtn = document.getElementById("layerDown");
+      layerDownBtn = document.getElementById("layerDown"),
+      // Dynamic shape controls
+      posXInput = document.getElementById("posX"),
+      posYInput = document.getElementById("posY"),
+      widthInput = document.getElementById("width"),
+      heightInput = document.getElementById("height"),
+      radiusInput = document.getElementById("radius"),
+      x2Input = document.getElementById("x2"),
+      y2Input = document.getElementById("y2");
 
 let items = [],
     selected = null,
@@ -374,7 +452,7 @@ function clamp(v, min, max) {
 
 
 function addItem(t) {
-    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), text: "Hello" };
+    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), text: "Text" };
     if (t.includes("circle") || t.includes("fillCircle")) o.w = o.h = 20;
     if (t === "line") {
         // For lines, use x,y as start point and x2,y2 as end point
@@ -822,10 +900,67 @@ shapeSelect.onchange = e => {
 
 
 function syncUI() {
-    if (!selected) return;
-    textInput.value = selected.text;
+    // Hide all dynamic controls first
+    document.getElementById('textControl').style.display = 'none';
+    document.getElementById('textSizeControl').style.display = 'none';
+    document.getElementById('posXControl').style.display = 'none';
+    document.getElementById('posYControl').style.display = 'none';
+    document.getElementById('widthControl').style.display = 'none';
+    document.getElementById('heightControl').style.display = 'none';
+    document.getElementById('radiusControl').style.display = 'none';
+    document.getElementById('x2Control').style.display = 'none';
+    document.getElementById('y2Control').style.display = 'none';
+    document.getElementById('colorControl').style.display = 'none';
+    
+    if (!selected) {
+        // Show placeholder message when nothing is selected
+        document.getElementById('noSelectionMessage').style.display = 'block';
+        return;
+    }
+    
+    // Hide placeholder message when something is selected
+    document.getElementById('noSelectionMessage').style.display = 'none';
+    
+    // Always show position and color for all shapes
+    document.getElementById('posXControl').style.display = 'flex';
+    document.getElementById('posYControl').style.display = 'flex';
+    document.getElementById('colorControl').style.display = 'flex';
+    posXInput.value = Math.round(selected.x);
+    posYInput.value = Math.round(selected.y);
+    
+    // Update common controls
+    textInput.value = selected.text || '';
     colorInput.value = selected.color;
-    if (selected.type === "text") textSizeInput.value = selected.size;
+    
+    // Show controls based on shape type
+    switch(selected.type) {
+        case 'fillRect':
+        case 'rect':
+            document.getElementById('widthControl').style.display = 'flex';
+            document.getElementById('heightControl').style.display = 'flex';
+            widthInput.value = Math.round(selected.w);
+            heightInput.value = Math.round(selected.h);
+            break;
+            
+        case 'circle':
+        case 'fillCircle':
+            document.getElementById('radiusControl').style.display = 'flex';
+            radiusInput.value = Math.round(selected.w / 2);
+            break;
+            
+        case 'line':
+            document.getElementById('x2Control').style.display = 'flex';
+            document.getElementById('y2Control').style.display = 'flex';
+            x2Input.value = Math.round(selected.x2);
+            y2Input.value = Math.round(selected.y2);
+            break;
+            
+        case 'text':
+            document.getElementById('textControl').style.display = 'flex';
+            document.getElementById('textSizeControl').style.display = 'flex';
+            textSizeInput.value = selected.size;
+            break;
+    }
 }
 
 textInput.addEventListener("input", () => {
@@ -845,6 +980,74 @@ colorInput.addEventListener("input", () => {
 textSizeInput.addEventListener("input", () => {
     if (selected && selected.type === "text") {
         selected.size = parseInt(textSizeInput.value);
+        render();
+    }
+});
+
+// Dynamic shape control event listeners
+posXInput.addEventListener("input", () => {
+    if (selected) {
+        const newX = parseInt(posXInput.value);
+        if (selected.type === 'line') {
+            const dx = newX - selected.x;
+            selected.x = newX;
+            selected.x2 += dx;
+            x2Input.value = Math.round(selected.x2);
+        } else {
+            selected.x = newX;
+        }
+        render();
+    }
+});
+
+posYInput.addEventListener("input", () => {
+    if (selected) {
+        const newY = parseInt(posYInput.value);
+        if (selected.type === 'line') {
+            const dy = newY - selected.y;
+            selected.y = newY;
+            selected.y2 += dy;
+            y2Input.value = Math.round(selected.y2);
+        } else {
+            selected.y = newY;
+        }
+        render();
+    }
+});
+
+widthInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'fillRect' || selected.type === 'rect')) {
+        selected.w = parseInt(widthInput.value);
+        render();
+    }
+});
+
+heightInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'fillRect' || selected.type === 'rect')) {
+        selected.h = parseInt(heightInput.value);
+        render();
+    }
+});
+
+radiusInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'circle' || selected.type === 'fillCircle')) {
+        const radius = parseInt(radiusInput.value);
+        selected.w = radius * 2;
+        selected.h = radius * 2;
+        render();
+    }
+});
+
+x2Input.addEventListener("input", () => {
+    if (selected && selected.type === 'line') {
+        selected.x2 = parseInt(x2Input.value);
+        render();
+    }
+});
+
+y2Input.addEventListener("input", () => {
+    if (selected && selected.type === 'line') {
+        selected.y2 = parseInt(y2Input.value);
         render();
     }
 });

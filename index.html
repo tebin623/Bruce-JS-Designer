@@ -64,10 +64,15 @@
             flex: 1 1 45%;
             display: flex;
             flex-direction: column;
+            font-weight: bold;
         }
 
         .main-settings .full-width, .properties .full-width {
             flex: 1 1 100%;
+        }
+
+        .main-settings .one-third, .properties .one-third {
+            flex: 1 1 calc(33.33% - 8px);
         }
 
         .main-settings h2, .properties h2 {
@@ -248,7 +253,7 @@
                 <input type="text" id="fileName" value="app">
             </label>
 
-            <label class="full-width">Text Background Color
+            <label class="full-width">Background Color
                 <input type="color" id="backgroundColor" value="#000000">
             </label>
 
@@ -259,15 +264,15 @@
                 </select>
             </label>
 
-            <label>Snap to Grid
+            <label class="one-third">Snap to Grid
                 <button id="snapToggle" class="toggle">OFF</button>
             </label>
 
-            <label>Grid Size
+            <label class="one-third">Grid Size
                 <input type="number" id="gridSize" min="1" max="50" step="1" value="10">
             </label>
 
-            <label>Always Show Grid
+            <label class="one-third">Always Show Grid
                 <button id="alwaysShowGrid" class="toggle">OFF</button>
             </label>
 
@@ -480,7 +485,8 @@ let items = [],
     history = [],
     historyIndex = -1,
     maxHistorySize = 50,
-    inputChangeTimeout = null;
+    inputChangeTimeout = null,
+    fontScale=1.175;
 
 const devices = {
     "M5Stack Cardputer/Adv/StickC 1.1/2/S3": [240, 135],
@@ -707,7 +713,6 @@ layerDownBtn.addEventListener("click", () => {
 
 
 function render() {
-    const fontScale=1.175;
     ctx.fillStyle = backgroundColorInput.value;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1550,6 +1555,7 @@ function syncUI() {
     document.getElementById('textSizeControl').style.display = 'none';
     document.getElementById('textBgColorControl').style.display = 'none';
     document.getElementById('textBgToggleControl').style.display = 'none';
+    document.getElementById('textBgColorPlaceholder').style.display = 'none';
     document.getElementById('posXControl').style.display = 'none';
     document.getElementById('posYControl').style.display = 'none';
     document.getElementById('widthControl').style.display = 'none';
@@ -1763,7 +1769,7 @@ textBgToggleInput.addEventListener("click", () => {
         if (selected.textBgColor) {
             selected.textBgColor = null;
             textBgToggleInput.textContent = 'NO';
-            textBgToggleInput.classList.remove('no');
+            textBgToggleInput.classList.remove('on');
             document.getElementById('textBgColorControl').style.display = 'none';
             document.getElementById('textBgColorPlaceholder').style.display = 'flex';
         } else {

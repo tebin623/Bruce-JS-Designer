@@ -532,7 +532,8 @@ let items = [],
     historyIndex = -1,
     maxHistorySize = 50,
     inputChangeTimeout = null,
-    fontScale=1.175;
+    fontScale=1.175,
+    currentOutputMode = 'display';
 
 const devices = {
     "M5Stack Cardputer/Adv/StickC 1.1/2/S3": [240, 135],
@@ -2498,38 +2499,10 @@ function exportJS() {
             b: backgroundColorInput.value,
             d: currentDevice,
             o: currentOutputMode,
-            g: gridSize,
-            s: snapOn,
-            h: showGrid,
             f: document.getElementById("fileName").value
         };
         
         let jsonString = JSON.stringify(compressedState);
-        
-        // Apply string replacements first
-        const replacements = [
-            ['color', 'c'],
-            ['type', 't'],
-            ['text', 'x'],
-            ['"fillRect"', '"fR"'],
-            ['"rect"', '"r"'],
-            ['"circle"', '"ci"'],
-            ['"fillCircle"', '"fC"'],
-            ['"line"', '"l"'],
-            ['"text"', '"tx"'],
-            ['"triangle"', '"tr"'],
-            ['"fillTriangle"', '"fT"'],
-            ['"wideLine"', '"wL"'],
-            ['"fastHLine"', '"fH"'],
-            ['"fastVLine"', '"fV"'],
-            ['"roundRect"', '"rR"'],
-            ['"fillRoundRect"', '"fRR"'],
-            ['"pixel"', '"p"']
-        ];
-        
-        replacements.forEach(([from, to]) => {
-            jsonString = jsonString.split(from).join(to);
-        });
         
         let encodedState;
         
@@ -2571,7 +2544,8 @@ function exportJS() {
             encodedState = btoa(jsonString);
         }
         
-        const shareUrl = window.location.origin + window.location.pathname + '?s=' + encodedState;
+        // URL encode the state to make it safe for sharing in any context
+        const shareUrl = window.location.origin + window.location.pathname + '?s=' + encodeURIComponent(encodedState);
         
         navigator.clipboard.writeText(shareUrl).then(() => {
             // Visual feedback - briefly change button text
@@ -2601,6 +2575,8 @@ function exportJS() {
         const urlParams = new URLSearchParams(window.location.search);
         let encodedState = urlParams.get('s') || urlParams.get('state');
         if (encodedState) {
+            // URL decode the state (URLSearchParams automatically decodes, but be explicit)
+            encodedState = decodeURIComponent(encodedState);
             try {
                 let jsonString;
                 
@@ -2646,33 +2622,6 @@ function exportJS() {
                     jsonString = atob(encodedState.startsWith('z') ? encodedState.substring(1) : encodedState);
                 }
                 
-                // Decompress string replacements if using compressed format
-                if (urlParams.get('s')) {
-                    const replacements = [
-                        ['c', 'color'],
-                        ['t', 'type'],
-                        ['x', 'text'],
-                        ['"fR"', '"fillRect"'],
-                        ['"r"', '"rect"'],
-                        ['"ci"', '"circle"'],
-                        ['"fC"', '"fillCircle"'],
-                        ['"l"', '"line"'],
-                        ['"tx"', '"text"'],
-                        ['"tr"', '"triangle"'],
-                        ['"fT"', '"fillTriangle"'],
-                        ['"wL"', '"wideLine"'],
-                        ['"fH"', '"fastHLine"'],
-                        ['"fV"', '"fastVLine"'],
-                        ['"rR"', '"roundRect"'],
-                        ['"fRR"', '"fillRoundRect"'],
-                        ['"p"', '"pixel"']
-                    ];
-                    
-                    replacements.forEach(([from, to]) => {
-                        jsonString = jsonString.split(from).join(to);
-                    });
-                }
-                
                 const rawState = JSON.parse(jsonString);
                 
                 // Handle both compressed and uncompressed formats
@@ -2681,9 +2630,6 @@ function exportJS() {
                     backgroundColor: rawState.b,
                     currentDevice: rawState.d,
                     currentOutputMode: rawState.o,
-                    gridSize: rawState.g,
-                    snapOn: rawState.s,
-                    showGrid: rawState.h,
                     fileName: rawState.f
                 } : rawState; // Fallback to old format
                 
@@ -2707,24 +2653,6 @@ function exportJS() {
                 if (state.currentOutputMode) {
                     currentOutputMode = state.currentOutputMode;
                     outputModeSelect.value = state.currentOutputMode;
-                }
-                
-                // Restore grid settings
-                if (state.gridSize) {
-                    gridSize = state.gridSize;
-                    gridSizeInput.value = gridSize;
-                }
-                
-                if (typeof state.snapOn === 'boolean') {
-                    snapOn = state.snapOn;
-                    snapToggle.textContent = snapOn ? "ON" : "OFF";
-                    snapToggle.classList.toggle("on", snapOn);
-                }
-                
-                if (typeof state.showGrid === 'boolean') {
-                    showGrid = state.showGrid;
-                    alwaysShowGridInput.textContent = showGrid ? "ON" : "OFF";
-                    alwaysShowGridInput.classList.toggle("on", showGrid);
                 }
                 
                 // Restore file name

@@ -43,14 +43,17 @@
             display: flex;
             gap: 24px;
             margin-bottom: 12px;
+            align-items: flex-start;
         }
 
         .main-settings {
             flex: 1;
+            min-width: 0;
         }
 
         .properties {
             flex: 1;
+            min-width: 0;
         }
 
         .main-settings, .properties {
@@ -61,6 +64,10 @@
             flex: 1 1 45%;
             display: flex;
             flex-direction: column;
+        }
+
+        .main-settings .full-width, .properties .full-width {
+            flex: 1 1 100%;
         }
 
         .main-settings h2, .properties h2 {
@@ -76,6 +83,7 @@
             border: none;
             background: #4b2e83;
             color: #fff;
+            box-sizing: border-box;
         }
 
         input[type="color"] {
@@ -131,7 +139,6 @@
         .layer-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
         }
 
         .layer-buttons button {
@@ -215,11 +222,15 @@
         <div class="main-settings">
             <h2>Main Settings</h2>
 
-            <label>Device
+            <label class="full-width">Device
                 <select id="device"></select>
             </label>
 
-            <label>Background Color
+            <label class="full-width">File name
+                <input type="text" id="fileName" value="app">
+            </label>
+
+            <label class="full-width">Background Color
                 <input type="color" id="backgroundColor" value="#000000">
             </label>
 
@@ -235,21 +246,18 @@
                 <button id="alwaysShowGrid" class="toggle">OFF</button>
             </label>
 
-            <label>File name
-                <input type="text" id="fileName" value="app">
-            </label>
         </div>
 
         <div class="properties">
             <h2>Layers</h2>
 
-            <label>Layer
+            <label class="full-width">Layer
                 <select id="shapeSelect"></select>
             </label>
 
-            <div class="layer-buttons">
-                <button id="layerUp">Forward</button>
-                <button id="layerDown">Backward</button>
+            <div class="layer-buttons full-width">
+                <button id="layerDown">Move Backward</button>
+                <button id="layerUp">Move Forward</button>
             </div>
 
             <h2>Properties</h2>
@@ -258,7 +266,7 @@
                 Select something to view properties
             </div>
 
-            <label id="colorControl" style="display: none;">Color
+            <label id="colorControl" class="full-width" style="display: none;">Color
                 <input type="color" id="color">
             </label>
 

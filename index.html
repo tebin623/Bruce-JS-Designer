@@ -1040,6 +1040,15 @@ document.addEventListener("touchmove", drag, { passive: false });
 document.addEventListener("mouseup", stopDrag);
 document.addEventListener("touchend", stopDrag);
 
+// Prevent drag events from interfering with text selection in code element
+document.getElementById("code").addEventListener("mousedown", (e) => {
+    e.stopPropagation();
+});
+
+document.getElementById("code").addEventListener("mouseup", (e) => {
+    e.stopPropagation();
+});
+
 // Track ALT key for temporary snap disable
 document.addEventListener("keydown", (e) => {
     if (e.altKey) {

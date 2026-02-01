@@ -891,9 +891,12 @@ function render() {
                 ctx.fill();
                 break;
             case "text":
-                ctx.font = `bold ${i.size * 11}px "Courier New"`;
-
-                const textWidth = ctx.measureText(i.text).width-i.size*2;
+                ctx.font = `bold ${i.size * 12}px "Courier New"`;
+                ctx.letterSpacing = "-1.5px";
+                //ctx.save();
+                ctx.scale(1, 1.15);
+                
+                const textWidth = ctx.measureText(i.text).width-i.size;
                 const textHeight = ctx.measureText(i.text).actualBoundingBoxAscent + ctx.measureText(i.text).actualBoundingBoxDescent;
                 
                 // Draw background if specified
@@ -904,7 +907,8 @@ function render() {
                 
                 // Draw text
                 ctx.fillStyle = i.color;
-                ctx.fillText(i.text, -2, textHeight / 2 + i.size * 6 - 5);
+                ctx.fillText(i.text, -2, textHeight / 2 + i.size*3);
+                ctx.restore(); // Reset the vertical scaling
                 break;
         }
 

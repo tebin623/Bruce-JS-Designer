@@ -217,6 +217,10 @@
         <label>Color
             <input type="color" id="color">
         </label>
+
+        <label>Background Color
+            <input type="color" id="backgroundColor" value="#000000">
+        </label>
     </div>
 
     <div class="buttons">
@@ -249,6 +253,7 @@ const canvas = document.getElementById("screen"),
       textInput = document.getElementById("text"),
       textSizeInput = document.getElementById("textSize"),
       colorInput = document.getElementById("color"),
+      backgroundColorInput = document.getElementById("backgroundColor"),
       code = document.getElementById("code"),
       snapToggle = document.getElementById("snapToggle"),
       gridSizeInput = document.getElementById("gridSize"),
@@ -318,6 +323,9 @@ alwaysShowGridInput.addEventListener("change", () => {
     render();
 });
 
+backgroundColorInput.addEventListener("input", () => {
+    render();
+});
 
 function getRandomColor() {
     let c = "#";
@@ -393,12 +401,16 @@ layerDownBtn.addEventListener("click", () => {
 
 
 function render() {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = backgroundColorInput.value;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     
     if (showGrid) {
-        ctx.strokeStyle = "#2b0055";
+        // Calculate inverse of background color for grid lines
+        const bgRgb = rgb(backgroundColorInput.value);
+        const inverseRgb = bgRgb.map(c => 255 - c);
+        const inverseColor = `rgb(${inverseRgb.join(', ')})`;
+        ctx.strokeStyle = inverseColor;
         ctx.lineWidth = 0.5;
         for (let x = 0; x <= Math.floor(canvas.width / gridSize) * gridSize; x += gridSize) {
             ctx.beginPath();

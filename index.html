@@ -2197,6 +2197,12 @@ function generateCode() {
         return outputPrefix;
     };
 
+    // Helper function to check if item uses display-only functions in sprite mode
+    const isDisplayOnly = (item) => {
+        const displayOnlyTypes = ['wideLine', 'fastHLine', 'fastVLine', 'triangle', 'fillTriangle', 'arc'];
+        return currentOutputMode === 'sprite' && displayOnlyTypes.includes(item.type);
+    };
+
     let out = `// Device: ${currentDevice}
 // Made with: Bruce JS designer
 
@@ -2215,9 +2221,13 @@ function draw() {
 
 ${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}));
 \n`;
- 
 
-    items.forEach(i => {
+    // Separate items into sprite-compatible and display-only
+    const spriteItems = items.filter(i => !isDisplayOnly(i));
+    const displayOnlyItems = items.filter(i => isDisplayOnly(i));
+
+    // Process sprite-compatible items first
+    spriteItems.forEach(i => {
         const sx = W / canvas.width,
               sy = H / canvas.height;
         const x = Math.round(i.x * sx),
@@ -2231,7 +2241,7 @@ ${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}
                 out += `${outputPrefix}.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
                 break;
             case "fillRectGradient":
-                const c2 = rgb(i.color2 || i.color).join(',');
+                const c2 = rgb(i.color2 || i.color).join(", ");
                 const mode = i.gradientMode || 'h';
                 out += `${outputPrefix}.drawFillRectGradient(${x}, ${y}, ${w}, ${h}, display.color(${c}), display.color(${c2}), "${mode}");\n`;
                 break;
@@ -2337,7 +2347,72 @@ ${outputPrefix}.drawText("${i.text}", ${x}, ${y});\n`;
     });
 
     if (currentOutputMode === "sprite") {
-        out += `\n${outputPrefix}.pushSprite();\n}`;
+        out += `\n${outputPrefix}.pushSprite();\n`;
+        
+        // Add display-only items after sprite is pushed
+        if (displayOnlyItems.length > 0) {
+            out += `\n// Display-only functions (not supported by sprite)\n`;
+            displayOnlyItems.forEach(i => {
+                const sx = W / canvas.width,
+                      sy = H / canvas.height;
+                const x = Math.round(i.x * sx),
+                      y = Math.round(i.y * sy),
+                      w = Math.round(i.w * sx),
+                      h = Math.round(i.h * sy);
+                const c = rgb(i.color).join(', ');
+
+                switch (i.type) {
+                    case "wideLine":
+                        const wx1 = Math.round(i.x * sx);
+                        const wy1 = Math.round(i.y * sy);
+                        const wx2 = Math.round(i.x2 * sx);
+                        const wy2 = Math.round(i.y2 * sy);
+                        const lineWidth = Math.round((i.lineWidth || 2) * Math.min(sx, sy));
+                        out += `display.drawWideLine(${wx1}, ${wy1}, ${wx2}, ${wy2}, ${lineWidth}, display.color(${c}));\n`;
+                        break;
+                    case "fastHLine":
+                        const hx1 = Math.round(i.x * sx);
+                        const hy1 = Math.round(i.y * sy);
+                        const hx2 = Math.round((i.x + i.w) * sx);
+                        out += `display.drawFastHLine(${hx1}, ${hy1}, ${hx2 - hx1}, display.color(${c}));\n`;
+                        break;
+                    case "fastVLine":
+                        const vx1 = Math.round(i.x * sx);
+                        const vy1 = Math.round(i.y * sy);
+                        const vy2 = Math.round((i.y + i.h) * sy);
+                        out += `display.drawFastVLine(${vx1}, ${vy1}, ${vy2 - vy1}, display.color(${c}));\n`;
+                        break;
+                    case "triangle":
+                        const tx0 = Math.round(i.x0 * sx);
+                        const ty0 = Math.round(i.y0 * sy);
+                        const tx1 = Math.round(i.x1 * sx);
+                        const ty1 = Math.round(i.y1 * sy);
+                        const tx2 = Math.round(i.x2 * sx);
+                        const ty2 = Math.round(i.y2 * sy);
+                        out += `display.drawTriangle(${tx0}, ${ty0}, ${tx1}, ${ty1}, ${tx2}, ${ty2}, display.color(${c}));\n`;
+                        break;
+                    case "fillTriangle":
+                        const ftx0 = Math.round(i.x0 * sx);
+                        const fty0 = Math.round(i.y0 * sy);
+                        const ftx1 = Math.round(i.x1 * sx);
+                        const fty1 = Math.round(i.y1 * sy);
+                        const ftx2 = Math.round(i.x2 * sx);
+                        const fty2 = Math.round(i.y2 * sy);
+                        out += `display.drawFillTriangle(${ftx0}, ${fty0}, ${ftx1}, ${fty1}, ${ftx2}, ${fty2}, display.color(${c}));\n`;
+                        break;
+                    case "arc":
+                        const centerX = Math.round((i.x + i.w / 2) * sx);
+                        const centerY = Math.round((i.y + i.h / 2) * sy);
+                        const r1 = Math.round((i.innerRadius || 10) * Math.min(sx, sy));
+                        const r2 = Math.round((i.outerRadius || 20) * Math.min(sx, sy));
+                        const startAngle = i.startAngle || 0;
+                        const endAngle = i.endAngle || 90;
+                        out += `display.drawArc(${centerX}, ${centerY}, ${r1}, ${r2}, ${startAngle}, ${endAngle}, display.color(${c}));\n`;
+                        break;
+                }
+            });
+        }
+        out += `}`;
     } else {
         out += `\n}`;
     }

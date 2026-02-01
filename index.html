@@ -132,8 +132,17 @@
             background: #ff4d6d;
         }
 
+        .buttons .danger:hover {
+            background: #ff6a87;
+        }
+
         .buttons .export {
             background: #4dff88;
+            color: #000;
+        }
+
+        .buttons .export:hover {
+            background: #73fda3;
             color: #000;
         }
 
@@ -165,7 +174,7 @@
 
         .layer-buttons button {
             flex: 1 1 100px;
-            background: #6c43b2;;
+            background: #6c43b2;
             color: #fff;
             font-weight: bold;
             border-radius: 10px;
@@ -176,7 +185,7 @@
         }
 
         .layer-buttons button:hover {
-            background: #6c43b2;;
+            background: #8457d6;
         }
 
         .credit-btn {
@@ -193,7 +202,7 @@
         }
 
         .credit-btn:hover {
-            background: #67ff9c;
+            background: #73fda3;
         }
 
         code {
@@ -218,9 +227,17 @@
             font-weight: bold;
         }
 
+        .toggle:hover {
+            background: #8457d6;
+        }
+
         .toggle.on {
             background: #4dff88;
             color: #000;
+        }
+
+        .toggle.on:hover {
+            background: #73fda3;
         }
     </style>
 </head>
@@ -249,8 +266,8 @@
     </div>
 
     <div class="buttons">
-        <button class="duplicate" onclick="duplicateItem()">Duplicate</button>
-        <button class="danger" onclick="deleteItem()">Delete</button>
+        <button id="duplicateBtn" class="duplicate" onclick="duplicateItem()" disabled>Duplicate</button>
+        <button id="deleteBtn" class="danger" onclick="deleteItem()" disabled>Delete</button>
     </div>
 
     <div class="settings-container">
@@ -261,7 +278,7 @@
                 <select id="device"></select>
             </label>
 
-            <label class="full-width">File name
+            <label class="full-width">File Name
                 <input type="text" id="fileName" value="app">
             </label>
 

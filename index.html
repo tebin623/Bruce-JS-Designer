@@ -146,6 +146,18 @@
             background: #FFEC70;
         }
 
+        .buttons button:disabled {
+            background: #666 !important;
+            color: #999 !important;
+            cursor: not-allowed !important;
+            opacity: 0.5;
+        }
+
+        .buttons button:disabled:hover {
+            background: #666 !important;
+            transform: none !important;
+        }
+
         .layer-buttons {
             display: flex;
             gap: 12px;
@@ -1272,6 +1284,11 @@ function startDrag(e) {
             }
         }
     }
+    
+    // If we get here, no shape was clicked - update UI to reflect deselection
+    updateLayerSelect();
+    syncUI();
+    render();
 }
 
 function drag(e) {
@@ -1597,11 +1614,17 @@ function syncUI() {
     if (!selected) {
         // Show placeholder message when nothing is selected
         document.getElementById('noSelectionMessage').style.display = 'block';
+        // Disable duplicate and delete buttons when nothing is selected
+        document.getElementById('duplicateBtn').disabled = true;
+        document.getElementById('deleteBtn').disabled = true;
         return;
     }
     
     // Hide placeholder message when something is selected
     document.getElementById('noSelectionMessage').style.display = 'none';
+    // Enable duplicate and delete buttons when something is selected
+    document.getElementById('duplicateBtn').disabled = false;
+    document.getElementById('deleteBtn').disabled = false;
     
     // Always show position and color for all shapes
     document.getElementById('posXControl').style.display = 'flex';

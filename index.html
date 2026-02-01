@@ -2573,7 +2573,7 @@ function exportJS() {
 
     async function loadStateFromUrl() {
         const urlParams = new URLSearchParams(window.location.search);
-        let encodedState = urlParams.get('s') || urlParams.get('state');
+        let encodedState = urlParams.get('s');
         if (encodedState) {
             // URL decode the state (URLSearchParams automatically decodes, but be explicit)
             encodedState = decodeURIComponent(encodedState);
@@ -2686,7 +2686,7 @@ function exportJS() {
     // Listen for URL changes (when someone pastes a new URL with state)
     window.addEventListener('popstate', () => {
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('s') || urlParams.get('state')) {
+        if (urlParams.get('s')) {
             loadStateFromUrl();
         }
     });
@@ -2694,7 +2694,7 @@ function exportJS() {
     // Also listen for focus events in case URL was manually changed
     window.addEventListener('focus', () => {
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('s') || urlParams.get('state')) {
+        if (urlParams.get('s')) {
             loadStateFromUrl();
         }
     });

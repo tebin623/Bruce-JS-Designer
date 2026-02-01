@@ -863,7 +863,7 @@ function render() {
                 ctx.restore(); // Restore to avoid translation
                 ctx.save();
                 ctx.strokeStyle = i.color;
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(i.x, i.y);
                 ctx.lineTo(i.x2, i.y2);
@@ -882,12 +882,26 @@ function render() {
                 ctx.stroke();
                 break;
             case "fastHLine":
-                // Fast horizontal line - width = length, height = thickness
-                ctx.fillRect(0, 0, i.w, i.h);
+                // Fast horizontal line - 1px thick, point to point
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(i.x, i.y);
+                ctx.lineTo(i.x + i.w, i.y);
+                ctx.stroke();
                 break;
             case "fastVLine":
-                // Fast vertical line - height = length, width = thickness
-                ctx.fillRect(0, 0, i.w, i.h);
+                // Fast vertical line - 1px thick, point to point
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(i.x, i.y);
+                ctx.lineTo(i.x, i.y + i.h);
+                ctx.stroke();
                 break;
             case "triangle":
                 // Triangle outline using absolute coordinates
@@ -992,6 +1006,26 @@ function render() {
                 ctx.restore(); // Restore to avoid translation
                 ctx.save();
                 [{ x: i.x, y: i.y }, { x: i.x2, y: i.y2 }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+            } else if (i.type === "fastHLine") {
+                // For fastHLine, show handles at start and end points
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                [{ x: i.x, y: i.y }, { x: i.x + i.w, y: i.y }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+            } else if (i.type === "fastVLine") {
+                // For fastVLine, show handles at start and end points
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                [{ x: i.x, y: i.y }, { x: i.x, y: i.y + i.h }].forEach(h => {
                     ctx.beginPath();
                     ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
                     ctx.fillStyle = "blue";
@@ -1226,6 +1260,76 @@ function startDrag(e) {
                     return;
                 }
             }
+        } else if (it.type === "fastHLine") {
+            // Check fastHLine endpoints first
+            const points = [
+                { name: 'start', x: it.x - 5, y: it.y - 5 },
+                { name: 'end', x: (it.x + it.w) - 5, y: it.y - 5 }
+            ];
+            
+            for (let point of points) {
+                if (p.x >= point.x && p.x <= point.x + 10 && p.y >= point.y && p.y <= point.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = point.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking near the horizontal line
+            const tolerance = 5;
+            if (p.y >= it.y - tolerance && p.y <= it.y + tolerance && 
+                p.x >= it.x - tolerance && p.x <= it.x + it.w + tolerance) {
+                dragging = it;
+                offsetX = p.x - it.x;
+                offsetY = p.y - it.y;
+                selected = it;
+                showGrid = true;
+                updateLayerSelect();
+                syncUI();
+                render();
+                return;
+            }
+        } else if (it.type === "fastVLine") {
+            // Check fastVLine endpoints first
+            const points = [
+                { name: 'start', x: it.x - 5, y: it.y - 5 },
+                { name: 'end', x: it.x - 5, y: (it.y + it.h) - 5 }
+            ];
+            
+            for (let point of points) {
+                if (p.x >= point.x && p.x <= point.x + 10 && p.y >= point.y && p.y <= point.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = point.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    syncUI();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking near the vertical line
+            const tolerance = 5;
+            if (p.x >= it.x - tolerance && p.x <= it.x + tolerance && 
+                p.y >= it.y - tolerance && p.y <= it.y + it.h + tolerance) {
+                dragging = it;
+                offsetX = p.x - it.x;
+                offsetY = p.y - it.y;
+                selected = it;
+                showGrid = true;
+                updateLayerSelect();
+                syncUI();
+                render();
+                return;
+            }
         } else if (it.type === "arc") {
             // Check bounding box corners first (for radius adjustment)
             const corners = [
@@ -1354,14 +1458,25 @@ function drag(e) {
     const p = getMousePos(e);
 
     if (resizing) {
-        if (dragging.type === "line" || dragging.type === "wideLine") {
+        if (dragging.type === "line" || dragging.type === "wideLine" || dragging.type === "fastHLine" || dragging.type === "fastVLine") {
             // Handle line point dragging
             if (resizeHandle === 'start') {
                 dragging.x = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
                 dragging.y = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
             } else if (resizeHandle === 'end') {
-                dragging.x2 = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
-                dragging.y2 = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
+                if (dragging.type === "fastHLine") {
+                    // For fastHLine, only allow horizontal movement of end point
+                    const newX = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+                    dragging.w = Math.max(1, newX - dragging.x);
+                } else if (dragging.type === "fastVLine") {
+                    // For fastVLine, only allow vertical movement of end point
+                    const newY = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
+                    dragging.h = Math.max(1, newY - dragging.y);
+                } else {
+                    // Regular lines
+                    dragging.x2 = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+                    dragging.y2 = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
+                }
             }
         } else if (dragging.type === "triangle" || dragging.type === "fillTriangle") {
             // Handle triangle vertex dragging
@@ -1550,6 +1665,18 @@ function drag(e) {
             dragging.y += dy;
             dragging.x2 += dx;
             dragging.y2 += dy;
+        } else if (dragging.type === "fastHLine" || dragging.type === "fastVLine") {
+            // Fast lines only move their start position
+            let nx = p.x - offsetX;
+            let ny = p.y - offsetY;
+            
+            if (snapOn !== altHeld) {
+                nx = Math.round(nx / gridSize) * gridSize;
+                ny = Math.round(ny / gridSize) * gridSize;
+            }
+            
+            dragging.x = nx;
+            dragging.y = ny;
         } else if (dragging.type === "triangle" || dragging.type === "fillTriangle") {
             let dx = p.x - dragging.x0 - offsetX;
             let dy = p.y - dragging.y0 - offsetY;
@@ -1712,11 +1839,19 @@ function syncUI() {
     switch(selected.type) {
         case 'fillRect':
         case 'rect':
-        case 'fastHLine':
-        case 'fastVLine':
             document.getElementById('widthControl').style.display = 'flex';
             document.getElementById('heightControl').style.display = 'flex';
             widthInput.value = Math.round(selected.w);
+            heightInput.value = Math.round(selected.h);
+            break;
+            
+        case 'fastHLine':
+            document.getElementById('widthControl').style.display = 'flex';
+            widthInput.value = Math.round(selected.w);
+            break;
+            
+        case 'fastVLine':
+            document.getElementById('heightControl').style.display = 'flex';
             heightInput.value = Math.round(selected.h);
             break;
             
@@ -1928,7 +2063,7 @@ posYInput.addEventListener("input", () => {
 });
 
 widthInput.addEventListener("input", () => {
-    if (selected && (selected.type === 'fillRect' || selected.type === 'rect' || selected.type === 'fillRectGradient')) {
+    if (selected && (selected.type === 'fillRect' || selected.type === 'rect' || selected.type === 'fillRectGradient' || selected.type === 'fastHLine')) {
         selected.w = parseInt(widthInput.value);
         render();
         trackInputChange();
@@ -1936,7 +2071,7 @@ widthInput.addEventListener("input", () => {
 });
 
 heightInput.addEventListener("input", () => {
-    if (selected && (selected.type === 'fillRect' || selected.type === 'rect' || selected.type === 'fillRectGradient')) {
+    if (selected && (selected.type === 'fillRect' || selected.type === 'rect' || selected.type === 'fillRectGradient' || selected.type === 'fastVLine')) {
         selected.h = parseInt(heightInput.value);
         render();
         trackInputChange();

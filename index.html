@@ -295,11 +295,11 @@
                 <input type="color" id="color">
             </label>
 
-            <label id="color2Control" class="full-width" style="display: none;">Color 2 (Gradient)
+            <label id="color2Control" class="full-width" style="display: none;">Color 2
                 <input type="color" id="color2">
             </label>
 
-            <label id="gradientModeControl" style="display: none;">Gradient Mode
+            <label id="gradientModeControl" class="full-width" style="display: none;">Gradient Mode
                 <select id="gradientMode">
                     <option value="h">Horizontal</option>
                     <option value="v">Vertical</option>
@@ -629,6 +629,7 @@ function addItem(t) {
     items.push(o);
     selected = o;
     updateLayerSelect();
+    syncUI();
     render();
 }
 
@@ -653,6 +654,7 @@ function duplicateItem() {
     items.push(o);
     selected = o;
     updateLayerSelect();
+    syncUI();
     render();
 }
 
@@ -662,6 +664,7 @@ function deleteItem() {
     items = items.filter(i => i !== selected);
     selected = null;
     updateLayerSelect();
+    syncUI();
     render();
 }
 
@@ -672,6 +675,7 @@ function clearAll() {
         items = [];
         selected = null;
         updateLayerSelect();
+        syncUI();
         render();
     }
 }
@@ -982,7 +986,6 @@ function render() {
         ctx.restore();
     });
 
-    syncUI();
     generateCode();
     saveState();
 }
@@ -1060,6 +1063,7 @@ function startDrag(e) {
                     selected = it;
                     showGrid = true;
                     updateLayerSelect();
+                    syncUI();
                     render();
                     return;
                 }
@@ -1088,6 +1092,7 @@ function startDrag(e) {
                         selected = it;
                         showGrid = true;
                         updateLayerSelect();
+                        syncUI();
                         render();
                         return;
                     }
@@ -1109,6 +1114,7 @@ function startDrag(e) {
                     selected = it;
                     showGrid = true;
                     updateLayerSelect();
+                    syncUI();
                     render();
                     return;
                 }
@@ -1129,6 +1135,7 @@ function startDrag(e) {
                     selected = it;
                     showGrid = true;
                     updateLayerSelect();
+                    syncUI();
                     render();
                     return;
                 }
@@ -1150,6 +1157,7 @@ function startDrag(e) {
                     selected = it;
                     showGrid = true;
                     updateLayerSelect();
+                    syncUI();
                     render();
                     return;
                 }
@@ -1194,6 +1202,7 @@ function startDrag(e) {
                 selected = it;
                 showGrid = true;
                 updateLayerSelect();
+                syncUI();
                 render();
                 return;
             }
@@ -1213,6 +1222,7 @@ function startDrag(e) {
                     selected = it;
                     showGrid = true;
                     updateLayerSelect();
+                    syncUI();
                     render();
                     return;
                 }
@@ -1225,6 +1235,7 @@ function startDrag(e) {
                 selected = it;
                 showGrid = true;
                 updateLayerSelect();
+                syncUI();
                 render();
                 return;
             }
@@ -1518,6 +1529,7 @@ function updateLayerSelect() {
 
 shapeSelect.onchange = e => {
     selected = items[e.target.value];
+    syncUI();
     render();
 };
 
@@ -1580,12 +1592,8 @@ function syncUI() {
     // Update common controls
     textInput.value = selected.text || '';
     colorInput.value = selected.color;
-    if (selected.color2) {
-        color2Input.value = selected.color2;
-    }
-    if (selected.gradientMode) {
-        gradientModeInput.value = selected.gradientMode;
-    }
+    color2Input.value = selected.color2 || selected.color;
+    gradientModeInput.value = selected.gradientMode || 'h';
     
     // Show controls based on shape type
     switch(selected.type) {
@@ -1712,6 +1720,7 @@ color2Input.addEventListener("input", () => {
     if (selected) {
         selected.color2 = color2Input.value;
         render();
+        trackInputChange();
     }
 });
 
@@ -1719,6 +1728,7 @@ gradientModeInput.addEventListener("change", () => {
     if (selected) {
         selected.gradientMode = gradientModeInput.value;
         render();
+        trackInputChange();
     }
 });
 

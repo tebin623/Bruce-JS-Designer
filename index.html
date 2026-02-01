@@ -190,7 +190,7 @@
         </label>
 
         <label>Always Show Grid
-            <input type="checkbox" id="alwaysShowGrid">
+            <button id="alwaysShowGrid" class="toggle">OFF</button>
         </label>
 
         <label>Text
@@ -320,8 +320,10 @@ gridSizeInput.addEventListener("input", () => {
     render();
 });
 
-alwaysShowGridInput.addEventListener("change", () => {
-    showGrid = alwaysShowGridInput.checked;
+alwaysShowGridInput.addEventListener("click", () => {
+    showGrid = !showGrid;
+    alwaysShowGridInput.textContent = showGrid ? "ON" : "OFF";
+    alwaysShowGridInput.classList.toggle("on", showGrid);
     render();
 });
 
@@ -558,7 +560,7 @@ function getMousePos(e) {
 
 function startDrag(e) {
     const p = getMousePos(e);
-    if (!alwaysShowGridInput.checked) {
+    if (!showGrid) {
         showGrid = false;
     }
     selected = null;
@@ -748,7 +750,10 @@ function stopDrag() {
     dragging = null;
     resizing = false;
     resizeHandle = null;
-    if (!alwaysShowGridInput.checked) {
+    // Keep grid visible if Always Show Grid is on
+    if (!showGrid && alwaysShowGridInput.classList.contains('on')) {
+        showGrid = true;
+    } else if (!alwaysShowGridInput.classList.contains('on')) {
         showGrid = false;
     }
     render();
@@ -817,7 +822,7 @@ function saveState() {
         currentDevice: currentDevice,
         gridSize: gridSize,
         snapOn: snapOn,
-        showGrid: alwaysShowGridInput.checked,
+        showGrid: showGrid,
         fileName: document.getElementById("fileName").value
     };
     localStorage.setItem('bruceJSDesignerState', JSON.stringify(state));
@@ -858,7 +863,8 @@ function loadState() {
             
             if (typeof state.showGrid === 'boolean') {
                 showGrid = state.showGrid;
-                alwaysShowGridInput.checked = state.showGrid;
+                alwaysShowGridInput.textContent = showGrid ? "ON" : "OFF";
+                alwaysShowGridInput.classList.toggle("on", showGrid);
             }
             
             // Restore file name

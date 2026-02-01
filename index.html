@@ -78,17 +78,19 @@
 
         input, select {
             width: 100%;
-            padding: 6px;
+            padding: 10px 8px;
             border-radius: 8px;
             border: none;
             background: #4b2e83;
             color: #fff;
             box-sizing: border-box;
+            font-size: 14px;
+            height: 36px;
         }
 
         input[type="color"] {
             padding: 0;
-            height: 32px;
+            height: 36px;
         }
 
         input[type="range"] {
@@ -103,15 +105,18 @@
         }
 
         .buttons button {
-            flex: 1 1 0;
-            min-width: 100px;
-            padding: 10px;
+            flex: 1 1 160px;
+            padding: 10px 4px;
             border: none;
             border-radius: 10px;
             background: #6c43b2;
             color: #fff;
             font-weight: bold;
             cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .buttons button:hover {
@@ -147,7 +152,8 @@
             color: #fff;
             font-weight: bold;
             border-radius: 10px;
-            padding: 8px;
+            padding: 10px 8px;
+            height: 36px;
             cursor: pointer;
             border: none; 
         }
@@ -208,12 +214,24 @@
     <canvas id="screen"></canvas>
 
     <div class="buttons">
-        <button onclick="addItem('fillRect')">FillRect</button>
         <button onclick="addItem('rect')">Rect</button>
+        <button onclick="addItem('fillRect')">FillRect</button>
+        <button onclick="addItem('fillRectGradient')">FillRectGradient</button>
+        <button onclick="addItem('roundRect')">RoundRect</button>
+        <button onclick="addItem('fillRoundRect')">FillRoundRect</button>
         <button onclick="addItem('line')">Line</button>
+        <button onclick="addItem('wideLine')">WideLine</button>
+        <button onclick="addItem('fastHLine')">FastHLine</button>
+        <button onclick="addItem('fastVLine')">FastVLine</button>
+        <button onclick="addItem('triangle')">Triangle</button>
+        <button onclick="addItem('fillTriangle')">FillTriangle</button>
         <button onclick="addItem('circle')">Circle</button>
         <button onclick="addItem('fillCircle')">FillCircle</button>
+        <button onclick="addItem('arc')">Arc</button>
         <button onclick="addItem('text')">Text</button>
+    </div>
+
+    <div class="buttons">
         <button class="duplicate" onclick="duplicateItem()">Duplicate</button>
         <button class="danger" onclick="deleteItem()">Delete</button>
     </div>
@@ -230,8 +248,15 @@
                 <input type="text" id="fileName" value="app">
             </label>
 
-            <label class="full-width">Background Color
+            <label class="full-width">Text Background Color
                 <input type="color" id="backgroundColor" value="#000000">
+            </label>
+
+            <label class="full-width">Output Mode
+                <select id="outputMode">
+                    <option value="sprite">Output: sprite</option>
+                    <option value="display">Output: display</option>
+                </select>
             </label>
 
             <label>Snap to Grid
@@ -270,12 +295,35 @@
                 <input type="color" id="color">
             </label>
 
+            <label id="color2Control" class="full-width" style="display: none;">Color 2 (Gradient)
+                <input type="color" id="color2">
+            </label>
+
+            <label id="gradientModeControl" style="display: none;">Gradient Mode
+                <select id="gradientMode">
+                    <option value="h">Horizontal</option>
+                    <option value="v">Vertical</option>
+                </select>
+            </label>
+
             <label id="textControl" style="display: none;">Text
                 <input type="text" id="text">
             </label>
 
             <label id="textSizeControl" style="display: none;">Text Size
                 <input type="range" id="textSize" min="1" max="8" step="1" value="2">
+            </label>
+
+            <label id="textBgToggleControl" style="display: none;">Background Color
+                <button id="textBgToggle" class="toggle">NO</button>
+            </label>
+
+            <label id="textBgColorControl" style="display: none;">Text Background Color
+                <input type="color" id="textBgColor" value="#000000">
+            </label>
+
+            <label id="textBgColorPlaceholder" style="display: none;">
+                <!-- Placeholder to preserve spacing when color control is hidden -->
             </label>
 
             <!-- Dynamic shape controls -->
@@ -307,9 +355,57 @@
                 <input type="number" id="y2" step="1">
             </label>
 
+            <!-- Triangle controls -->
+            <label id="x0Control" style="display: none;">Point 1 X
+                <input type="number" id="x0" step="1">
+            </label>
+
+            <label id="y0Control" style="display: none;">Point 1 Y
+                <input type="number" id="y0" step="1">
+            </label>
+
+            <label id="x1Control" style="display: none;">Point 2 X
+                <input type="number" id="x1" step="1">
+            </label>
+
+            <label id="y1Control" style="display: none;">Point 2 Y
+                <input type="number" id="y1" step="1">
+            </label>
+
+            <label id="x2TriControl" style="display: none;">Point 3 X
+                <input type="number" id="x2Tri" step="1">
+            </label>
+
+            <label id="y2TriControl" style="display: none;">Point 3 Y
+                <input type="number" id="y2Tri" step="1">
+            </label>
+
+            <!-- Line width control -->
+            <label id="lineWidthControl" style="display: none;">Line Width
+                <input type="number" id="lineWidth" min="1" step="1" value="2">
+            </label>
+
+            <!-- Arc controls -->
+            <label id="startAngleControl" style="display: none;">Start Angle (°)
+                <input type="number" id="startAngle" step="1" value="0">
+            </label>
+
+            <label id="endAngleControl" style="display: none;">End Angle (°)
+                <input type="number" id="endAngle" step="1" value="90">
+            </label>
+
+            <label id="innerRadiusControl" style="display: none;">Inner Radius
+                <input type="number" id="innerRadius" min="0" step="1" value="10">
+            </label>
+
+            <label id="outerRadiusControl" style="display: none;">Outer Radius
+                <input type="number" id="outerRadius" min="1" step="1" value="20">
+            </label>
+
         </div>
     </div>
     <div class="buttons">
+        <button onclick="copyToClipboard()">Copy to Clipboard</button>
         <button class="danger" onclick="clearAll()">Clear All</button>
         <button class="export" onclick="exportJS()">Export JS</button>
     </div>
@@ -328,10 +424,13 @@
 const canvas = document.getElementById("screen"),
       ctx = canvas.getContext("2d"),
       deviceSelect = document.getElementById("device"),
+      outputModeSelect = document.getElementById("outputMode"),
       shapeSelect = document.getElementById("shapeSelect"),
       textInput = document.getElementById("text"),
       textSizeInput = document.getElementById("textSize"),
       colorInput = document.getElementById("color"),
+      color2Input = document.getElementById("color2"),
+      gradientModeInput = document.getElementById("gradientMode"),
       backgroundColorInput = document.getElementById("backgroundColor"),
       code = document.getElementById("code"),
       snapToggle = document.getElementById("snapToggle"),
@@ -346,7 +445,24 @@ const canvas = document.getElementById("screen"),
       heightInput = document.getElementById("height"),
       radiusInput = document.getElementById("radius"),
       x2Input = document.getElementById("x2"),
-      y2Input = document.getElementById("y2");
+      y2Input = document.getElementById("y2"),
+      // Triangle controls
+      x0Input = document.getElementById("x0"),
+      y0Input = document.getElementById("y0"),
+      x1Input = document.getElementById("x1"),
+      y1Input = document.getElementById("y1"),
+      x2TriInput = document.getElementById("x2Tri"),
+      y2TriInput = document.getElementById("y2Tri"),
+      // Line width control
+      lineWidthInput = document.getElementById("lineWidth"),
+      // Arc controls
+      startAngleInput = document.getElementById("startAngle"),
+      endAngleInput = document.getElementById("endAngle"),
+      innerRadiusInput = document.getElementById("innerRadius"),
+      outerRadiusInput = document.getElementById("outerRadius"),
+      // Text background controls
+      textBgColorInput = document.getElementById("textBgColor"),
+      textBgToggleInput = document.getElementById("textBgToggle");
 
 let items = [],
     selected = null,
@@ -359,7 +475,12 @@ let items = [],
     resizeHandle = null,
     offsetX = 0,
     offsetY = 0,
-    showGrid = false;
+    showGrid = false,
+    // History system for undo/redo
+    history = [],
+    historyIndex = -1,
+    maxHistorySize = 50,
+    inputChangeTimeout = null;
 
 const devices = {
     "M5Stack Cardputer/Adv/ StickC-Plus 1.1/StickC-Plus 2": [240, 135],
@@ -460,11 +581,34 @@ function clamp(v, min, max) {
 
 
 function addItem(t) {
-    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), text: "Text" };
-    if (t.includes("circle") || t.includes("fillCircle")) o.w = o.h = 20;
-    if (t === "line") {
+    const o = { type: t, x: 40, y: 40, w: 40, h: 40, size: 2, color: getRandomColor(), color2: getRandomColor(), gradientMode: "h", text: "Text", textBgColor: null, radius: 5, lineWidth: 2, startAngle: 0, endAngle: 90, innerRadius: 10, outerRadius: 20 };
+    if (t.includes("circle") || t.includes("fillCircle")) {
+        o.radius = 15; // Set radius
+        o.w = o.h = o.radius * 2; // Set bounding box to diameter
+    }
+    if (t === "arc") {
+        o.w = o.h = (o.outerRadius || 20) * 2; // Set bounding box to outer diameter
+    }
+    if (t === "line" || t === "wideLine") {
         // For lines, use x,y as start point and x2,y2 as end point
         o.x2 = o.x + o.w;
+        o.y2 = o.y + o.h;
+    }
+    if (t === "fastHLine") {
+        // Horizontal line
+        o.h = 1;
+    }
+    if (t === "fastVLine") {
+        // Vertical line
+        o.w = 1;
+    }
+    if (t === "triangle" || t === "fillTriangle") {
+        // Triangle with 3 points
+        o.x0 = o.x;
+        o.y0 = o.y;
+        o.x1 = o.x + o.w;
+        o.y1 = o.y;
+        o.x2 = o.x + o.w/2;
         o.y2 = o.y + o.h;
     }
     if (snapOn !== altHeld) {
@@ -474,7 +618,14 @@ function addItem(t) {
             o.x2 = Math.round(o.x2 / gridSize) * gridSize;
             o.y2 = Math.round(o.y2 / gridSize) * gridSize;
         }
+        if (o.x0 !== undefined) {
+            o.x0 = Math.round(o.x0 / gridSize) * gridSize;
+            o.y0 = Math.round(o.y0 / gridSize) * gridSize;
+            o.x1 = Math.round(o.x1 / gridSize) * gridSize;
+            o.y1 = Math.round(o.y1 / gridSize) * gridSize;
+        }
     }
+    saveToHistory(); // Save state before adding item
     items.push(o);
     selected = o;
     updateLayerSelect();
@@ -498,6 +649,7 @@ function duplicateItem() {
             o.y2 = Math.round(o.y2 / gridSize) * gridSize;
         }
     }
+    saveToHistory(); // Save state before duplicating
     items.push(o);
     selected = o;
     updateLayerSelect();
@@ -506,6 +658,7 @@ function duplicateItem() {
 
 function deleteItem() {
     if (!selected) return;
+    saveToHistory(); // Save state before deleting
     items = items.filter(i => i !== selected);
     selected = null;
     updateLayerSelect();
@@ -515,6 +668,7 @@ function deleteItem() {
 function clearAll() {
     if (items.length === 0) return;
     if (confirm('Are you sure you want to clear all? This cannot be undone.')) {
+        saveToHistory(); // Save state before clearing
         items = [];
         selected = null;
         updateLayerSelect();
@@ -527,6 +681,7 @@ layerUpBtn.addEventListener("click", () => {
     if (!selected) return;
     const idx = items.indexOf(selected);
     if (idx < items.length - 1) {
+        saveToHistory(); // Save state before moving layer
         items.splice(idx, 1);
         items.splice(idx + 1, 0, selected);
     }
@@ -538,6 +693,7 @@ layerDownBtn.addEventListener("click", () => {
     if (!selected) return;
     const idx = items.indexOf(selected);
     if (idx > 0) {
+        saveToHistory(); // Save state before moving layer
         items.splice(idx, 1);
         items.splice(idx - 1, 0, selected);
     }
@@ -589,8 +745,56 @@ function render() {
             case "fillRect":
                 ctx.fillRect(0, 0, i.w, i.h);
                 break;
+            case "fillRectGradient":
+                // Create gradient
+                const gradient = i.gradientMode === "v" 
+                    ? ctx.createLinearGradient(0, 0, 0, i.h)
+                    : ctx.createLinearGradient(0, 0, i.w, 0);
+                gradient.addColorStop(0, i.color);
+                gradient.addColorStop(1, i.color2 || i.color);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, i.w, i.h);
+                break;
             case "rect":
                 ctx.strokeRect(0, 0, i.w, i.h);
+                break;
+            case "roundRect":
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(0, 0, i.w, i.h, i.radius || 5);
+                } else {
+                    // Fallback for browsers without roundRect support
+                    const r = Math.min(i.radius || 5, i.w / 2, i.h / 2);
+                    ctx.moveTo(r, 0);
+                    ctx.lineTo(i.w - r, 0);
+                    ctx.quadraticCurveTo(i.w, 0, i.w, r);
+                    ctx.lineTo(i.w, i.h - r);
+                    ctx.quadraticCurveTo(i.w, i.h, i.w - r, i.h);
+                    ctx.lineTo(r, i.h);
+                    ctx.quadraticCurveTo(0, i.h, 0, i.h - r);
+                    ctx.lineTo(0, r);
+                    ctx.quadraticCurveTo(0, 0, r, 0);
+                }
+                ctx.stroke();
+                break;
+            case "fillRoundRect":
+                ctx.beginPath();
+                if (ctx.roundRect) {
+                    ctx.roundRect(0, 0, i.w, i.h, i.radius || 5);
+                } else {
+                    // Fallback for browsers without roundRect support
+                    const r = Math.min(i.radius || 5, i.w / 2, i.h / 2);
+                    ctx.moveTo(r, 0);
+                    ctx.lineTo(i.w - r, 0);
+                    ctx.quadraticCurveTo(i.w, 0, i.w, r);
+                    ctx.lineTo(i.w, i.h - r);
+                    ctx.quadraticCurveTo(i.w, i.h, i.w - r, i.h);
+                    ctx.lineTo(r, i.h);
+                    ctx.quadraticCurveTo(0, i.h, 0, i.h - r);
+                    ctx.lineTo(0, r);
+                    ctx.quadraticCurveTo(0, 0, r, 0);
+                }
+                ctx.fill();
                 break;
             case "line":
                 // Draw line using absolute coordinates
@@ -603,19 +807,100 @@ function render() {
                 ctx.lineTo(i.x2, i.y2);
                 ctx.stroke();
                 break;
+            case "wideLine":
+                // Draw wide line using absolute coordinates
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = i.lineWidth || 2;
+                ctx.lineCap = "round"; // Add rounded end caps
+                ctx.beginPath();
+                ctx.moveTo(i.x, i.y);
+                ctx.lineTo(i.x2, i.y2);
+                ctx.stroke();
+                break;
+            case "fastHLine":
+                // Fast horizontal line - width = length, height = thickness
+                ctx.fillRect(0, 0, i.w, i.h);
+                break;
+            case "fastVLine":
+                // Fast vertical line - height = length, width = thickness
+                ctx.fillRect(0, 0, i.w, i.h);
+                break;
+            case "triangle":
+                // Triangle outline using absolute coordinates
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.strokeStyle = i.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(i.x0, i.y0);
+                ctx.lineTo(i.x1, i.y1);
+                ctx.lineTo(i.x2, i.y2);
+                ctx.closePath();
+                ctx.stroke();
+                break;
+            case "fillTriangle":
+                // Filled triangle using absolute coordinates
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.fillStyle = i.color;
+                ctx.beginPath();
+                ctx.moveTo(i.x0, i.y0);
+                ctx.lineTo(i.x1, i.y1);
+                ctx.lineTo(i.x2, i.y2);
+                ctx.closePath();
+                ctx.fill();
+                break;
+            case "arc":
+                // Arc using absolute coordinates - draw filled arc segment
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                ctx.fillStyle = i.color;
+                
+                const centerX = i.x + i.w / 2;
+                const centerY = i.y + i.h / 2;
+                const startRad = ((i.startAngle || 0) + 90) * Math.PI / 180; // Add 90° to make 0° at bottom
+                const endRad = ((i.endAngle || 90) + 90) * Math.PI / 180;
+                const innerRadius = i.innerRadius || 10;
+                const outerRadius = i.outerRadius || 20;
+                
+                // Draw filled arc segment
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, outerRadius, startRad, endRad);
+                ctx.arc(centerX, centerY, innerRadius, endRad, startRad, true);
+                ctx.closePath();
+                ctx.fill();
+                break;
             case "circle":
                 ctx.beginPath();
-                ctx.arc(i.w / 2, i.h / 2, i.w / 2, 0, 2 * Math.PI);
+                // Draw circle at radius
+                const circleRadius = i.radius || 10;
+                ctx.arc(i.w / 2, i.h / 2, circleRadius, 0, 2 * Math.PI);
                 ctx.stroke();
                 break;
             case "fillCircle":
                 ctx.beginPath();
-                ctx.arc(i.w / 2, i.h / 2, i.w / 2, 0, 2 * Math.PI);
+                // Draw filled circle at full radius
+                const fillRadius = i.radius || 10;
+                ctx.arc(i.w / 2, i.h / 2, fillRadius, 0, 2 * Math.PI);
                 ctx.fill();
                 break;
             case "text":
-                ctx.font = `${i.size * 8}px Arial`;
-                ctx.fillText(i.text, 0, ih / 2 + i.size * 4);
+                ctx.font = `bold ${i.size * 11}px "Courier New"`;
+
+                const textWidth = ctx.measureText(i.text).width-i.size*2;
+                const textHeight = ctx.measureText(i.text).actualBoundingBoxAscent + ctx.measureText(i.text).actualBoundingBoxDescent;
+                
+                // Draw background if specified
+                if (i.textBgColor) {
+                    ctx.fillStyle = i.textBgColor;
+                    ctx.fillRect(0, 0, textWidth, textHeight);
+                }
+                
+                // Draw text
+                ctx.fillStyle = i.color;
+                ctx.fillText(i.text, -2, textHeight / 2 + i.size * 6 - 5);
                 break;
         }
 
@@ -628,7 +913,7 @@ function render() {
                 const iw = ctx.measureText(i.text).width;
                 const ih = i.size * 8;
                 ctx.strokeRect(0, 0, iw, ih);
-            } else if (i.type === "line") {
+            } else if (i.type === "line" || i.type === "wideLine") {
                 // For lines, show handles at start and end points
                 ctx.restore(); // Restore to avoid translation
                 ctx.save();
@@ -636,6 +921,51 @@ function render() {
                     ctx.beginPath();
                     ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
                     ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+            } else if (i.type === "triangle" || i.type === "fillTriangle") {
+                // For triangles, show handles at all three vertices
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                [{ x: i.x0, y: i.y0 }, { x: i.x1, y: i.y1 }, { x: i.x2, y: i.y2 }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+            } else if (i.type === "arc") {
+                // For arcs, show bounding box for radius adjustment and angle handles
+                ctx.restore(); // Restore to avoid translation
+                ctx.save();
+                
+                // Draw bounding box
+                ctx.strokeRect(i.x, i.y, i.w, i.h);
+                
+                // Bounding box corner handles (for radius adjustment)
+                [{ x: i.x, y: i.y }, { x: i.x + i.w, y: i.y }, { x: i.x, y: i.y + i.h }, { x: i.x + i.w, y: i.y + i.h }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 4, 0, 2 * Math.PI);
+                    ctx.fillStyle = "blue";
+                    ctx.fill();
+                });
+                
+                // Angle handles at arc endpoints
+                const centerX = i.x + i.w / 2;
+                const centerY = i.y + i.h / 2;
+                const outerRadius = i.outerRadius || 20;
+                const startRad = ((i.startAngle || 0) + 90) * Math.PI / 180; // Add 90° to make 0° at bottom
+                const endRad = ((i.endAngle || 90) + 90) * Math.PI / 180;
+                
+                const startX = centerX + outerRadius * Math.cos(startRad);
+                const startY = centerY + outerRadius * Math.sin(startRad);
+                const endX = centerX + outerRadius * Math.cos(endRad);
+                const endY = centerY + outerRadius * Math.sin(endRad);
+                
+                // Start and end angle handles (larger, distinct color)
+                [{ x: startX, y: startY }, { x: endX, y: endY }].forEach(h => {
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, 6, 0, 2 * Math.PI);
+                    ctx.fillStyle = "red";
                     ctx.fill();
                 });
             } else {
@@ -670,6 +1000,15 @@ document.addEventListener("keydown", (e) => {
     if (e.altKey) {
         e.preventDefault(); // Prevent browser menu activation
         altHeld = true;
+    } else if (e.key === "Delete" && selected) {
+        e.preventDefault(); // Prevent default delete action
+        deleteItem();
+    } else if (e.ctrlKey && e.key === "z") {
+        e.preventDefault(); // Prevent browser undo
+        undo();
+    } else if (e.ctrlKey && e.key === "y") {
+        e.preventDefault(); // Prevent browser redo
+        redo();
     }
 });
 
@@ -699,11 +1038,14 @@ function startDrag(e) {
         const it = items[i];
         let iw = it.w, ih = it.h;
         if (it.type === "text") {
+            ctx.save();
+            ctx.font = `bold ${it.size * 8}px "Courier New"`;
             iw = ctx.measureText(it.text).width;
             ih = it.size * 8;
+            ctx.restore();
         }
 
-        if (it.type === "line") {
+        if (it.type === "line" || it.type === "wideLine") {
             // Check line endpoints first
             const points = [
                 { name: 'start', x: it.x - 5, y: it.y - 5 },
@@ -751,6 +1093,110 @@ function startDrag(e) {
                     }
                 }
             }
+        } else if (it.type === "triangle" || it.type === "fillTriangle") {
+            // Check triangle vertices first
+            const vertices = [
+                { name: 'v0', x: it.x0 - 5, y: it.y0 - 5 },
+                { name: 'v1', x: it.x1 - 5, y: it.y1 - 5 },
+                { name: 'v2', x: it.x2 - 5, y: it.y2 - 5 }
+            ];
+            
+            for (let vertex of vertices) {
+                if (p.x >= vertex.x && p.x <= vertex.x + 10 && p.y >= vertex.y && p.y <= vertex.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = vertex.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking inside triangle for whole shape dragging
+            // Simple point-in-triangle test using barycentric coordinates
+            const area = Math.abs((it.x1 - it.x0) * (it.y2 - it.y0) - (it.x2 - it.x0) * (it.y1 - it.y0)) / 2;
+            if (area > 0) {
+                const area1 = Math.abs((it.x0 - p.x) * (it.y1 - p.y) - (it.x1 - p.x) * (it.y0 - p.y)) / 2;
+                const area2 = Math.abs((it.x1 - p.x) * (it.y2 - p.y) - (it.x2 - p.x) * (it.y1 - p.y)) / 2;
+                const area3 = Math.abs((it.x2 - p.x) * (it.y0 - p.y) - (it.x0 - p.x) * (it.y2 - p.y)) / 2;
+                
+                if (Math.abs(area1 + area2 + area3 - area) < 1) {
+                    dragging = it;
+                    offsetX = p.x - it.x0;
+                    offsetY = p.y - it.y0;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    render();
+                    return;
+                }
+            }
+        } else if (it.type === "arc") {
+            // Check bounding box corners first (for radius adjustment)
+            const corners = [
+                { name: 'tl', x: it.x - 5, y: it.y - 5 },
+                { name: 'tr', x: it.x + it.w - 5, y: it.y - 5 },
+                { name: 'bl', x: it.x - 5, y: it.y + it.h - 5 },
+                { name: 'br', x: it.x + it.w - 5, y: it.y + it.h - 5 }
+            ];
+            
+            for (let corner of corners) {
+                if (p.x >= corner.x && p.x <= corner.x + 10 && p.y >= corner.y && p.y <= corner.y + 10) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = corner.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check arc angle handles
+            const centerX = it.x + it.w / 2;
+            const centerY = it.y + it.h / 2;
+            const outerRadius = it.outerRadius || 20;
+            const startRad = ((it.startAngle || 0) + 90) * Math.PI / 180; // Add 90° to make 0° at bottom
+            const endRad = ((it.endAngle || 90) + 90) * Math.PI / 180;
+            
+            const startX = centerX + outerRadius * Math.cos(startRad);
+            const startY = centerY + outerRadius * Math.sin(startRad);
+            const endX = centerX + outerRadius * Math.cos(endRad);
+            const endY = centerY + outerRadius * Math.sin(endRad);
+            
+            const angleHandles = [
+                { name: 'arcStart', x: startX - 5, y: startY - 5, w: 10, h: 10 },
+                { name: 'arcEnd', x: endX - 5, y: endY - 5, w: 10, h: 10 }
+            ];
+            
+            for (let handle of angleHandles) {
+                if (p.x >= handle.x && p.x <= handle.x + handle.w && p.y >= handle.y && p.y <= handle.y + handle.w) {
+                    dragging = it;
+                    resizing = true;
+                    resizeHandle = handle.name;
+                    selected = it;
+                    showGrid = true;
+                    updateLayerSelect();
+                    render();
+                    return;
+                }
+            }
+            
+            // Check if clicking inside arc bounding box for whole shape dragging
+            // Use full bounding box area for easy selection
+            if (p.x >= it.x && p.x <= it.x + it.w && p.y >= it.y && p.y <= it.y + it.h) {
+                dragging = it;
+                offsetX = p.x - it.x;
+                offsetY = p.y - it.y;
+                selected = it;
+                showGrid = true;
+                updateLayerSelect();
+                render();
+                return;
+            }
         } else {
             const corners = it.type !== "text" ? [
                 { name: 'tl', x: it.x - 5, y: it.y - 5 },
@@ -793,7 +1239,7 @@ function drag(e) {
     const p = getMousePos(e);
 
     if (resizing) {
-        if (dragging.type === "line") {
+        if (dragging.type === "line" || dragging.type === "wideLine") {
             // Handle line point dragging
             if (resizeHandle === 'start') {
                 dragging.x = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
@@ -802,6 +1248,141 @@ function drag(e) {
                 dragging.x2 = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
                 dragging.y2 = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
             }
+        } else if (dragging.type === "triangle" || dragging.type === "fillTriangle") {
+            // Handle triangle vertex dragging
+            const newX = (snapOn !== altHeld) ? Math.round(p.x / gridSize) * gridSize : p.x;
+            const newY = (snapOn !== altHeld) ? Math.round(p.y / gridSize) * gridSize : p.y;
+            
+            if (resizeHandle === 'v0') {
+                dragging.x0 = newX;
+                dragging.y0 = newY;
+            } else if (resizeHandle === 'v1') {
+                dragging.x1 = newX;
+                dragging.y1 = newY;
+            } else if (resizeHandle === 'v2') {
+                dragging.x2 = newX;
+                dragging.y2 = newY;
+            }
+        } else if (dragging.type === "arc") {
+            // Handle arc radius adjustment via corner dragging
+            if (resizeHandle === 'tl' || resizeHandle === 'tr' || resizeHandle === 'bl' || resizeHandle === 'br') {
+                let nx = p.x, ny = p.y, nw = dragging.w, nh = dragging.h;
+                
+                if (snapOn !== altHeld) {
+                    nx = Math.round(nx / gridSize) * gridSize;
+                    ny = Math.round(ny / gridSize) * gridSize;
+                }
+                
+                if (resizeHandle === 'br') {
+                    nw = clamp(nx - dragging.x, 20, canvas.width - dragging.x);
+                    nh = clamp(ny - dragging.y, 20, canvas.height - dragging.y);
+                    // Keep arc circular and update outer radius
+                    const newSize = Math.min(nw, nh);
+                    dragging.w = newSize;
+                    dragging.h = newSize;
+                    dragging.outerRadius = newSize / 2;
+                } else if (resizeHandle === 'tl') {
+                    const newX = clamp(nx, 0, dragging.x + dragging.w - 20);
+                    const newY = clamp(ny, 0, dragging.y + dragging.h - 20);
+                    nw = dragging.x + dragging.w - newX;
+                    nh = dragging.y + dragging.h - newY;
+                    const newSize = Math.min(nw, nh);
+                    dragging.x = dragging.x + dragging.w - newSize;
+                    dragging.y = dragging.y + dragging.h - newSize;
+                    dragging.w = newSize;
+                    dragging.h = newSize;
+                    dragging.outerRadius = newSize / 2;
+                } else if (resizeHandle === 'tr') {
+                    const newY = clamp(ny, 0, dragging.y + dragging.h - 20);
+                    nw = clamp(nx - dragging.x, 20, canvas.width - dragging.x);
+                    nh = dragging.y + dragging.h - newY;
+                    const newSize = Math.min(nw, nh);
+                    dragging.y = dragging.y + dragging.h - newSize;
+                    dragging.w = newSize;
+                    dragging.h = newSize;
+                    dragging.outerRadius = newSize / 2;
+                } else if (resizeHandle === 'bl') {
+                    const newX = clamp(nx, 0, dragging.x + dragging.w - 20);
+                    nw = dragging.x + dragging.w - newX;
+                    nh = clamp(ny - dragging.y, 20, canvas.height - dragging.y);
+                    const newSize = Math.min(nw, nh);
+                    dragging.x = dragging.x + dragging.w - newSize;
+                    dragging.w = newSize;
+                    dragging.h = newSize;
+                    dragging.outerRadius = newSize / 2;
+                }
+            }
+            // Handle arc angle dragging
+            else if (resizeHandle === 'arcStart' || resizeHandle === 'arcEnd') {
+                const centerX = dragging.x + dragging.w / 2;
+                const centerY = dragging.y + dragging.h / 2;
+                let angle = Math.atan2(p.y - centerY, p.x - centerX) * 180 / Math.PI;
+                angle -= 90; // Subtract 90° to make 0° at bottom
+                if (angle < 0) angle += 360;
+                
+                if (snapOn !== altHeld) {
+                    angle = Math.round(angle / 15) * 15; // Snap to 15-degree increments
+                } else {
+                    angle = Math.round(angle); // Always round to integer
+                }
+                
+                if (resizeHandle === 'arcStart') {
+                    dragging.startAngle = Math.round(angle);
+                } else {
+                    dragging.endAngle = Math.round(angle);
+                }
+            }
+        } else if (dragging.type === "circle" || dragging.type === "fillCircle") {
+            // Handle circle resizing - keep square and update radius
+            let nx = dragging.x,
+                ny = dragging.y,
+                nw = dragging.w,
+                nh = dragging.h,
+                mn = 10; // Minimum size for circles
+
+            if (resizeHandle.includes('t')) {
+                ny = Math.min(p.y, dragging.y + dragging.h - mn);
+                nh = dragging.h + (dragging.y - ny);
+            }
+            if (resizeHandle.includes('b')) nh = Math.max(mn, p.y - dragging.y);
+            if (resizeHandle.includes('l')) {
+                nx = Math.min(p.x, dragging.x + dragging.w - mn);
+                nw = dragging.w + (dragging.x - nx);
+            }
+            if (resizeHandle.includes('r')) nw = Math.max(mn, p.x - dragging.x);
+
+            // Keep circles square - use the smaller dimension
+            const newSize = Math.min(nw, nh);
+            
+            // Adjust position based on which handle was dragged
+            if (resizeHandle.includes('t') && resizeHandle.includes('l')) {
+                // Top-left: adjust both x and y
+                nx = dragging.x + dragging.w - newSize;
+                ny = dragging.y + dragging.h - newSize;
+            } else if (resizeHandle.includes('t')) {
+                // Top: adjust y only
+                ny = dragging.y + dragging.h - newSize;
+            } else if (resizeHandle.includes('l')) {
+                // Left: adjust x only
+                nx = dragging.x + dragging.w - newSize;
+            }
+            
+            // Remove canvas boundary restrictions for circle resizing
+            // nx = clamp(nx, 0, canvas.width - newSize);
+            // ny = clamp(ny, 0, canvas.height - newSize);
+
+            if (snapOn !== altHeld) {
+                dragging.x = Math.round(nx / gridSize) * gridSize;
+                dragging.y = Math.round(ny / gridSize) * gridSize;
+                dragging.w = dragging.h = Math.round(newSize / gridSize) * gridSize;
+            } else {
+                dragging.x = nx;
+                dragging.y = ny;
+                dragging.w = dragging.h = newSize;
+            }
+            
+            // Update radius based on new bounding box
+            dragging.radius = Math.round(dragging.w / 2);
         } else {
             // Handle other shapes resizing
             let nx = dragging.x,
@@ -821,10 +1402,11 @@ function drag(e) {
             }
             if (resizeHandle.includes('r')) nw = Math.max(mn, p.x - dragging.x);
 
-            nx = clamp(nx, 0, canvas.width - nw);
-            ny = clamp(ny, 0, canvas.height - nh);
-            nw = clamp(nw, mn, canvas.width - nx);
-            nh = clamp(nh, mn, canvas.height - ny);
+            // Remove canvas boundary restrictions for resizing
+            // nx = clamp(nx, 0, canvas.width - nw);
+            // ny = clamp(ny, 0, canvas.height - nh);
+            // nw = clamp(nw, mn, canvas.width - nx);
+            // nh = clamp(nh, mn, canvas.height - ny);
 
             if (snapOn !== altHeld) {
                 dragging.x = Math.round(nx / gridSize) * gridSize;
@@ -840,7 +1422,7 @@ function drag(e) {
         }
     } else {
         // Handle moving entire shape
-        if (dragging.type === "line") {
+        if (dragging.type === "line" || dragging.type === "wideLine") {
             let dx = p.x - dragging.x - offsetX;
             let dy = p.y - dragging.y - offsetY;
             
@@ -853,6 +1435,35 @@ function drag(e) {
             dragging.y += dy;
             dragging.x2 += dx;
             dragging.y2 += dy;
+        } else if (dragging.type === "triangle" || dragging.type === "fillTriangle") {
+            let dx = p.x - dragging.x0 - offsetX;
+            let dy = p.y - dragging.y0 - offsetY;
+            
+            if (snapOn !== altHeld) {
+                dx = Math.round(dx / gridSize) * gridSize;
+                dy = Math.round(dy / gridSize) * gridSize;
+            }
+            
+            dragging.x0 += dx;
+            dragging.y0 += dy;
+            dragging.x1 += dx;
+            dragging.y1 += dy;
+            dragging.x2 += dx;
+            dragging.y2 += dy;
+        } else if (dragging.type === "arc") {
+            if (!resizeHandle) {
+                // Normal arc dragging (whole shape movement)
+                let nx = p.x - offsetX;
+                let ny = p.y - offsetY;
+                
+                if (snapOn !== altHeld) {
+                    nx = Math.round(nx / gridSize) * gridSize;
+                    ny = Math.round(ny / gridSize) * gridSize;
+                }
+                
+                dragging.x = nx;
+                dragging.y = ny;
+            }
         } else {
             let nx = p.x - offsetX;
             let ny = p.y - offsetY;
@@ -863,11 +1474,11 @@ function drag(e) {
             }
 
             if (selected && selected.type === "text") {
-                selected.x = clamp(nx, 0, canvas.width - selected.w);
-                selected.y = clamp(ny, 0, canvas.height - selected.h);
+                selected.x = nx;
+                selected.y = ny;
             } else {
-                dragging.x = clamp(nx, 0, canvas.width - dragging.w);
-                dragging.y = clamp(ny, 0, canvas.height - dragging.h);
+                dragging.x = nx;
+                dragging.y = ny;
             }
         }
     }
@@ -877,6 +1488,10 @@ function drag(e) {
 }
 
 function stopDrag() {
+    if (dragging || resizing) {
+        // Save state after completing drag operation
+        saveToHistory();
+    }
     dragging = null;
     resizing = false;
     resizeHandle = null;
@@ -911,6 +1526,8 @@ function syncUI() {
     // Hide all dynamic controls first
     document.getElementById('textControl').style.display = 'none';
     document.getElementById('textSizeControl').style.display = 'none';
+    document.getElementById('textBgColorControl').style.display = 'none';
+    document.getElementById('textBgToggleControl').style.display = 'none';
     document.getElementById('posXControl').style.display = 'none';
     document.getElementById('posYControl').style.display = 'none';
     document.getElementById('widthControl').style.display = 'none';
@@ -919,6 +1536,19 @@ function syncUI() {
     document.getElementById('x2Control').style.display = 'none';
     document.getElementById('y2Control').style.display = 'none';
     document.getElementById('colorControl').style.display = 'none';
+    document.getElementById('x0Control').style.display = 'none';
+    document.getElementById('y0Control').style.display = 'none';
+    document.getElementById('x1Control').style.display = 'none';
+    document.getElementById('y1Control').style.display = 'none';
+    document.getElementById('x2TriControl').style.display = 'none';
+    document.getElementById('y2TriControl').style.display = 'none';
+    document.getElementById('lineWidthControl').style.display = 'none';
+    document.getElementById('startAngleControl').style.display = 'none';
+    document.getElementById('endAngleControl').style.display = 'none';
+    document.getElementById('innerRadiusControl').style.display = 'none';
+    document.getElementById('outerRadiusControl').style.display = 'none';
+    document.getElementById('color2Control').style.display = 'none';
+    document.getElementById('gradientModeControl').style.display = 'none';
     
     if (!selected) {
         // Show placeholder message when nothing is selected
@@ -933,27 +1563,80 @@ function syncUI() {
     document.getElementById('posXControl').style.display = 'flex';
     document.getElementById('posYControl').style.display = 'flex';
     document.getElementById('colorControl').style.display = 'flex';
-    posXInput.value = Math.round(selected.x);
-    posYInput.value = Math.round(selected.y);
+    
+    if (selected.type === 'arc') {
+        // For arcs, show center point instead of top-left corner
+        posXInput.value = Math.round(selected.x + selected.w / 2);
+        posYInput.value = Math.round(selected.y + selected.h / 2);
+    } else if (selected.type === 'triangle' || selected.type === 'fillTriangle') {
+        // For triangles, don't show position controls as they use point-based positioning
+        document.getElementById('posXControl').style.display = 'none';
+        document.getElementById('posYControl').style.display = 'none';
+    } else {
+        posXInput.value = Math.round(selected.x);
+        posYInput.value = Math.round(selected.y);
+    }
     
     // Update common controls
     textInput.value = selected.text || '';
     colorInput.value = selected.color;
+    if (selected.color2) {
+        color2Input.value = selected.color2;
+    }
+    if (selected.gradientMode) {
+        gradientModeInput.value = selected.gradientMode;
+    }
     
     // Show controls based on shape type
     switch(selected.type) {
         case 'fillRect':
         case 'rect':
+        case 'fastHLine':
+        case 'fastVLine':
             document.getElementById('widthControl').style.display = 'flex';
             document.getElementById('heightControl').style.display = 'flex';
             widthInput.value = Math.round(selected.w);
             heightInput.value = Math.round(selected.h);
             break;
             
+        case 'fillRectGradient':
+            document.getElementById('widthControl').style.display = 'flex';
+            document.getElementById('heightControl').style.display = 'flex';
+            document.getElementById('color2Control').style.display = 'flex';
+            document.getElementById('gradientModeControl').style.display = 'flex';
+            widthInput.value = Math.round(selected.w);
+            heightInput.value = Math.round(selected.h);
+            break;
+            
+        case 'roundRect':
+        case 'fillRoundRect':
+            document.getElementById('widthControl').style.display = 'flex';
+            document.getElementById('heightControl').style.display = 'flex';
+            document.getElementById('radiusControl').style.display = 'flex';
+            widthInput.value = Math.round(selected.w);
+            heightInput.value = Math.round(selected.h);
+            radiusInput.value = selected.radius || 5;
+            break;
+            
         case 'circle':
+            document.getElementById('radiusControl').style.display = 'flex';
+            radiusInput.value = selected.radius || Math.round(selected.w / 2);
+            break;
+            
         case 'fillCircle':
             document.getElementById('radiusControl').style.display = 'flex';
-            radiusInput.value = Math.round(selected.w / 2);
+            radiusInput.value = selected.radius || Math.round(selected.w / 2);
+            break;
+            
+        case 'arc':
+            document.getElementById('startAngleControl').style.display = 'flex';
+            document.getElementById('endAngleControl').style.display = 'flex';
+            document.getElementById('innerRadiusControl').style.display = 'flex';
+            document.getElementById('outerRadiusControl').style.display = 'flex';
+            startAngleInput.value = selected.startAngle || 0;
+            endAngleInput.value = selected.endAngle || 90;
+            innerRadiusInput.value = Math.round(selected.innerRadius || 10);
+            outerRadiusInput.value = Math.round(selected.outerRadius || 20);
             break;
             
         case 'line':
@@ -963,10 +1646,49 @@ function syncUI() {
             y2Input.value = Math.round(selected.y2);
             break;
             
+        case 'wideLine':
+            document.getElementById('x2Control').style.display = 'flex';
+            document.getElementById('y2Control').style.display = 'flex';
+            document.getElementById('lineWidthControl').style.display = 'flex';
+            x2Input.value = Math.round(selected.x2);
+            y2Input.value = Math.round(selected.y2);
+            lineWidthInput.value = selected.lineWidth || 2;
+            break;
+            
+        case 'triangle':
+        case 'fillTriangle':
+            document.getElementById('x0Control').style.display = 'flex';
+            document.getElementById('y0Control').style.display = 'flex';
+            document.getElementById('x1Control').style.display = 'flex';
+            document.getElementById('y1Control').style.display = 'flex';
+            document.getElementById('x2TriControl').style.display = 'flex';
+            document.getElementById('y2TriControl').style.display = 'flex';
+            x0Input.value = Math.round(selected.x0);
+            y0Input.value = Math.round(selected.y0);
+            x1Input.value = Math.round(selected.x1);
+            y1Input.value = Math.round(selected.y1);
+            x2TriInput.value = Math.round(selected.x2);
+            y2TriInput.value = Math.round(selected.y2);
+            break;
+            
         case 'text':
             document.getElementById('textControl').style.display = 'flex';
             document.getElementById('textSizeControl').style.display = 'flex';
+            document.getElementById('textBgToggleControl').style.display = 'flex';
             textSizeInput.value = selected.size;
+            textBgColorInput.value = selected.textBgColor || '#000000';
+            
+            if (selected.textBgColor) {
+                document.getElementById('textBgColorControl').style.display = 'flex';
+                document.getElementById('textBgColorPlaceholder').style.display = 'none';
+                textBgToggleInput.textContent = 'YES';
+                textBgToggleInput.classList.add('on');
+            } else {
+                document.getElementById('textBgColorControl').style.display = 'none';
+                document.getElementById('textBgColorPlaceholder').style.display = 'flex';
+                textBgToggleInput.textContent = 'NO';
+                textBgToggleInput.classList.remove('on');
+            }
             break;
     }
 }
@@ -975,6 +1697,7 @@ textInput.addEventListener("input", () => {
     if (selected && selected.type === "text") {
         selected.text = textInput.value;
         render();
+        trackInputChange();
     }
 });
 
@@ -985,10 +1708,53 @@ colorInput.addEventListener("input", () => {
     }
 });
 
+color2Input.addEventListener("input", () => {
+    if (selected) {
+        selected.color2 = color2Input.value;
+        render();
+    }
+});
+
+gradientModeInput.addEventListener("change", () => {
+    if (selected) {
+        selected.gradientMode = gradientModeInput.value;
+        render();
+    }
+});
+
 textSizeInput.addEventListener("input", () => {
     if (selected && selected.type === "text") {
         selected.size = parseInt(textSizeInput.value);
         render();
+        trackInputChange();
+    }
+});
+
+textBgColorInput.addEventListener("input", () => {
+    if (selected && selected.type === "text" && selected.textBgColor) {
+        selected.textBgColor = textBgColorInput.value;
+        render();
+        trackInputChange();
+    }
+});
+
+textBgToggleInput.addEventListener("click", () => {
+    if (selected && selected.type === "text") {
+        if (selected.textBgColor) {
+            selected.textBgColor = null;
+            textBgToggleInput.textContent = 'NO';
+            textBgToggleInput.classList.remove('no');
+            document.getElementById('textBgColorControl').style.display = 'none';
+            document.getElementById('textBgColorPlaceholder').style.display = 'flex';
+        } else {
+            selected.textBgColor = textBgColorInput.value;
+            textBgToggleInput.textContent = 'YES';
+            textBgToggleInput.classList.add('on');
+            document.getElementById('textBgColorControl').style.display = 'flex';
+            document.getElementById('textBgColorPlaceholder').style.display = 'none';
+        }
+        render();
+        trackInputChange();
     }
 });
 
@@ -996,26 +1762,41 @@ textSizeInput.addEventListener("input", () => {
 posXInput.addEventListener("input", () => {
     if (selected) {
         const newX = parseInt(posXInput.value);
-        if (selected.type === 'line') {
+        if (selected.type === 'line' || selected.type === 'wideLine') {
             const dx = newX - selected.x;
             selected.x = newX;
             selected.x2 += dx;
             x2Input.value = Math.round(selected.x2);
+        } else if (selected.type === 'arc') {
+            // For arcs, position represents center point
+            const centerX = newX;
+            const radius = selected.outerRadius || 20;
+            selected.x = centerX - radius;
+            selected.w = radius * 2;
+            selected.h = radius * 2;
         } else {
             selected.x = newX;
         }
         render();
+        trackInputChange();
     }
 });
 
 posYInput.addEventListener("input", () => {
     if (selected) {
         const newY = parseInt(posYInput.value);
-        if (selected.type === 'line') {
+        if (selected.type === 'line' || selected.type === 'wideLine') {
             const dy = newY - selected.y;
             selected.y = newY;
             selected.y2 += dy;
             y2Input.value = Math.round(selected.y2);
+        } else if (selected.type === 'arc') {
+            // For arcs, position represents center point
+            const centerY = newY;
+            const radius = selected.outerRadius || 20;
+            selected.y = centerY - radius;
+            selected.w = radius * 2;
+            selected.h = radius * 2;
         } else {
             selected.y = newY;
         }
@@ -1024,38 +1805,147 @@ posYInput.addEventListener("input", () => {
 });
 
 widthInput.addEventListener("input", () => {
-    if (selected && (selected.type === 'fillRect' || selected.type === 'rect')) {
+    if (selected && (selected.type === 'fillRect' || selected.type === 'rect' || selected.type === 'fillRectGradient')) {
         selected.w = parseInt(widthInput.value);
         render();
+        trackInputChange();
     }
 });
 
 heightInput.addEventListener("input", () => {
-    if (selected && (selected.type === 'fillRect' || selected.type === 'rect')) {
+    if (selected && (selected.type === 'fillRect' || selected.type === 'rect' || selected.type === 'fillRectGradient')) {
         selected.h = parseInt(heightInput.value);
         render();
+        trackInputChange();
     }
 });
 
 radiusInput.addEventListener("input", () => {
     if (selected && (selected.type === 'circle' || selected.type === 'fillCircle')) {
         const radius = parseInt(radiusInput.value);
-        selected.w = radius * 2;
-        selected.h = radius * 2;
+        selected.radius = radius;
+        // Set bounding box to diameter for both circle types
+        selected.w = selected.h = radius * 2;
+        render();
+        trackInputChange();
+    } else if (selected && (selected.type === 'roundRect' || selected.type === 'fillRoundRect')) {
+        selected.radius = parseInt(radiusInput.value);
+        render();
+        trackInputChange();
+    } else if (selected && selected.type === 'arc') {
+        const newRadius = parseInt(radiusInput.value);
+        selected.w = newRadius * 2;
+        selected.h = newRadius * 2;
         render();
     }
 });
 
 x2Input.addEventListener("input", () => {
-    if (selected && selected.type === 'line') {
+    if (selected && (selected.type === 'line' || selected.type === 'wideLine')) {
         selected.x2 = parseInt(x2Input.value);
         render();
     }
 });
 
 y2Input.addEventListener("input", () => {
-    if (selected && selected.type === 'line') {
+    if (selected && (selected.type === 'line' || selected.type === 'wideLine')) {
         selected.y2 = parseInt(y2Input.value);
+        render();
+    }
+});
+
+// Line width input
+lineWidthInput.addEventListener("input", () => {
+    if (selected && selected.type === 'wideLine') {
+        selected.lineWidth = parseInt(lineWidthInput.value);
+        render();
+        trackInputChange();
+    }
+});
+
+// Triangle point inputs
+x0Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.x0 = parseInt(x0Input.value);
+        render();
+    }
+});
+
+y0Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.y0 = parseInt(y0Input.value);
+        render();
+    }
+});
+
+x1Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.x1 = parseInt(x1Input.value);
+        render();
+    }
+});
+
+y1Input.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.y1 = parseInt(y1Input.value);
+        render();
+    }
+});
+
+x2TriInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.x2 = parseInt(x2TriInput.value);
+        render();
+    }
+});
+
+y2TriInput.addEventListener("input", () => {
+    if (selected && (selected.type === 'triangle' || selected.type === 'fillTriangle')) {
+        selected.y2 = parseInt(y2TriInput.value);
+        render();
+    }
+});
+
+// Arc control listeners
+startAngleInput.addEventListener("input", () => {
+    if (selected && selected.type === 'arc') {
+        selected.startAngle = parseInt(startAngleInput.value);
+        render();
+    }
+});
+
+endAngleInput.addEventListener("input", () => {
+    if (selected && selected.type === 'arc') {
+        selected.endAngle = parseInt(endAngleInput.value);
+        render();
+    }
+});
+
+innerRadiusInput.addEventListener("input", () => {
+    if (selected && selected.type === 'arc') {
+        selected.innerRadius = Math.round(parseInt(innerRadiusInput.value) || 0);
+        render();
+    }
+});
+
+outerRadiusInput.addEventListener("input", () => {
+    if (selected && selected.type === 'arc') {
+        const newRadius = Math.round(parseInt(outerRadiusInput.value) || 1);
+        
+        // Calculate current center
+        const centerX = selected.x + selected.w / 2;
+        const centerY = selected.y + selected.h / 2;
+        
+        // Update radius
+        selected.outerRadius = newRadius;
+        
+        // Update bounding box size and position to keep center constant
+        const diameter = newRadius * 2;
+        selected.w = diameter;
+        selected.h = diameter;
+        selected.x = centerX - newRadius;
+        selected.y = centerY - newRadius;
+        
         render();
     }
 });
@@ -1075,12 +1965,66 @@ function saveState() {
         items: items,
         backgroundColor: backgroundColorInput.value,
         currentDevice: currentDevice,
+        currentOutputMode: currentOutputMode,
         gridSize: gridSize,
         snapOn: snapOn,
         showGrid: showGrid,
         fileName: document.getElementById("fileName").value
     };
     localStorage.setItem('bruceJSDesignerState', JSON.stringify(state));
+}
+
+function saveToHistory() {
+    // Remove any future history when making a new change
+    history = history.slice(0, historyIndex + 1);
+    
+    // Deep clone the current state
+    const currentState = {
+        items: JSON.parse(JSON.stringify(items)),
+        selected: selected ? items.indexOf(selected) : -1
+    };
+    
+    history.push(currentState);
+    historyIndex++;
+    
+    // Limit history size
+    if (history.length > maxHistorySize) {
+        history.shift();
+        historyIndex--;
+    }
+}
+
+function undo() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        const state = history[historyIndex];
+        items = JSON.parse(JSON.stringify(state.items));
+        selected = state.selected >= 0 ? items[state.selected] : null;
+        updateLayerSelect();
+        render();
+    }
+}
+
+function redo() {
+    if (historyIndex < history.length - 1) {
+        historyIndex++;
+        const state = history[historyIndex];
+        items = JSON.parse(JSON.stringify(state.items));
+        selected = state.selected >= 0 ? items[state.selected] : null;
+        updateLayerSelect();
+        render();
+    }
+}
+
+function trackInputChange() {
+    // Clear any existing timeout
+    if (inputChangeTimeout) {
+        clearTimeout(inputChangeTimeout);
+    }
+    // Set a new timeout to save history after user stops typing
+    inputChangeTimeout = setTimeout(() => {
+        saveToHistory();
+    }, 1000); // Save after 1 second of no changes
 }
 
 function loadState() {
@@ -1102,6 +2046,12 @@ function loadState() {
             if (state.currentDevice && devices[state.currentDevice]) {
                 currentDevice = state.currentDevice;
                 deviceSelect.value = state.currentDevice;
+            }
+            
+            // Restore output mode
+            if (state.currentOutputMode) {
+                currentOutputMode = state.currentOutputMode;
+                outputModeSelect.value = state.currentOutputMode;
             }
             
             // Restore grid settings
@@ -1145,6 +2095,7 @@ function loadState() {
 function generateCode() {
     const dev = devices[currentDevice];
     const W = dev[0], H = dev[1];
+    const outputPrefix = currentOutputMode;
 
     let out = `// Device: ${currentDevice}
 // Made with: Bruce JS designer
@@ -1154,11 +2105,15 @@ const display = require('display');
 
 const sprite = display.createSprite();
 
+draw();
+
 while(true){
+  if (keyboard.getEscPress(true)) break;
+}
 
-if(keyboard.getEscPress(true)) break;
+function draw() {
 
-sprite.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}));
+${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}));
 \n`;
  
 
@@ -1169,14 +2124,27 @@ sprite.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}));
               y = Math.round(i.y * sy),
               w = Math.round(i.w * sx),
               h = Math.round(i.h * sy);
-        const c = rgb(i.color).join(',');
+        const c = rgb(i.color).join(', ');
 
         switch (i.type) {
             case "fillRect":
-                out += `sprite.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
+                out += `${outputPrefix}.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
+                break;
+            case "fillRectGradient":
+                const c2 = rgb(i.color2 || i.color).join(',');
+                const mode = i.gradientMode || 'h';
+                out += `${outputPrefix}.drawFillRectGradient(${x}, ${y}, ${w}, ${h}, display.color(${c}), display.color(${c2}), "${mode}");\n`;
                 break;
             case "rect":
-                out += `sprite.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
+                out += `${outputPrefix}.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
+                break;
+            case "roundRect":
+                const radius = Math.round((i.radius || 5) * Math.min(sx, sy));
+                out += `${outputPrefix}.drawRoundRect(${x}, ${y}, ${w}, ${h}, ${radius}, display.color(${c}));\n`;
+                break;
+            case "fillRoundRect":
+                const radiusFill = Math.round((i.radius || 5) * Math.min(sx, sy));
+                out += `${outputPrefix}.drawFillRoundRect(${x}, ${y}, ${w}, ${h}, ${radiusFill}, display.color(${c}));\n`;
                 break;
             case "line":
                 // Use actual line coordinates instead of bounding box
@@ -1184,23 +2152,95 @@ sprite.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}));
                 const y1 = Math.round(i.y * sy);
                 const x2 = Math.round(i.x2 * sx);
                 const y2 = Math.round(i.y2 * sy);
-                out += `sprite.drawLine(${x1}, ${y1}, ${x2}, ${y2}, display.color(${c}));\n`;
+                out += `${outputPrefix}.drawLine(${x1}, ${y1}, ${x2}, ${y2}, display.color(${c}));\n`;
+                break;
+            case "wideLine":
+                // Use actual line coordinates and width
+                const wx1 = Math.round(i.x * sx);
+                const wy1 = Math.round(i.y * sy);
+                const wx2 = Math.round(i.x2 * sx);
+                const wy2 = Math.round(i.y2 * sy);
+                const lineWidth = Math.round((i.lineWidth || 2) * Math.min(sx, sy));
+                out += `${outputPrefix}.drawWideLine(${wx1}, ${wy1}, ${wx2}, ${wy2}, ${lineWidth}, display.color(${c}));\n`;
+                break;
+            case "fastHLine":
+                const hx1 = Math.round(i.x * sx);
+                const hy1 = Math.round(i.y * sy);
+                const hx2 = Math.round((i.x + i.w) * sx);
+                out += `${outputPrefix}.drawFastHLine(${hx1}, ${hy1}, ${hx2 - hx1}, display.color(${c}));\n`;
+                break;
+            case "fastVLine":
+                const vx1 = Math.round(i.x * sx);
+                const vy1 = Math.round(i.y * sy);
+                const vy2 = Math.round((i.y + i.h) * sy);
+                out += `${outputPrefix}.drawFastVLine(${vx1}, ${vy1}, ${vy2 - vy1}, display.color(${c}));\n`;
+                break;
+            case "fastHLine":
+                const fhx1 = Math.round(i.x * sx);
+                const fhy1 = Math.round(i.y * sy);
+                const fhx2 = Math.round(i.x2 * sx);
+                out += `${outputPrefix}.drawFastHLine(${fhx1}, ${fhy1}, ${fhx2 - fhx1}, display.color(${c}));\n`;
+                break;
+            case "fastVLine":
+                const fvx1 = Math.round(i.x * sx);
+                const fvy1 = Math.round(i.y * sy);
+                const fvy2 = Math.round(i.y2 * sy);
+                out += `${outputPrefix}.drawFastVLine(${fvx1}, ${fvy1}, ${fvy2 - fvy1}, display.color(${c}));\n`;
+                break;
+            case "triangle":
+                const tx0 = Math.round(i.x0 * sx);
+                const ty0 = Math.round(i.y0 * sy);
+                const tx1 = Math.round(i.x1 * sx);
+                const ty1 = Math.round(i.y1 * sy);
+                const tx2 = Math.round(i.x2 * sx);
+                const ty2 = Math.round(i.y2 * sy);
+                out += `${outputPrefix}.drawTriangle(${tx0}, ${ty0}, ${tx1}, ${ty1}, ${tx2}, ${ty2}, display.color(${c}));\n`;
+                break;
+            case "fillTriangle":
+                const ftx0 = Math.round(i.x0 * sx);
+                const fty0 = Math.round(i.y0 * sy);
+                const ftx1 = Math.round(i.x1 * sx);
+                const fty1 = Math.round(i.y1 * sy);
+                const ftx2 = Math.round(i.x2 * sx);
+                const fty2 = Math.round(i.y2 * sy);
+                out += `${outputPrefix}.drawFillTriangle(${ftx0}, ${fty0}, ${ftx1}, ${fty1}, ${ftx2}, ${fty2}, display.color(${c}));\n`;
+                break;
+            case "arc":
+                const centerX = Math.round((i.x + i.w / 2) * sx);
+                const centerY = Math.round((i.y + i.h / 2) * sy);
+                const r1 = Math.round((i.innerRadius || 10) * Math.min(sx, sy));
+                const r2 = Math.round((i.outerRadius || 20) * Math.min(sx, sy));
+                const startAngle = i.startAngle || 0;
+                const endAngle = i.endAngle || 90;
+                out += `${outputPrefix}.drawArc(${centerX}, ${centerY}, ${r1}, ${r2}, ${startAngle}, ${endAngle}, display.color(${c}));\n`;
                 break;
             case "circle":
-                out += `sprite.drawCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${Math.floor(w / 2)}, display.color(${c}));\n`;
+                const circleRadius = i.radius || Math.floor(w / 2);
+                out += `${outputPrefix}.drawCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${circleRadius}, display.color(${c}));\n`;
                 break;
             case "fillCircle":
-                out += `sprite.drawFillCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${Math.floor(w / 2)}, display.color(${c}));\n`;
+                const fillCircleRadius = i.radius || Math.floor(w / 2);
+                out += `${outputPrefix}.drawFillCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${fillCircleRadius}, display.color(${c}));\n`;
                 break;
             case "text":
-                out += `sprite.setTextSize(${i.size});
-sprite.setTextColor(${c});
-sprite.drawText("${i.text}", ${x}, ${y});\n`;
+                const textColorCode = `display.color(${c})`;
+                let bgColorCode = '';
+                if (i.textBgColor) {
+                    const textBgColor = rgb(i.textBgColor).join(', ');
+                    bgColorCode = `, display.color(${textBgColor})`;
+                }
+                out += `${outputPrefix}.setTextSize(${i.size});
+${outputPrefix}.setTextColor(${textColorCode}${bgColorCode});
+${outputPrefix}.drawText("${i.text}", ${x}, ${y});\n`;
                 break;
         }
     });
 
-    out += `\nsprite.pushSprite();\n}`;
+    if (currentOutputMode === "sprite") {
+        out += `\n${outputPrefix}.pushSprite();\n}`;
+    } else {
+        out += `\n}`;
+    }
     code.textContent = out;
 }
 function exportJS() {
@@ -1212,9 +2252,46 @@ function exportJS() {
         a.click();
     }
 
+    function copyToClipboard() {
+        navigator.clipboard.writeText(code.textContent).then(() => {
+            // Visual feedback - briefly change button text
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = "Copied!";
+            button.style.backgroundColor = "#4CAF50";
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = "";
+            }, 1500);
+        }).catch(err => {
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = code.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = "Copied!";
+            button.style.backgroundColor = "#4CAF50";
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = "";
+            }, 1500);
+        });
+    }
+
     deviceSelect.addEventListener("change", () => {
         currentDevice = deviceSelect.value;
         updateCanvasSize();
+    });
+
+    outputModeSelect.addEventListener("change", () => {
+        currentOutputMode = outputModeSelect.value;
+        generateCode(); // Regenerate code with new output mode
     });
 
     // Initialize the application
@@ -1228,6 +2305,9 @@ function exportJS() {
         render();
         updateLayerSelect();
     }
+    
+    // Initialize history with current state
+    saveToHistory();
 </script>
 </body>
 </html>

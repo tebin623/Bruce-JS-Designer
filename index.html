@@ -2188,6 +2188,15 @@ function generateCode() {
     const W = dev[0], H = dev[1];
     const outputPrefix = currentOutputMode;
 
+    // Helper function to get correct prefix for functions that don't support sprite
+    const getPrefix = (functionName) => {
+        const unsupportedInSprite = ['drawFastVLine', 'drawFastHLine', 'drawWideLine', 'drawTriangle', 'drawFillTriangle', 'drawArc'];
+        if (currentOutputMode === 'sprite' && unsupportedInSprite.includes(functionName)) {
+            return 'display';
+        }
+        return outputPrefix;
+    };
+
     let out = `// Device: ${currentDevice}
 // Made with: Bruce JS designer
 
@@ -2252,19 +2261,19 @@ ${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}
                 const wx2 = Math.round(i.x2 * sx);
                 const wy2 = Math.round(i.y2 * sy);
                 const lineWidth = Math.round((i.lineWidth || 2) * Math.min(sx, sy));
-                out += `${outputPrefix}.drawWideLine(${wx1}, ${wy1}, ${wx2}, ${wy2}, ${lineWidth}, display.color(${c}));\n`;
+                out += `${getPrefix('drawWideLine')}.drawWideLine(${wx1}, ${wy1}, ${wx2}, ${wy2}, ${lineWidth}, display.color(${c}));\n`;
                 break;
             case "fastHLine":
                 const hx1 = Math.round(i.x * sx);
                 const hy1 = Math.round(i.y * sy);
                 const hx2 = Math.round((i.x + i.w) * sx);
-                out += `${outputPrefix}.drawFastHLine(${hx1}, ${hy1}, ${hx2 - hx1}, display.color(${c}));\n`;
+                out += `${getPrefix('drawFastHLine')}.drawFastHLine(${hx1}, ${hy1}, ${hx2 - hx1}, display.color(${c}));\n`;
                 break;
             case "fastVLine":
                 const vx1 = Math.round(i.x * sx);
                 const vy1 = Math.round(i.y * sy);
                 const vy2 = Math.round((i.y + i.h) * sy);
-                out += `${outputPrefix}.drawFastVLine(${vx1}, ${vy1}, ${vy2 - vy1}, display.color(${c}));\n`;
+                out += `${getPrefix('drawFastVLine')}.drawFastVLine(${vx1}, ${vy1}, ${vy2 - vy1}, display.color(${c}));\n`;
                 break;
             case "fastHLine":
                 const fhx1 = Math.round(i.x * sx);
@@ -2285,7 +2294,7 @@ ${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}
                 const ty1 = Math.round(i.y1 * sy);
                 const tx2 = Math.round(i.x2 * sx);
                 const ty2 = Math.round(i.y2 * sy);
-                out += `${outputPrefix}.drawTriangle(${tx0}, ${ty0}, ${tx1}, ${ty1}, ${tx2}, ${ty2}, display.color(${c}));\n`;
+                out += `${getPrefix('drawTriangle')}.drawTriangle(${tx0}, ${ty0}, ${tx1}, ${ty1}, ${tx2}, ${ty2}, display.color(${c}));\n`;
                 break;
             case "fillTriangle":
                 const ftx0 = Math.round(i.x0 * sx);
@@ -2294,7 +2303,7 @@ ${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}
                 const fty1 = Math.round(i.y1 * sy);
                 const ftx2 = Math.round(i.x2 * sx);
                 const fty2 = Math.round(i.y2 * sy);
-                out += `${outputPrefix}.drawFillTriangle(${ftx0}, ${fty0}, ${ftx1}, ${fty1}, ${ftx2}, ${fty2}, display.color(${c}));\n`;
+                out += `${getPrefix('drawFillTriangle')}.drawFillTriangle(${ftx0}, ${fty0}, ${ftx1}, ${fty1}, ${ftx2}, ${fty2}, display.color(${c}));\n`;
                 break;
             case "arc":
                 const centerX = Math.round((i.x + i.w / 2) * sx);
@@ -2303,7 +2312,7 @@ ${outputPrefix}.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}
                 const r2 = Math.round((i.outerRadius || 20) * Math.min(sx, sy));
                 const startAngle = i.startAngle || 0;
                 const endAngle = i.endAngle || 90;
-                out += `${outputPrefix}.drawArc(${centerX}, ${centerY}, ${r1}, ${r2}, ${startAngle}, ${endAngle}, display.color(${c}));\n`;
+                out += `${getPrefix('drawArc')}.drawArc(${centerX}, ${centerY}, ${r1}, ${r2}, ${startAngle}, ${endAngle}, display.color(${c}));\n`;
                 break;
             case "circle":
                 const circleRadius = i.radius || Math.floor(w / 2);

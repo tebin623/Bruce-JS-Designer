@@ -702,10 +702,9 @@ const sprite = display.createSprite();
 
 while(true){
 
-if(keyboard.getEscPress(true))
-break;
+if(keyboard.getEscPress(true)) break;
 
-sprite.fill(0);
+sprite.fill(display.color(${rgb(backgroundColorInput.value).join(', ')}));
 \n`;
  
 
@@ -720,24 +719,24 @@ sprite.fill(0);
 
         switch (i.type) {
             case "fillRect":
-                out += `sprite.drawFillRect(${x},${y},${w},${h},display.color(${c}));\n`;
+                out += `sprite.drawFillRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
                 break;
             case "rect":
-                out += `sprite.drawRect(${x},${y},${w},${h},display.color(${c}));\n`;
+                out += `sprite.drawRect(${x}, ${y}, ${w}, ${h}, display.color(${c}));\n`;
                 break;
             case "line":
-                out += `sprite.drawLine(${x},${y},${x + w},${y + h},display.color(${c}));\n`;
+                out += `sprite.drawLine(${x}, ${y}, ${x + w}, ${y + h}, display.color(${c}));\n`;
                 break;
             case "circle":
-                out += `sprite.drawCircle(${x + Math.floor(w / 2)},${y + Math.floor(h / 2)},${Math.floor(w / 2)},display.color(${c}));\n`;
+                out += `sprite.drawCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${Math.floor(w / 2)}, display.color(${c}));\n`;
                 break;
             case "fillCircle":
-                out += `sprite.drawFillCircle(${x + Math.floor(w / 2)},${y + Math.floor(h / 2)},${Math.floor(w / 2)},display.color(${c}));\n`;
+                out += `sprite.drawFillCircle(${x + Math.floor(w / 2)}, ${y + Math.floor(h / 2)}, ${Math.floor(w / 2)}, display.color(${c}));\n`;
                 break;
             case "text":
                 out += `sprite.setTextSize(${i.size});
 sprite.setTextColor(${c});
-sprite.drawText("${i.text}",${x},${y});\n`;
+sprite.drawText("${i.text}", ${x}, ${y});\n`;
                 break;
         }
     });

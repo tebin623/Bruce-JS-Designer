@@ -12,7 +12,7 @@
 
 ## Usage
 
-1. Open [bruceJSdesigner](https://tebin623.github.io/Bruce-JS-Designer/) in a web browser.
+1. Open [bruceJSdesigner](https://sloth632.github.io/Bruce-JS-Designer/) in a web browser.
 2. Select the device you want from the device picker below the canvas.
 3. Use the buttons to add shapes to the canvas.
 4. Adjust properties using Canva, color picker, and input fields.
